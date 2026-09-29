@@ -654,6 +654,9 @@ export function narrowAgentTools(
     workspaceWrite: parent.workspaceWrite && (has('write', 'edit') || writesWorkspace),
     shell: parent.shell && has('bash'),
     mcp: parent.mcp && has('mcp'),
+    // view.* ships but is untested — deliberately absent from AI awareness,
+    // so subagents never inherit it even when the parent opts in.
+    viewTools: false,
   }
 }
 
