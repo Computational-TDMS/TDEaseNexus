@@ -5,7 +5,8 @@
 > history alone. Feature descriptions live in their owning `spec/`/`design/`
 > documents; each line here is a status verdict plus the pointer and the
 > pinning test. Status vocabulary: `docs/README.md`. Last rewrite:
-> 2026-09-18 (feature descriptions migrated out of this file).
+> 2026-09-29 (version axis to 0.10.0-beta, repo org to Computational-TDMS,
+> quality baseline re-measured, chlamy record statuses reconciled).
 
 ## Open defects
 
@@ -27,11 +28,11 @@
 
 ## Shape
 
-- **TDEaseNexus (desktop, 1.0.2)**: AI-first TD-MS analysis desktop workbench.
+- **TDEaseNexus (desktop, 0.10.0-beta)**: AI-first TD-MS analysis desktop workbench.
   The installed artifact keeps the name `TDEaseNexus` (installer/exe/data
   directory); every user-visible surface reads **TDEaseNexus · TD通**.
-  Desktop = main repo (`Tisen-Ray/TDEaseNexus`; Electron shell + Vue3) + two
-  submodules: `tdease-backend` 0.2.0 (Python/FastAPI, independently
+  Desktop = main repo (`Computational-TDMS/TDEaseNexus`; Electron shell + Vue3)
+  + two submodules: `tdease-backend` 0.2.0 (Python/FastAPI, independently
   deployable) and `tdease-ai-capability` (Rust kernel 0.1.0 + `system/`
   assets). `data/` simulates a real client install; never a source of truth.
   Packaging posture: `design/DESKTOP-PACKAGING.md`.
@@ -103,7 +104,8 @@
 
 ### Quality baseline (verification snapshot)
 
-- vitest 177 test files / 1443 tests green; desktop e2e 5/5 (one merged
+- vitest 189 test files / 1519 tests green (re-measured 2026-09-29 on the
+  0.10.0-beta tree, incl. the agent-transparency work); desktop e2e 5/5 (one merged
   Electron journey: sliding door, group toggles, real Agent chain,
   permissions, manual /compact, runs reload, failure trio, prompt queue +
   stop-keeps, blocked one-tap, /export HTML+PDF, cost guard, log-agreement).
@@ -162,7 +164,7 @@
 - **Node catalog**: five nodes registered, zero catalog errors: `toppic` 1.8.1
   (authoritative), `msconvert`, `informed-proteomics` (MSPathFinderT/ProMex),
   definition-only `pride`/`topindex`. Definition layer git-tracked; binaries
-  never are (inventory + provenance: `docs/NODES.md`).
+  never are (inventory + provenance: Run records; `docs/NODES.md` archived 2026-09-29).
 
 ## AI capability submodule (tdease-ai-capability)
 
@@ -178,8 +180,12 @@
 - **IsoForma** — `design/ISOFORMA-ARCHITECTURE.md` is the feature
   description (selection/pooling/estimation boundaries, `--feature-scan-map`,
   isotope gate, beta-vs-least-squares, declared category models). Status:
-  **implemented** as designed; the Chlamydomonas rerun outcome is an open
-  defect (see Open defects) and its counts must not be cited.
+  **implemented** as designed. Chlamydomonas record statuses: the archived
+  attempt-56 rerun outcome is a closed benchmark record (its counts are not
+  contract); the certified basis for the paper's Chlamydomonas figures is the
+  five-sample rerun (`results/data/certified-cases/chlamy-five-sample-rerun/`,
+  runtime-validated 2026-09-05; 19 fits / 80 fractions retained). The
+  gate/rung test instability stays in Open defects.
 - **Skill library (16)**: chart-forge (runtime figure compiler —
   `design/SKILL-D3-RENDERING-ARCHITECTURE.md`), evolution (the one gate for
   every accumulation tier), isoforma, massql, ptm-database, spectral-evidence,

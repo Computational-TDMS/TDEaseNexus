@@ -52,7 +52,7 @@ PYTHONPATH=tdease-backend tdease-backend/.venv/Scripts/python.exe -m pytest test
 cargo test
 
 # One-time per clone — enable the pre-commit gate (node --check + eslint
-# on staged files; zero dependencies, plan: docs/HARNESS-ENGINEERING-PLAN.md)
+# on staged files; zero dependencies, plan archived 2026-09-29)
 git config core.hooksPath githooks
 ```
 

@@ -116,7 +116,9 @@ decomposition):
   special-purpose branches grow for individual cases.
 - Optimization targets: the flow and component details of the python orchestration
   scripts, and the scoring semantics of the Rust kernel.
-- Each change's verdict terms and reasons go into `docs/EXPLORATION-LOG.md`; read
+- Each change's verdict terms and reasons went into `docs/EXPLORATION-LOG.md`
+  (archived 2026-09-29 to `archive/docs-cleanup-2026-09-29/`; new verdicts go to
+git history and case RECORD files); read
   before changing; excluded paths are not re-run.
 
 ### 2. dryrun

@@ -103,7 +103,7 @@ Don't read everything. Start by task:
 | Understand the event/projection model | `design/CORE-ARCHITECTURE.md` |
 | Check a Backend error code / envelope | `spec/FAILURE-CONTRACT.md` |
 | Run or extend the test suite | `../CLAUDE.md` (Commands) + `STATUS.md` (baseline) |
-| Check whether a scientific path was already explored | `EXPLORATION-LOG.md` (read before starting a new round) |
+| Check whether a scientific path was already explored | git history + `archive/docs-cleanup-2026-09-29/` (log archived 2026-09-29) |
 | Check a past operational fix | `solutions/` |
 
 Status is read from exactly one place: `STATUS.md`. Never infer status from
@@ -127,20 +127,11 @@ These live under `docs/` but are **not** product authority:
   (submission→execution path, data/truth layers, worker process loop, node
   lifecycle), each carrying its own known-weakness card; rendered from the
   shipped code, reference material only.
-- `HARNESS-ENGINEERING-PLAN.md` — engineering-harness transformation plan and
-  problem ledger (`H<n>` ids referenced by `[harness]` commits); process
-  record, never product authority.
-- `PI-PARITY-PLAN.md` — one-shot comparison against the PI-Desktop reference
-  tree (settings/statistics/token accounting): what was replicated, what was
-  already present, what was declined and why; process record, never product
-  authority.
-- `NODES.md` — operational note (node package inventory, provenance and usage
-  for the git-ignored `data/backend/nodes/` deployment root).
-- `EXPLORATION-LOG.md` — scientific exploration log (hypothesis→run→verdict
-  rounds, active fronts, ruled-out paths). Scope: **post-data-analysis
-  only** — data pre-processing (conversion, deconvolution, node deployment)
-  is out of scope and lives in `NODES.md`, `STATUS.md` and Run provenance.
-  Process record only, never a contract or status source.
+- Process records archived 2026-09-29 to `archive/docs-cleanup-2026-09-29/`:
+  `EXPLORATION-LOG.md`, `HARNESS-ENGINEERING-PLAN.md`, `PI-PARITY-PLAN.md`,
+  `plans/pi-desktop-parity.md`, `NODES.md` (node-package inventory; provenance
+  now lives in Run records). None were product authority; git history retains
+  their tracked revisions.
 
 ## Status vs process records
 
@@ -159,9 +150,9 @@ lookup cheap — and it is the reason `STATUS.md` stays short:
   - **git history** — the development record. Every narrative dropped from
     a STATUS rewrite remains retrievable here; that is what makes
     rewriting safe.
-  - **`EXPLORATION-LOG.md`** — the scientific loop memory
-    (hypothesis → run → verdict; post-analysis scope per its constitution;
-    requires reading it before starting a new exploration round).
+  - **`archive/docs-cleanup-2026-09-29/docs/EXPLORATION-LOG.md`** — the archived
+    scientific loop memory (hypothesis → run → verdict); retired 2026-09-29,
+    new rounds record verdicts in git history and case RECORD files.
   - **`paper/RECORD-*.md`** — adjudicated agent-session records for the
     paper cases.
   - **`HANDOFF-*.md`** — session-boundary handoffs (what is in flight,
