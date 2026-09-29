@@ -128,7 +128,10 @@ if (-not (Test-Path -LiteralPath $gitVendorBash)) {
         throw "MinGit download failed: $mingitUrl"
     }
     New-Item -ItemType Directory -Path $gitVendorDir -Force | Out-Null
-    tar.exe -xf $mingitZip -C $gitVendorDir
+    # System32 bsdtar explicitly (same reason as Phase 0.6): a Git-Bash PATH
+    # puts GNU tar first, and GNU tar reads "-f C:\..." as a remote host name.
+    $windowsTar = Join-Path $env:SystemRoot "System32\tar.exe"
+    & $windowsTar -xf $mingitZip -C $gitVendorDir
     if ($LASTEXITCODE -ne 0) {
         throw "MinGit extraction failed"
     }
