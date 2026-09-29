@@ -58,7 +58,7 @@
   guide). Status: **implemented**. Pinned by the desktop Playwright suite
   (5/5 green, one merged journey) and the vitest suite below.
 - **Studio business core** — `design/STUDIO-FRONTEND-BUSINESS-LOGIC.md`:
-  module boundary, twelve command families (exposure metadata fail-closed;
+  module boundary, thirteen command families (exposure metadata fail-closed;
   `evidence.*` registered but stripped from session profiles; `nodes.install`
   withheld under a remote backend connection), planRef lifecycle, and the
   Backend link contract (authFetch single re-handshake, SSE keepalives,
@@ -139,7 +139,8 @@
 
 - FastAPI + SQLite + SSE. API: runs_v2, files, nodes, capabilities, uploads,
   workspace_roots. Contracts: `spec/WORKFLOW-RUN.md`,
-  `spec/FAILURE-CONTRACT.md`. Root suite 327 passed / 1 skipped; `ruff check`
+  `spec/FAILURE-CONTRACT.md`. Root suite 327 passed / 1 skipped
+  (re-measured 2026-09-29); `ruff check`
   + `ruff format --check` clean (rule set pinned; import-order-sensitive
   snakemake imports documented in pyproject).
 - **Engine semantics** — `spec/WORKFLOW-RUN.md` §1 (+ its subsections) is the
@@ -177,14 +178,14 @@
 
 ## AI capability submodule (tdease-ai-capability)
 
-- **Rust kernel `tdeasenexus-toolbox`**: 22 subcommands; the evidence lattice
+- **Rust kernel `tdeasenexus-toolbox`**: 23 subcommands; the evidence lattice
   `mass ⊂ composition ⊂ identity` enforced by CLI gates. Contract:
   `spec/RUST-MS-CONTRACT.md` (incl. `resolve-shift` scoring, site-scoped
   neutral losses, 10 ppm fragment tolerance, raw-MS2 error-map matching with
   explicit `fragmentStatuses`, `unimod solve --fixed-mod` semantics);
   designs: `RUST-KERNEL-ARCHITECTURE.md`, `hypothesis-evidence-lattice.md`.
   Status: **implemented**; suites green (lib 122, cli_contract 71; raw
-  error-map and msalign E2E); clippy `-D warnings` (4 waived categories) +
+  error-map and msalign E2E; 201 total, re-measured 2026-09-29); clippy `-D warnings` (4 waived categories) +
   fmt + 201 tests wired as the CI `rust-kernel` job.
 - **IsoForma** — `design/ISOFORMA-ARCHITECTURE.md` is the feature
   description (selection/pooling/estimation boundaries, `--feature-scan-map`,

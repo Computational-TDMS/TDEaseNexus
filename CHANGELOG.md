@@ -28,7 +28,7 @@ desktop artifact versions (`TDEase-FrontEnd/package.json`).
   Electron + Vue 3 desktop with the two-mode agent runtime (Explorer/Executor,
   two-tier permissions), FastAPI backend 0.2.0 with the Snakemake 9.23.1
   workflow engine (MSConvert/TopFD/TopPIC node packages, per-launch bearer
-  auth), Rust kernel `tdeasenexus-toolbox` 0.1.0 (22 subcommands, evidence
+  auth), Rust kernel `tdeasenexus-toolbox` 0.1.0 (23 subcommands, evidence
   lattice `mass ⊂ composition ⊂ identity`), and the 16-skill scientific library
   (open search census, TDP-Copilot, IsoForma, TopPICR-based quantification,
   spectral/structure evidence, chart-forge, PTM database).
