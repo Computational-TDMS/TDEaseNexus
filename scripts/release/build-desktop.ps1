@@ -214,7 +214,7 @@ $checks = @(
     @{ Path = "$backendDir/src"; Label = "src/" },
     @{ Path = "$backendDir/runtime/cpython-3.12.13-windows-x86_64-none/python.exe"; Label = "bundled interpreter" },
     @{ Path = (Join-Path $unpacked "resources/app/assets/templates"); Label = "templates/" }
-    @{ Path = (Join-Path $unpacked "resources/app/assets/canvases"); Label = "canvases/" },
+    @{ Path = (Join-Path $unpacked "resources/app/assets/skills"); Label = "skills/" },
     @{ Path = (Join-Path $unpacked "resources/vendor/git/usr/bin/bash.exe"); Label = "vendor/git bash" }
 )
 $allOk = $true
