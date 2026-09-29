@@ -138,8 +138,9 @@ git history and case RECORD files); read
    ones point to systemic problems (calibration/clustering parameters); unique ones are
    the scientific-discovery candidates.
 
-The three answers are written back to that cycle's EXPLORATION-LOG record. **Forbidden**
-to run without analyzing.
+The three answers are recorded in the cycle's commit message / case RECORD
+file (the EXPLORATION-LOG mechanism was archived 2026-09-29 to
+`archive/docs-cleanup-2026-09-29/`). **Forbidden** to run without analyzing.
 
 ## Routing rules (who goes to which layer)
 
