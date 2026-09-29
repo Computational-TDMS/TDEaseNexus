@@ -19,8 +19,11 @@
   close/crash, app exit) stays silent for 45 s. Reopen the defect with
   that spec if it resurfaces.
 - **Red/unstable tests** (must not be cited as passing): the chlamy
-  gate/rung test is outcome-unstable (input-state drift undiagnosed — red,
-  and its recorded counts are benchmark records, not contract).
+  gate/rung test is outcome-unstable (input-state drift undiagnosed — red).
+  Record statuses: the archived attempt-56 rerun counts are closed benchmark
+  records, and the certified basis for the paper's Chlamydomonas figures is
+  the five-sample rerun (see IsoForma below); neither changes this test's
+  status.
   (`test_focused_skills_do_not_embed_acceptance_case_answers` was resolved
   2026-09-19: the acceptance-case structure had slipped into
   structure-evidence's reference data as untracked files — deleted; the
@@ -73,6 +76,12 @@
   `AGENT-LOOP.md`, `SUBAGENT/PTC/ORCHESTRATE/PTY-RUNTIME.md`. Status:
   **implemented**; pinned by prompt assembly tests (7) +
   `mcp-provider.test.ts` behavioral pins.
+- **Agent transparency surfaces** — task-tree cards, `view.*` viewports
+  (subagent tool narrowing gains the `viewTools` slot: untested `view.*`
+  commands are hard-excluded from the agent's visible surface), native
+  mass-shift ledger and MS2 discrimination views. Status: **implemented**
+  (0.10.0-beta, `664e9ac` + `966f5fc`); included in the vitest baseline
+  below.
 - **Model/provider seam & usage accounting** —
   `design/MODEL-PROVIDER-SEAM.md`: capability resolution precedence with
   ceiling semantics, the atomic-write seam, custom providers + endpoint
@@ -89,7 +98,7 @@
   (writable + space-free), bundled CPython with online `uv sync`, relocated-
   install venv rebuild, self-sufficient packaged bash, splash-to-painted-UI
   boot reveal, license surface, update channel, node-catalog seed, Windows
-  job-object process ownership. Status: **implemented** (1.0.2); verified by
+  job-object process ownership. Status: **implemented** (0.10.0-beta); verified by
   `scripts/release/verify-install.ps1` (incl. `-EngineSmoke`),
   `verify-data-root.cjs`, and `backend_manager.test.cjs`.
 - **Wiki** — `design/KNOWLEDGE-WIKI.md`: workspace `wiki/` + System wiki
