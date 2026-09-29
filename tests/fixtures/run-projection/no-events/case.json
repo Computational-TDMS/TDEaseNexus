@@ -1,0 +1,9 @@
+{
+  "description": "No journal facts means no Run lifecycle projection.",
+  "events": [],
+  "expect": {
+    "status": null, "projected_at_seq": 0,
+    "current_revision_id": null, "queued_mode": null, "queued_at_seq": null,
+    "ranges": []
+  }
+}

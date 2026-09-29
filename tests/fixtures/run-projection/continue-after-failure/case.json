@@ -1,0 +1,20 @@
+{
+  "description": "Continue requeues the same frozen revision and opens a second execution range.",
+  "events": [
+    { "seq": 1, "type": "run.submitted", "data": { "revision_id": "rev-1" } },
+    { "seq": 2, "type": "run.queue_requested", "data": { "revision_id": "rev-1", "mode": "execute" } },
+    { "seq": 3, "type": "run.started", "data": { "revision_id": "rev-1", "mode": "execute" } },
+    { "seq": 4, "type": "run.failed", "data": { "revision_id": "rev-1" } },
+    { "seq": 5, "type": "run.queue_requested", "data": { "revision_id": "rev-1", "mode": "continue" } },
+    { "seq": 6, "type": "run.started", "data": { "revision_id": "rev-1", "mode": "continue" } },
+    { "seq": 7, "type": "run.succeeded", "data": { "revision_id": "rev-1" } }
+  ],
+  "expect": {
+    "status": "SUCCEEDED", "projected_at_seq": 7,
+    "current_revision_id": "rev-1", "queued_mode": null, "queued_at_seq": null,
+    "ranges": [
+      { "queue_seq": 2, "start_seq": 3, "revision_id": "rev-1", "mode": "execute", "terminal_seq": 4, "terminal_type": "run.failed" },
+      { "queue_seq": 5, "start_seq": 6, "revision_id": "rev-1", "mode": "continue", "terminal_seq": 7, "terminal_type": "run.succeeded" }
+    ]
+  }
+}

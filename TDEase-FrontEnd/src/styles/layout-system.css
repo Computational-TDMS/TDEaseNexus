@@ -1,0 +1,38 @@
+:root {
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 1000;
+  --z-modal: 1100;
+  --z-popover: 1200;
+  --z-tooltip: 1300;
+  --z-notification: 9000;
+
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  --sidebar-min: 200px;
+  --sidebar-max: 500px;
+  --sidebar-default: 320px;
+  --panel-min: 150px;
+  --panel-max-ratio: 0.6;
+  --panel-default: 300px;
+
+  /* Deprecated aliases -- duplicate the --space-* scale
+     (unified-design-tokens.css, Layer 5) exactly. Kept so existing
+     components keep working; migrate call sites to --space-N and remove
+     these once nothing references --spacing-*. */
+  --spacing-xs: var(--space-1);
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+  --spacing-lg: var(--space-5);
+  --spacing-xl: var(--space-6);
+
+  --touch-target-min: 48px;
+  --touch-target-comfortable: 56px;
+}

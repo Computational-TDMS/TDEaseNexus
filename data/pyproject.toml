@@ -1,0 +1,6 @@
+# Python project for this Workspace. `uv sync` builds the local venv.
+[project]
+name = "data"
+version = "0"
+requires-python = ">=3.11"
+dependencies = []

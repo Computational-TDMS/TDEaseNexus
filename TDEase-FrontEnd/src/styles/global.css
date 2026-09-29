@@ -1,0 +1,166 @@
+/**
+ * Global utility styles and transitions.
+ * FRONTEND-ZERO: shared page transitions, card animations, tool classes.
+ */
+
+/* ── Page transitions ── */
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+}
+
+/* ── Card entrance animation ── */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.canvas-card {
+  animation: cardIn 0.25s ease-out;
+}
+
+/* ── Slide up (for drawers/modals) ── */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* ── Spin utility ── */
+.spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Pulse (for live indicators) ── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ── Chat — Typewriter dots (thinking + tool running) ── */
+@keyframes hana-typewriter-dots {
+  0%, 100% { content: '\00a0'; }
+  25%      { content: '.'; }
+  50%      { content: '..'; }
+  75%      { content: '...'; }
+}
+@keyframes hana-cycling-dots {
+  0%, 100% { content: '.'; }
+  33%      { content: '..'; }
+  66%      { content: '...'; }
+}
+@keyframes hana-chat-soft-down-in {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hana-chat-soft-up-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Text truncation helpers ── */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Scrollbar minimal ── */
+.scroll-mini::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroll-mini::-webkit-scrollbar-track { background: transparent; }
+.scroll-mini::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+.scroll-mini::-webkit-scrollbar-thumb:hover { background: var(--color-border-hover); }
+
+/* -- Numeric typography (VISUAL-SYSTEM.md §3.3) --
+   Tabular figures so a column of numbers does not shift horizontally as
+   it updates -- the single highest-value typographic rule in a
+   scientific tool. */
+.numeric,
+.ag-cell[data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* -- Label text (VISUAL-SYSTEM.md §3.2 --text-label) --
+   Section labels, table headers, chip text. */
+.text-label {
+  font-size: var(--text-label);
+  line-height: var(--text-label-lh);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* -- Monospace utility -- */
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  line-height: var(--text-mono-lh);
+}
+
+/* ── App shell reset (moved from App.vue — App.vue carries no global CSS) ── */
+:root {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-bg-shell);
+  color: var(--color-text);
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+::selection { background-color: var(--color-selection-bg); color: var(--color-selection-text); }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border-hover); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-border-active); }
+
+:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+.el-icon { color: inherit; }
+
+/* ── Shiki syntax-highlight token colors ────────────────────────────────────
+   Fenced code blocks hydrate with dual-theme CSS variables only
+   (`defaultColor: false`; see utils/code-highlighter.ts) — the active
+   [data-theme] picks the set here, so a theme switch recolors code with no
+   re-tokenize. Light themes share the latte set, dark themes the mocha set;
+   the block's own surface stays --color-bg from the component styles. */
+.md-content .code-highlighted span {
+  color: var(--shiki-light);
+}
+[data-theme="frappe"] .md-content .code-highlighted span,
+[data-theme="macchiato"] .md-content .code-highlighted span,
+[data-theme="mocha"] .md-content .code-highlighted span {
+  color: var(--shiki-dark);
+}

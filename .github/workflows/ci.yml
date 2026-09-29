@@ -1,0 +1,253 @@
+# The checks that would have caught what shipped.
+#
+# This repository had no CI. Three outages were sitting in the tree at once,
+# each one invisible because it failed quietly rather than loudly:
+#
+#   * `electron/preload.cjs` had a SyntaxError in HEAD, so the preload script
+#     never parsed and `window.tdeaseDesktop` was never exposed. Every bridge in
+#     that file -- Workspace files, the Pi runtime, skill execution, the Backend
+#     handshake -- was unreachable from the renderer. A single `node --check`
+#     would have refused the commit.
+#   * The Client sent `commit.mode` on every Run submission, which the Backend
+#     rejects outright. Both sides had passing tests; neither looked at the wire.
+#   * The Client discarded the Backend's failure envelope at the fetch layer, so
+#     the rejection above surfaced as `POST /api/v2/runs: 400` with the remedy
+#     stripped -- which is why the first two went unnoticed for so long.
+#
+# So the ordering below is deliberate: the cheapest checks that catch whole
+# classes of silent breakage run first, before the expensive suites.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Seconds, no install required. A script the Electron runtime loads directly
+  # is never type-checked or bundled, so nothing else in this file would notice
+  # that it does not parse.
+  electron-scripts:
+    name: Electron scripts parse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # Private submodules need a PAT with repo scope on them; the default
+          # github.token is scoped to THIS repository only. Unset secret falls
+          # back to github.token (public-submodule behavior).
+          token: ${{ secrets.CI_SUBMODULES_TOKEN || github.token }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: node --check every runtime script
+        working-directory: TDEase-FrontEnd
+        run: |
+          set -euo pipefail
+          found=0
+          for script in electron/*.cjs electron/*.mjs; do
+            case "$script" in *.test.*) continue ;; esac
+            echo "checking $script"
+            node --check "$script"
+            found=$((found + 1))
+          done
+          # A glob that matched nothing would make this job a green no-op.
+          if [ "$found" -eq 0 ]; then
+            echo "no Electron runtime scripts found -- the glob is wrong" >&2
+            exit 1
+          fi
+          echo "$found scripts parsed"
+
+  client:
+    name: Client — types, tests, bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # Private submodules need a PAT with repo scope on them; the default
+          # github.token is scoped to THIS repository only. Unset secret falls
+          # back to github.token (public-submodule behavior).
+          token: ${{ secrets.CI_SUBMODULES_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: TDEase-FrontEnd/pnpm-lock.yaml
+
+      - name: Install
+        working-directory: TDEase-FrontEnd
+        run: pnpm install --frozen-lockfile
+
+      # The mass-spec Rust kernel is exposed only through the `tdeasenexus-toolbox` CLI
+      # now (the wasm path was retired in 06d5aa7). Build it once so the unit
+      # suite runs against the real kernel for both the reference tests (unimod
+      # query + ProFormA resolution, D12-R) and the spectra tests.
+      - name: Build native mass-spec (CLI)
+        working-directory: TDEase-FrontEnd
+        run: pnpm run build:native:cli
+
+      - name: Unit tests
+        working-directory: TDEase-FrontEnd
+        run: pnpm exec vitest run
+
+      - name: Production build
+        working-directory: TDEase-FrontEnd
+        run: pnpm run build
+
+      - name: Electron main-process tests
+        working-directory: TDEase-FrontEnd
+        run: node --test electron/backend_manager.test.cjs electron/skill_runtime.test.cjs
+
+  app-e2e:
+    name: Desktop E2E — real Electron and backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # Private submodules need a PAT with repo scope on them; the default
+          # github.token is scoped to THIS repository only. Unset secret falls
+          # back to github.token (public-submodule behavior).
+          token: ${{ secrets.CI_SUBMODULES_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: TDEase-FrontEnd/pnpm-lock.yaml
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: tdease-backend/uv.lock
+      - name: Install client
+        working-directory: TDEase-FrontEnd
+        run: pnpm install --frozen-lockfile
+      - name: Install desktop runtime dependencies
+        working-directory: TDEase-FrontEnd
+        run: pnpm exec playwright install-deps chromium
+      - name: Electron workflow E2E
+        working-directory: TDEase-FrontEnd
+        run: xvfb-run -a pnpm run test:e2e:desktop
+
+  backend:
+    name: Backend — tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # Private submodules need a PAT with repo scope on them; the default
+          # github.token is scoped to THIS repository only. Unset secret falls
+          # back to github.token (public-submodule behavior).
+          token: ${{ secrets.CI_SUBMODULES_TOKEN || github.token }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: tdease-backend/uv.lock
+      - name: Lint (ruff — waived categories documented in tdease-backend/pyproject.toml)
+        working-directory: tdease-backend
+        run: |
+          uv run --frozen ruff check src/ tests/ cli.py
+          uv run --frozen ruff format --check src/ tests/ cli.py
+      - name: Tests
+        run: uv run --project tdease-backend pytest tests/ -q
+        env:
+          PYTHONPATH: tdease-backend
+
+  # The 22k-line mass-spec kernel had zero CI coverage (H3): a broken kernel
+  # build only surfaced when a developer ran the desktop app. fmt/clippy/test
+  # run against the git-tracked fixtures. Four clippy categories are waived at
+  # the category level — they are longstanding idioms of this numeric code
+  # (wide parameter lists, scientific tuple types, index loops, partially
+  # ordered comparisons); any NEW warning category still fails the build.
+  rust-kernel:
+    name: Rust kernel — fmt, clippy, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # Private submodules need a PAT with repo scope on them; the default
+          # github.token is scoped to THIS repository only. Unset secret falls
+          # back to github.token (public-submodule behavior).
+          token: ${{ secrets.CI_SUBMODULES_TOKEN || github.token }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tdease-ai-capability/rust
+      - name: Format
+        working-directory: tdease-ai-capability/rust
+        run: cargo fmt --check
+      - name: Clippy
+        working-directory: tdease-ai-capability/rust
+        run: cargo clippy --workspace --all-targets -- -D warnings -A clippy::type_complexity -A clippy::too_many_arguments -A clippy::needless_range_loop -A clippy::neg_cmp_op_on_partial_ord
+      - name: Tests (lib + integration, fixtures git-tracked)
+        working-directory: tdease-ai-capability/rust
+        run: cargo test --workspace
+
+  # The failure contract and the Run commit shape are agreed across two
+  # languages, and each side's own suite can stay green while they disagree --
+  # that is exactly how `commit.mode` broke every submission. These are the
+  # tests that assert on the shared shape rather than on one side's behaviour.
+  contract:
+    name: Cross-language contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # Private submodules need a PAT with repo scope on them; the default
+          # github.token is scoped to THIS repository only. Unset secret falls
+          # back to github.token (public-submodule behavior).
+          token: ${{ secrets.CI_SUBMODULES_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: TDEase-FrontEnd/pnpm-lock.yaml
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: tdease-backend/uv.lock
+
+      - name: Install client
+        working-directory: TDEase-FrontEnd
+        run: pnpm install --frozen-lockfile
+
+      - name: Backend — envelope, capabilities, results, containment
+        run: |
+          uv run --project tdease-backend pytest -q \
+            tests/test_failure_contract.py \
+            tests/test_capabilities.py \
+            tests/test_run_results_api.py \
+            tests/test_workspace_roots.py \
+            tests/test_run_projector.py
+        env:
+          PYTHONPATH: tdease-backend
+
+      - name: Client — the same contracts, from the other side
+        working-directory: TDEase-FrontEnd
+        run: |
+          pnpm exec vitest run \
+            src/services/backend-commit-contract.test.ts \
+            src/services/backendFailure.test.ts \
+            src/services/capabilities-contract.test.ts \
+            src/studio/projections/run-projector.test.ts

@@ -1,0 +1,15 @@
+{
+  "description": "run.failed closes the active revision's execution range.",
+  "events": [
+    { "seq": 1, "type": "run.submitted", "data": { "revision_id": "rev-1" } },
+    { "seq": 2, "type": "run.queue_requested", "data": { "revision_id": "rev-1", "mode": "execute" } },
+    { "seq": 3, "type": "run.started", "data": { "revision_id": "rev-1", "mode": "execute" } },
+    { "seq": 4, "type": "task.failed", "data": {} },
+    { "seq": 5, "type": "run.failed", "data": { "revision_id": "rev-1" } }
+  ],
+  "expect": {
+    "status": "FAILED", "projected_at_seq": 5,
+    "current_revision_id": "rev-1", "queued_mode": null, "queued_at_seq": null,
+    "ranges": [{ "queue_seq": 2, "start_seq": 3, "revision_id": "rev-1", "mode": "execute", "terminal_seq": 5, "terminal_type": "run.failed" }]
+  }
+}

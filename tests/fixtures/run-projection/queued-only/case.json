@@ -1,0 +1,12 @@
+{
+  "description": "A submitted revision becomes QUEUED only when an explicit execution request is journaled.",
+  "events": [
+    { "seq": 1, "type": "run.submitted", "data": { "revision_id": "rev-1" } },
+    { "seq": 2, "type": "run.queue_requested", "data": { "revision_id": "rev-1", "mode": "execute" } }
+  ],
+  "expect": {
+    "status": "QUEUED", "projected_at_seq": 2,
+    "current_revision_id": "rev-1", "queued_mode": "execute", "queued_at_seq": 2,
+    "ranges": []
+  }
+}

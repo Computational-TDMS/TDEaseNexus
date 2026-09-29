@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en" data-theme="celadon">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TDEaseNexus · TD通</title>
+<style>
+  :root{
+    /* Celadon Mist · celadon. Same values as the celadon theme in
+       unified-design-tokens.css — the splash is a standalone BrowserWindow
+       that cannot reference the app's token sheet, so they are inlined here.
+       --peak is the celadon brand glaze (#6DB9C8), graphics only:
+       spectrum peaks / progress / glow / logo.
+       Text always uses the ink color --ink (#4A4D5C, 7.7:1 on paper, passes AA). */
+    --paper:#F7F5F2; --mantle:#ECEAE6;
+    --ink:#4A4D5C; --ink2:#5C5F6E; --muted:#6E7180; --faint:#8A8D99;
+    --peak:#6DB9C8; --peak-soft:rgba(109,185,200,.55); --peak-wash:rgba(109,185,200,.12);
+    --dot:#C9A3B4;
+    --seam:#B8B5B0; --seam-soft:#DDDAD5;
+    --glow-a:rgba(109,185,200,.30);
+    --refl:.10;
+    --halo-op:.9;
+    --tile:#6DB9C8; --tile-bar:#FFFFFF; --tile-dot:#C9A3B4;
+    --error-bg:#FBF1F0; --error-border:#E4C5C0; --error-ink:#8C3A3F;
+    --error-btn:#2A7483; --error-btn-hover:#256F7D;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    font-family:Inter,'SF Pro Text','PingFang SC','Microsoft YaHei',-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(130% 100% at 50% 34%, var(--paper) 52%, var(--mantle) 100%);
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:'JetBrains Mono','Fira Code',ui-monospace,Consolas,monospace; }
+  .numeric{ font-variant-numeric:tabular-nums; }
+  .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+
+  .stage{
+    height:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:0; padding:4vh 24px 0;
+  }
+
+  /* —— Brand area —— */
+  .brand{ display:flex; align-items:center; gap:14px; }
+  .brand svg.mark{ width:46px; height:46px; display:block; }
+  .wordmark{
+    font-family:Inter,'SF Pro Display','PingFang SC',-apple-system,sans-serif;
+    font-size:22px; line-height:26px; letter-spacing:.01em;
+  }
+  .wordmark b{ font-weight:650; color:var(--ink); }
+  .wordmark span{ font-weight:400; color:var(--ink2); }
+  /* The Chinese name sits beside the wordmark, in a kai (楷体) face — the
+     brush-like stroke is the "Chinese" voice, deliberately not the UI sans. */
+  .wordmark i.cn{
+    font-family:"KaiTi","STKaiti","Kaiti SC","Noto Serif SC","Source Han Serif SC","SimSun",serif;
+    font-style:normal; font-size:15px; letter-spacing:.16em; color:var(--muted);
+    margin-left:10px; padding-left:10px; border-left:1px solid var(--seam-soft);
+  }
+  .tagline{ margin-top:6px; font-size:15px; color:var(--muted); letter-spacing:.02em; }
+
+  /* —— Mass-spec rhythm area —— */
+  .spectrum{ margin-top:40px; width:min(1180px,94vw); }
+  .spectrum svg{ width:100%; height:auto; display:block; overflow:visible; }
+
+  /* —— Loading status row —— */
+  .status{
+    margin-top:36px; width:min(520px,80vw);
+    display:flex; align-items:center; gap:10px;
+  }
+  .status .run-mark{ width:13px; height:13px; flex:none; }
+  .status .run-mark .arc{
+    transform-origin:50% 50%;
+    animation:spin 1.1s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .status .step-icon{ width:14px; height:14px; flex:none; color:var(--muted); display:flex; }
+  .status .step-icon svg{ width:14px; height:14px; }
+  .status .step-text{
+    font-size:12px; color:var(--ink2); letter-spacing:.01em;
+    transition:opacity .18s ease-out;
+    line-height:1.4;
+  }
+  .status .step-text.fade{ opacity:0; }
+  .status .elapsed{ margin-left:auto; font-size:11.5px; color:var(--muted); }
+
+  /* —— Progress hairline —— */
+  .progress{
+    margin-top:14px; width:min(520px,80vw); height:2px; border-radius:1px;
+    background:var(--seam-soft); overflow:hidden;
+  }
+  .progress .bar{
+    height:100%; width:4%; border-radius:1px;
+    background:var(--peak);
+    transition:width .6s cubic-bezier(.2,0,0,1);
+  }
+
+  /* —— Error screen: the same celadon language as the splash, not a jarring blue box —— */
+  #error-overlay{
+    position:fixed; inset:0; display:none;
+    flex-direction:column; align-items:center; justify-content:center;
+    gap:16px; padding:28px;
+    background:radial-gradient(130% 100% at 50% 34%, var(--paper) 52%, var(--mantle) 100%);
+    z-index:10;
+  }
+  #error-overlay.show{ display:flex; }
+  .error-head{
+    display:flex; align-items:center; gap:12px;
+  }
+  .error-head svg.mark{ width:38px; height:38px; }
+  .error-title{
+    font-size:15px; font-weight:600; color:var(--ink); letter-spacing:.01em;
+  }
+  #error-msg{
+    font-size:12px; color:var(--error-ink); line-height:1.6;
+    background:var(--error-bg); border:1px solid var(--error-border);
+    padding:12px 14px; border-radius:10px;
+    white-space:pre-wrap; font-family:"JetBrains Mono","Fira Code",Consolas,monospace;
+    max-width:min(560px, 86vw); max-height:180px; overflow:auto;
+  }
+  .actions{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .actions button{
+    appearance:none; cursor:pointer;
+    font-family:inherit; font-size:12.5px; letter-spacing:.02em;
+    padding:8px 16px; border-radius:8px;
+    border:1px solid transparent;
+    transition:background-color .14s ease-out, border-color .14s ease-out;
+  }
+  .actions button.primary{
+    background:var(--error-btn); color:#fff; border-color:var(--error-btn);
+  }
+  .actions button.primary:hover{ background:var(--error-btn-hover); }
+  .actions button.secondary{
+    background:transparent; color:var(--ink2);
+    border-color:var(--seam);
+  }
+  .actions button.secondary:hover{ background:var(--peak-wash); border-color:var(--peak); }
+  .actions button.danger{
+    background:transparent; color:var(--error-ink);
+    border-color:var(--error-border);
+  }
+  .actions button.danger:hover{ background:var(--error-bg); }
+  .hint{
+    font-size:11px; color:var(--muted); text-align:center; line-height:1.5;
+    max-width:min(520px, 86vw); margin-top:4px;
+  }
+
+  /* —— Reduced-motion degradation —— */
+  @media (prefers-reduced-motion: reduce){
+    .status .run-mark .arc{ animation:none; }
+    .status .step-text{ transition:none; }
+    .progress .bar{ transition:none; }
+  }
+</style>
+</head>
+<body>
+<main class="stage">
+  <header class="brand">
+    <svg class="mark" viewBox="0 0 48 48" role="img" aria-label="TDEaseNexus logo">
+      <rect x="1" y="1" width="46" height="46" rx="12" fill="var(--tile)"/>
+      <g fill="var(--tile-bar)">
+        <rect x="9.4"  y="30" width="3.2" height="9"  rx="1.6"/>
+        <rect x="14.4" y="25" width="3.2" height="14" rx="1.6"/>
+        <rect x="19.4" y="17" width="3.2" height="22" rx="1.6"/>
+        <rect x="24.4" y="21" width="3.2" height="18" rx="1.6"/>
+        <rect x="29.4" y="27" width="3.2" height="12" rx="1.6"/>
+        <rect x="34.4" y="32" width="3.2" height="7"  rx="1.6"/>
+      </g>
+      <circle cx="21" cy="12.6" r="2.2" fill="var(--tile-dot)"/>
+    </svg>
+    <div>
+      <div class="wordmark"><b>TDEase</b><span>Nexus</span><i class="cn">TD通</i></div>
+      <div class="tagline">Your 24/7 assistant for top-down MS data analysis</div>
+    </div>
+  </header>
+
+  <figure class="spectrum">
+    <svg id="spec" viewBox="0 0 880 248" role="img"
+         aria-label="Intact-protein charge-state envelope spectrum; the signal breathes gently while loading"></svg>
+  </figure>
+
+  <div class="status">
+    <svg class="run-mark" viewBox="0 0 14 14" aria-hidden="true">
+      <circle class="arc" cx="7" cy="7" r="5.2" fill="none"
+              stroke="var(--peak)" stroke-width="1.8" stroke-linecap="round"
+              stroke-dasharray="24.5 8.2"/>
+    </svg>
+    <span class="step-icon" id="stepIcon" aria-hidden="true"></span>
+    <span class="step-text mono" id="stepText" role="status">Starting…</span>
+    <span class="elapsed mono numeric" id="elapsed">00:00.0</span>
+  </div>
+
+  <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
+</main>
+
+<!-- Error screen: same celadon language as the splash; never leave a blank window -->
+<div id="error-overlay" role="alert" aria-live="assertive">
+  <div class="error-head">
+    <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+      <rect x="1" y="1" width="46" height="46" rx="12" fill="var(--tile)"/>
+      <g fill="var(--tile-bar)">
+        <rect x="9.4"  y="30" width="3.2" height="9"  rx="1.6"/>
+        <rect x="14.4" y="25" width="3.2" height="14" rx="1.6"/>
+        <rect x="19.4" y="17" width="3.2" height="22" rx="1.6"/>
+        <rect x="24.4" y="21" width="3.2" height="18" rx="1.6"/>
+        <rect x="29.4" y="27" width="3.2" height="12" rx="1.6"/>
+        <rect x="34.4" y="32" width="3.2" height="7"  rx="1.6"/>
+      </g>
+      <circle cx="21" cy="12.6" r="2.2" fill="var(--tile-dot)"/>
+    </svg>
+    <div class="error-title">Startup hit a snag</div>
+  </div>
+  <div id="error-msg"></div>
+  <div class="actions">
+    <button id="retry-btn" class="primary" type="button">Retry</button>
+    <button id="logs-btn" class="secondary" type="button">Open Logs</button>
+    <button id="uv-btn" class="secondary" type="button">Runtime Help</button>
+    <button id="quit-btn" class="danger" type="button">Quit</button>
+  </div>
+  <div class="hint">TDEaseNexus uses a user-level uv to manage an isolated backend environment; settings and run data live in the app data directory.</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const { ipcRenderer } = require("electron");
+
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.getElementById('spec');
+  const W=880, BASE=196, MAXH=118;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* m/z → x mapping: 500–1500 → 70–810 */
+  const xOf=mz=>70+(mz-500)*(740/1000);
+  const M=15800;                 // intact protein ≈16 kDa
+  const gauss=z=>Math.exp(-((z-19.5)**2)/(2*4.2**2));
+  const ISO=[0.30,0.62,1.0,0.58,0.26];   // isotope fine structure
+
+  function el(name,attrs,parent){
+    const n=document.createElementNS(NS,name);
+    for(const k in attrs) n.setAttribute(k,attrs[k]);
+    (parent||svg).appendChild(n); return n;
+  }
+
+  /* Halo gradient (living channel: glows only while loading) */
+  const defs=el('defs',{});
+  const grad=el('radialGradient',{id:'halo'},defs);
+  const s1=el('stop',{offset:'0%','stop-opacity':'1'},grad);
+  s1.style.stopColor='var(--glow-a)';
+  const s2=el('stop',{offset:'100%','stop-opacity':'0'},grad);
+  s2.style.stopColor='var(--glow-a)';
+  const halo=el('ellipse',{cx:440,cy:BASE-46,rx:120,ry:64,fill:'url(#halo)',opacity:0.85});
+
+  const sticks=[];   // {main, refl, x}
+  const reflG=el('g',{opacity:'var(--refl)'});
+
+  for(let z=12; z<=28; z++){
+    const xc=xOf(M/z), env=gauss(z);
+    ISO.forEach((r,i)=>{
+      const h=Math.max(3,MAXH*env*r);
+      const x=xc+(i-2)*4.6-1.4;
+      const cls=(i===2)?'p-main':'p-soft';
+      const m=el('rect',{x:x,y:BASE-h,width:2.8,height:h,rx:1.4,class:cls});
+      m.style.fill=(i===2)?'var(--peak)':'var(--peak-soft)';
+      m.style.transformBox='fill-box'; m.style.transformOrigin='50% 100%';
+      const rf=el('rect',{x:x,y:BASE+3,width:2.8,height:h*0.32,rx:1.4},reflG);
+      rf.style.fill=(i===2)?'var(--peak)':'var(--peak-soft)';
+      rf.style.transformBox='fill-box'; rf.style.transformOrigin='50% 0%';
+      sticks.push({m,rf,x:xc,h});
+    });
+    /* Charge-state labels (every third one) */
+    if([14,17,20,23,26].includes(z)){
+      const t=el('text',{x:xc,y:BASE-MAXH*env-9,'text-anchor':'middle',class:'mono'});
+      t.setAttribute('style','font-size:10px;letter-spacing:.05em;fill:var(--faint);font-variant-numeric:tabular-nums');
+      t.textContent=z+'+';
+    }
+  }
+
+  /* "Signal seen" dot above the main peak (echoes the logo) */
+  const dot=el('circle',{cx:xOf(M/19),cy:BASE-MAXH*gauss(19)-20,r:2.6});
+  dot.style.fill='var(--dot)';
+
+  /* Baseline and m/z ticks */
+  el('rect',{x:58,y:BASE,width:764,height:1}).style.fill='var(--seam)';
+  [600,800,1000,1200,1400].forEach(mz=>{
+    el('rect',{x:xOf(mz)-0.5,y:BASE,width:1,height:5}).style.fill='var(--seam)';
+    const t=el('text',{x:xOf(mz),y:BASE+18,'text-anchor':'middle',class:'mono'});
+    t.setAttribute('style','font-size:10px;fill:var(--faint);font-variant-numeric:tabular-nums');
+    t.textContent=mz;
+  });
+  const ax=el('text',{x:834,y:BASE+18,'text-anchor':'end',class:'mono'});
+  ax.setAttribute('style','font-size:10px;letter-spacing:.08em;fill:var(--faint)');
+  ax.textContent='m/z';
+
+  /* —— Rhythm: a small dot roams, and peaks breathe upward wherever it goes —— */
+  const DOT_AMP=270, DOT_T=7.5, SIGMA=26, BOOST=0.55;
+  const envAtX=x=>{ const mz=500+(x-70)/0.74; return gauss(M/mz); };
+  let rafId=null;
+  function frame(now){
+    const t=now/1000;
+    /* The dot sweeps back and forth above the peak clusters
+       (decelerating at both ends, like a touring gaze) */
+    const dotX=440+DOT_AMP*Math.cos(2*Math.PI*t/DOT_T);
+    for(const s of sticks){
+      /* Peaks closer to the dot get "lit up" higher;
+         distant ones keep a quiet baseline breath */
+      const lift=BOOST*Math.exp(-((s.x-dotX)**2)/(2*SIGMA*SIGMA));
+      const sc=0.94+0.06*Math.sin(2*Math.PI*t/3.6)+lift;
+      s.m.style.transform='scaleY('+sc.toFixed(4)+')';
+      s.rf.style.transform='scaleY('+sc.toFixed(4)+')';
+    }
+    /* The dot rides the crest of the lit peak and rises with it */
+    const topH=MAXH*envAtX(dotX)*(1+BOOST);
+    dot.setAttribute('cx',dotX.toFixed(2));
+    dot.setAttribute('cy',(BASE-topH-13).toFixed(2));
+    halo.setAttribute('cx',dotX.toFixed(2));
+    halo.setAttribute('cy',(BASE-topH*0.55).toFixed(2));
+    rafId=requestAnimationFrame(frame);
+  }
+  if(!reduced){ rafId=requestAnimationFrame(frame); }
+  else{
+    dot.setAttribute('cx',xOf(M/19));
+    dot.setAttribute('cy',BASE-MAXH*gauss(19)-16);
+    dot.setAttribute('opacity','0.9'); halo.setAttribute('opacity','0.5');
+  }
+
+  /* —— Loading sequence: driven by real startup events —— */
+  const ICONS={
+    spec:'<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11.5h10"/><path d="M4 11V7.5M7 11V3.5M10 11V6"/></svg>',
+    spark:'<svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 1.5c.4 2.9 2.6 5.1 5.5 5.5-2.9.4-5.1 2.6-5.5 5.5C6.6 9.6 4.4 7.4 1.5 7c2.9-.4 5.1-2.6 5.5-5.5z"/></svg>',
+    nodes:'<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="3" cy="7" r="1.8"/><circle cx="11" cy="3.2" r="1.8"/><circle cx="11" cy="10.8" r="1.8"/><path d="M4.7 6.3l4.5-2.3M4.7 7.7l4.5 2.3"/></svg>',
+    chart:'<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12V2M2 12h10"/><path d="M4 9.5l2.5-3 2 1.8L11.5 4"/></svg>'
+  };
+
+  /* Real startup steps → 4 brand icons + copy + target progress.
+     The step values come from the splash:progress IPC events in electron/main.ts. */
+  const STAGE_MAP={
+    'uv':          {icon:'spec',  text:'Calibrating the runtime, tuning uv…',                    p:18},
+    'uv-install':  {icon:'spec',  text:'Installing user-level uv…',                               p:30},
+    'uv-sync':     {icon:'spark', text:'Preparing the Python backend environment (first run may take minutes)…', p:52},
+    'spawn':       {icon:'nodes', text:'Weaving the Snakemake backend workflow…',                p:70},
+    'health':      {icon:'chart', text:'Connecting backend services, waiting for the health signal…', p:84},
+    'assets':      {icon:'chart', text:'Deploying system assets…',                                p:90},
+    'db-init':     {icon:'spark', text:'Initializing the database…',                              p:95},
+    'backend':     {icon:'nodes', text:'Connecting to the remote backend…',                       p:84},
+    'cleanup-backend': {icon:'nodes', text:'Cleaning up old backend processes…',                  p:8},
+    'ready':       {icon:'spark', text:'TDEaseNexus is ready — unrolling the scroll of your spectra.', p:100}
+  };
+
+  const stepIcon=document.getElementById('stepIcon'),
+        stepText=document.getElementById('stepText'),
+        bar=document.getElementById('bar');
+
+  function applyStage(st){
+    stepIcon.innerHTML=ICONS[st.icon]||ICONS.spec;
+    stepText.textContent=st.text;
+    bar.style.width=st.p+'%';
+    stepText.classList.remove('fade');
+    if(st.p===100){
+      // The splash owns its closing beat: the window may replace it only after
+      // the last frame has landed (bar transition .6s + fade 180ms). Main
+      // closes the splash and shows the window on this signal.
+      setTimeout(()=>ipcRenderer.send('splash:closing-done'), reduced?150:900);
+    }
+  }
+  function updateStage(info){
+    const st=STAGE_MAP[info && info.step];
+    if(!st){
+      // Unknown step: use the detail text, keep the current icon and progress
+      if(info && info.detail){ stepText.textContent=info.detail; }
+      return;
+    }
+    if(reduced){ applyStage(st); return; }
+    stepText.classList.add('fade');
+    setTimeout(applyStage.bind(null, st), 180);
+  }
+
+  // After launch, briefly keep the starting text while waiting for the first real progress event
+  ipcRenderer.on("splash:progress", (_e, info) => updateStage(info));
+
+  /* —— Elapsed timer (tabular-figures discipline) —— */
+  const t0=performance.now(), elapsed=document.getElementById('elapsed');
+  setInterval(()=>{
+    const s=(performance.now()-t0)/1000;
+    const mm=String(Math.floor(s/60)).padStart(2,'0');
+    const ss=(s%60).toFixed(1).padStart(4,'0');
+    elapsed.textContent=mm+':'+ss;
+  },100);
+
+  /* —— Error screen: same celadon tone as the splash; IPC channels follow the existing contract —— */
+  const errorOverlay=document.getElementById('error-overlay');
+  const errorMsg=document.getElementById('error-msg');
+  const retryBtn=document.getElementById('retry-btn');
+  const logsBtn=document.getElementById('logs-btn');
+  const uvBtn=document.getElementById('uv-btn');
+  const quitBtn=document.getElementById('quit-btn');
+
+  function hideError(){
+    errorOverlay.classList.remove('show');
+    errorMsg.textContent='';
+  }
+  function showError(){
+    errorOverlay.classList.add('show');
+  }
+
+  // Retry: return to the starting state first, then let main re-run boot
+  function resetToStarting(){
+    hideError();
+    stepIcon.innerHTML='';
+    stepText.textContent='Starting…';
+    bar.style.width='4%';
+  }
+
+  ipcRenderer.on("splash:reset", resetToStarting);
+
+  ipcRenderer.on("splash:error", (_e, err) => {
+    // Failure envelope (CORE-ARCHITECTURE.md §7.1): remedy is the primary,
+    // human-facing line; code/domain/message are secondary diagnostic detail.
+    // This screen must never be a blank window.
+    const remedy = (err && err.remedy) || "Please retry, or contact support.";
+    const domain = (err && err.domain) || "environment";
+    const code = (err && err.code) || "ERROR";
+    const detail = (err && err.message) || "Unknown error";
+    errorMsg.textContent = remedy + "\n\n[" + domain + "/" + code + "] " + detail;
+    showError();
+  });
+
+  retryBtn.addEventListener("click", () => {
+    resetToStarting();
+    ipcRenderer.send("splash:retry");
+  });
+  logsBtn.addEventListener("click", () => ipcRenderer.invoke("desktop:open-logs"));
+  uvBtn.addEventListener("click", () => ipcRenderer.invoke("desktop:open-uv-docs"));
+  quitBtn.addEventListener("click", () => ipcRenderer.send("splash:quit"));
+})();
+</script>
+</body>
+</html>

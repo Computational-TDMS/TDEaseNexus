@@ -1,0 +1,240 @@
+/**
+ * Catppuccin Theme for Vue Flow
+ * Overrides Vue Flow CSS variables to match Catppuccin color palette
+ */
+
+/* Vue Flow canvas background */
+.vue-flow-editor {
+  background: var(--color-bg-shell) !important;
+}
+
+/* Vue Flow background grid */
+.vue-flow__background {
+  background-color: var(--color-bg-shell);
+}
+
+.vue-flow__background-pattern {
+  --vf-pattern-color: var(--color-border-panel);
+}
+
+/* Vue Flow nodes */
+.vue-flow__node {
+  background: transparent !important;
+}
+
+/* Vue Flow edges */
+.vue-flow__edge-path {
+  stroke: var(--color-border-active);
+}
+
+.vue-flow__edge.selected .vue-flow__edge-path {
+  stroke: var(--color-primary, var(--color-primary)) !important;
+  stroke-width: 3 !important;
+}
+
+.vue-flow__edge:hover .vue-flow__edge-path {
+  stroke: var(--color-primary, var(--color-primary));
+}
+
+/* Vue Flow ports/handles */
+.vue-flow__handle {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-bg-shell);
+  background: var(--color-text-muted);
+  transition: all 0.2s ease;
+}
+
+.vue-flow__handle:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background: var(--color-primary, var(--color-primary));
+}
+
+.vue-flow__handle.connecting {
+  background: var(--color-success);
+}
+
+/* Vue Flow control buttons */
+.vue-flow__controls-button {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  fill: var(--icon-secondary);
+  transition: all 0.2s ease;
+}
+
+.vue-flow__controls-button:hover {
+  background: var(--color-hover);
+  border-color: var(--color-border-control-hover);
+  fill: var(--color-primary, var(--color-primary));
+}
+
+/* Vue Flow minimap */
+.vue-flow__minimap {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-panel);
+  border-radius: var(--radius-md, 8px);
+}
+
+.vue-flow__minimap-mask {
+  fill: var(--color-bg-muted);
+  opacity: 0.3;
+}
+
+.vue-flow__minimap-node {
+  fill: var(--color-primary);
+}
+
+/* Selected state */
+.vue-flow__node.selected {
+  box-shadow: none !important;
+}
+
+/* Drag-connect line */
+.vue-flow__connection-line {
+  stroke: var(--color-primary, var(--color-primary));
+  stroke-width: 2;
+}
+
+/* Empty state */
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.empty-content {
+  background: var(--color-bg-secondary);
+  border: 2px dashed var(--color-border-panel);
+  border-radius: var(--radius-md, 8px);
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.empty-icon {
+  color: var(--icon-accent);
+  opacity: 0.6;
+}
+
+.empty-content h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.empty-content p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* ── Block canvas signal edges (TDEase blocks) ── */
+
+/* data edges: port data color */
+.vue-flow__edge.edge-signal-data .vue-flow__edge-path {
+  stroke: var(--domain-data);
+  stroke-width: 2;
+}
+
+/* selection edges: mauve + static dashes */
+.vue-flow__edge.edge-signal-selection .vue-flow__edge-path {
+  stroke: var(--color-interact);
+  stroke-width: 2;
+  stroke-dasharray: 7 5;
+}
+
+/* selection edge while propagating an active selection: flowing dashes + thicker,
+   so the user sees data "currently flowing through" */
+.vue-flow__edge.edge-signal-selection.edge-selection-live .vue-flow__edge-path {
+  stroke: var(--color-interact);
+  stroke-width: 2.5;
+  stroke-dasharray: 7 5;
+  animation: tdease-selection-flow 0.9s linear infinite;
+}
+
+@keyframes tdease-selection-flow {
+  to { stroke-dashoffset: -24; }
+}
+
+/* Selected state keeps the signal color and only thickens
+   (the generic selected rule must not override the hue) */
+.vue-flow__edge.selected.edge-signal-data .vue-flow__edge-path {
+  stroke: var(--domain-data) !important;
+}
+.vue-flow__edge.selected.edge-signal-selection .vue-flow__edge-path {
+  stroke: var(--color-interact) !important;
+}
+
+/* Ports (handles) colored by signal */
+.vue-flow__handle.handle-signal-data {
+  background: var(--domain-data);
+}
+.vue-flow__handle.handle-signal-selection {
+  background: var(--color-interact);
+}
+
+/* ── Shared block-node appearance (all three block kinds) ── */
+.block-node {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: visible;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+/* hover: 1px border + small blur shadow (≤16px blur, stacking allowed) */
+.block-node:hover {
+  border-color: var(--color-text-muted);
+  box-shadow: var(--shadow-md);
+}
+
+/* Selected: highlighted border, no stacked shadow — selection is the interact response color */
+.vue-flow__node.selected .block-node {
+  border-color: var(--color-interact-text);
+  box-shadow: none;
+}
+
+/* Viewer currently receiving an active selection: mauve outer ring, echoing the selection edge hue */
+.vue-flow__node.has-selection .block-node {
+  border-color: var(--color-interact-text);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-interact) 35%, transparent);
+}
+
+.vue-flow__node.dragging .block-node {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* Small in-node buttons */
+.node-act-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.node-act-btn:hover { color: var(--color-text); background: var(--color-hover); }
+.node-act-btn.close-btn:hover { color: var(--color-error-text); }
+.node-act-btn.refresh-btn:hover { color: var(--color-interact-hover); }
+
+/* Reduced-motion degradation: no flow, but thicker + brighter to keep the "active" signal */
+@media (prefers-reduced-motion: reduce) {
+  .vue-flow__edge.edge-signal-selection.edge-selection-live .vue-flow__edge-path {
+    animation: none;
+    stroke-width: 3;
+  }
+}

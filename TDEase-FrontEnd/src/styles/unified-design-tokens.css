@@ -1,0 +1,613 @@
+/**
+ * TDEase Design Tokens — direct CTP supply architecture
+ *
+ * Three layers, letting the official Catppuccin palette do the real work:
+ *   Layer 1 — --ctp-*    the full official 26 colors × 4 themes + celadon's own warm surfaces
+ *   Layer 2 — --color-*  semantic layer, referencing official CTP colors directly
+ *                        (latte text is fine-tuned to AA with color-mix)
+ *   Layer 3 — --domain-* domain colors, supplied directly from CTP
+ *
+ * Each theme uses its own official colors — latte's teal is #179299, mocha's is #94e2d5;
+ * they look completely different, each with its own flair. No more unified override layer.
+ *
+ * interact = rosewater: each theme's official rosewater, the voice of interaction response.
+ * latte #dc8a78 (warm orange) → frappe #f2d5cf (light pink) → mocha #f5e0dc (warm pink).
+ */
+
+/* ================================================================
+   Layer 1 — Official Catppuccin palette (full 26 colors)
+   ================================================================ */
+
+:root,
+[data-theme="latte"] {
+  --ctp-rosewater: #dc8a78;
+  --ctp-flamingo: #dd7878;
+  --ctp-pink: #ea76cb;
+  --ctp-mauve: #8839ef;
+  --ctp-red: #d20f39;
+  --ctp-maroon: #e64553;
+  --ctp-peach: #fe640b;
+  --ctp-yellow: #df8e1d;
+  --ctp-green: #40a02b;
+  --ctp-teal: #179299;
+  --ctp-sky: #04a5e5;
+  --ctp-sapphire: #209fb5;
+  --ctp-blue: #1e66f5;
+  --ctp-lavender: #7287fd;
+  --ctp-text: #4c4f69;
+  --ctp-subtext1: #5c5f77;
+  --ctp-subtext0: #6c6f85;
+  --ctp-overlay2: #7c7f93;
+  --ctp-overlay1: #8c8fa1;
+  --ctp-overlay0: #9ca0b0;
+  --ctp-surface2: #acb0be;
+  --ctp-surface1: #bcc0cc;
+  --ctp-surface0: #ccd0da;
+  --ctp-base: #eff1f5;
+  --ctp-mantle: #e6e9ef;
+  --ctp-crust: #dce0e8;
+}
+
+[data-theme="frappe"] {
+  --ctp-rosewater: #f2d5cf;
+  --ctp-flamingo: #eebebe;
+  --ctp-pink: #f4b8e4;
+  --ctp-mauve: #ca9ee6;
+  --ctp-red: #e78284;
+  --ctp-maroon: #ea999c;
+  --ctp-peach: #ef9f76;
+  --ctp-yellow: #e5c890;
+  --ctp-green: #a6d189;
+  --ctp-teal: #81c8be;
+  --ctp-sky: #99d1db;
+  --ctp-sapphire: #85c1dc;
+  --ctp-blue: #8caaee;
+  --ctp-lavender: #babbf1;
+  --ctp-text: #c6d0f5;
+  --ctp-subtext1: #b5bfe2;
+  --ctp-subtext0: #a5adce;
+  --ctp-overlay2: #949cbb;
+  --ctp-overlay1: #838ba7;
+  --ctp-overlay0: #737994;
+  --ctp-surface2: #626880;
+  --ctp-surface1: #51576d;
+  --ctp-surface0: #414559;
+  --ctp-base: #303446;
+  --ctp-mantle: #292c3c;
+  --ctp-crust: #232634;
+}
+
+[data-theme="macchiato"] {
+  --ctp-rosewater: #f4dbd6;
+  --ctp-flamingo: #f0c6c6;
+  --ctp-pink: #f5bde6;
+  --ctp-mauve: #c6a0f6;
+  --ctp-red: #ed8796;
+  --ctp-maroon: #ee99a0;
+  --ctp-peach: #f5a97f;
+  --ctp-yellow: #eed49f;
+  --ctp-green: #a6da95;
+  --ctp-teal: #8bd5ca;
+  --ctp-sky: #91d7e3;
+  --ctp-sapphire: #7dc4e4;
+  --ctp-blue: #8aadf4;
+  --ctp-lavender: #b7bdf8;
+  --ctp-text: #cad3f5;
+  --ctp-subtext1: #b8c0e0;
+  --ctp-subtext0: #a5adcb;
+  --ctp-overlay2: #939ab7;
+  --ctp-overlay1: #8087a2;
+  --ctp-overlay0: #6e738d;
+  --ctp-surface2: #5b6078;
+  --ctp-surface1: #494d64;
+  --ctp-surface0: #363a4f;
+  --ctp-base: #24273a;
+  --ctp-mantle: #1e2030;
+  --ctp-crust: #181926;
+}
+
+[data-theme="mocha"] {
+  --ctp-rosewater: #f5e0dc;
+  --ctp-flamingo: #f2cdcd;
+  --ctp-pink: #f5c2e7;
+  --ctp-mauve: #cba6f7;
+  --ctp-red: #f38ba8;
+  --ctp-maroon: #eba0ac;
+  --ctp-peach: #fab387;
+  --ctp-yellow: #f9e2af;
+  --ctp-green: #a6e3a1;
+  --ctp-teal: #94e2d5;
+  --ctp-sky: #89dceb;
+  --ctp-sapphire: #74c7ec;
+  --ctp-blue: #89b4fa;
+  --ctp-lavender: #b4befe;
+  --ctp-text: #cdd6f4;
+  --ctp-subtext1: #bac2de;
+  --ctp-subtext0: #a6adc8;
+  --ctp-overlay2: #9399b2;
+  --ctp-overlay1: #7f849c;
+  --ctp-overlay0: #6c7086;
+  --ctp-surface2: #585b70;
+  --ctp-surface1: #45475a;
+  --ctp-surface0: #313244;
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
+}
+
+/* celadon (Celadon Mist · TDEase's own light theme):
+   full 26 colors — an independent theme on equal footing with latte/frappe/macchiato/mocha,
+   inheriting no latte chromatic colors. The chromatic set is the Celadon Mist tuning: deeper,
+   warmer, and lower-saturation than the official latte colors, paired with warm rice-paper
+   neutral surfaces. teal #1F7E8C is the celadon lead color — same hue family as the splash
+   animation's #6DB9C8 but darkened to pass double AA (white-on 4.75 / on-paper 4.36). */
+[data-theme="celadon"] {
+  /* 14 chromatic colors — Celadon Mist tuning, fully self-authored */
+  --ctp-rosewater: #C99A8A;
+  --ctp-flamingo: #CC7E7E;
+  --ctp-pink: #B86A9E;
+  --ctp-mauve: #7E5BB0;
+  --ctp-red: #B83A4A;
+  --ctp-maroon: #C45A66;
+  --ctp-peach: #C77A3E;
+  --ctp-yellow: #A8842E;
+  --ctp-green: #3E7A4B;
+  --ctp-teal: #1F7E8C;
+  --ctp-sky: #3A8FB0;
+  --ctp-sapphire: #357FA0;
+  --ctp-blue: #3D6BB8;
+  --ctp-lavender: #6B6FC9;
+  /* 12 neutral surfaces — warm rice-paper tone.
+     The ladder is tuned for PERCEPTIBLE steps (≈5 luminance points per level):
+     the 2026-09-05 design review measured base→mantle→crust at only 2–3%
+     apart, which is below what the eye parses as hierarchy — the "misty
+     layering" concept was executing as literal murk. Chrome (mantle/crust)
+     now reads clearly deeper than the paper base while staying in the same
+     warm family. */
+  --ctp-text: #4A4D5C;
+  --ctp-subtext1: #5C5F6E;
+  --ctp-subtext0: #5E616E;
+  --ctp-overlay2: #6E7180;
+  --ctp-overlay1: #7E8190;
+  --ctp-overlay0: #9CA0B0;
+  --ctp-surface2: #C2BEB7;
+  --ctp-surface1: #D5D1C9;
+  --ctp-surface0: #D8D4CC;
+  --ctp-base: #F7F5F2;
+  --ctp-mantle: #ECE9E3;
+  --ctp-crust: #E1DDD4;
+}
+
+/* ================================================================
+   Layer 2 — Semantic Tokens
+   Strictly follows the official Catppuccin Style Guide semantic mapping:
+     Links, URLs, Tags, Pills → Blue
+     Cursor, hover activity    → Rosewater
+     Active Border, focus      → Lavender
+     Success                   → Green
+     Warnings                  → Yellow
+     Errors                    → Red
+     Selection BG              → Overlay 2 @ 25%
+   Adding a new theme only requires providing the 26 ctp colors;
+   this layer then works automatically.
+   ================================================================ */
+
+:root {
+  /* Primary — action voice: official teal (search BG / enum / info semantics) */
+  --color-primary: var(--ctp-teal);
+  --color-primary-hover: color-mix(in srgb, var(--color-primary) 88%, var(--color-text));
+  --color-primary-active: color-mix(in srgb, var(--color-primary) 78%, var(--color-text));
+  --color-primary-soft: color-mix(in srgb, var(--ctp-teal) 15%, transparent);
+  --color-primary-glow: color-mix(in srgb, var(--ctp-teal) 30%, transparent);
+  --color-on-primary: #ffffff;
+
+  /* Interact — Links, Tags, Pills = Blue (official CTP Style Guide mapping).
+     This is latte's blue textual anchor color. Links / tags / selected text are all blue. */
+  --color-interact: var(--ctp-blue);
+  --color-interact-soft: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  --color-interact-hover: color-mix(in srgb, var(--ctp-sky) 70%, var(--ctp-blue) 30%);
+  --color-interact-text: var(--ctp-blue);
+  --color-selection-bg: color-mix(in srgb, var(--ctp-overlay2) 25%, transparent);
+
+  /* Hover — Cursor/hover activity tint = Rosewater (official CTP cursor color).
+     Hover tints with each theme's rosewater warmth — lively, not rigid. */
+  --color-hover: color-mix(in srgb, var(--ctp-rosewater) 8%, var(--color-bg));
+  --color-border-control-hover: color-mix(in srgb, var(--ctp-rosewater) 35%, var(--color-border) 65%);
+
+  /* Status — official mapping: Success=Green, Warnings=Yellow, Errors=Red */
+  --color-success: var(--ctp-green);
+  --color-success-text: var(--ctp-green);
+  --color-success-soft: color-mix(in srgb, var(--ctp-green) 15%, transparent);
+  --color-warning: var(--ctp-yellow);
+  --color-warning-text: var(--ctp-yellow);
+  --color-warning-soft: color-mix(in srgb, var(--ctp-yellow) 15%, transparent);
+  --color-error: var(--ctp-red);
+  --color-error-text: var(--ctp-red);
+  --color-error-soft: color-mix(in srgb, var(--ctp-red) 15%, transparent);
+  --color-info: var(--ctp-teal);
+  --color-info-text: var(--ctp-teal);
+  --color-info-soft: color-mix(in srgb, var(--ctp-teal) 15%, transparent);
+
+  /* Live — The Living Channel Rule */
+  --color-live: var(--color-primary);
+  --color-live-glow: var(--color-primary-glow);
+
+  /* Focus ring — Active Border = Lavender (official CTP Style Guide mapping) */
+  --color-ring: var(--ctp-lavender);
+
+  /* Icon */
+  --icon-primary: var(--color-text);
+  --icon-secondary: var(--color-text-secondary);
+  --icon-muted: var(--color-text-muted);
+  --icon-accent: var(--color-primary);
+  --icon-success: var(--color-success);
+  --icon-warning: var(--color-warning);
+  --icon-error: var(--color-error);
+  --icon-info: var(--color-info);
+
+  /* Panel composites */
+  --color-bg-shell: color-mix(in srgb, var(--color-bg) 92%, var(--color-bg-secondary) 8%);
+  --color-bg-muted: color-mix(in srgb, var(--color-bg-tertiary) 58%, transparent);
+  --color-border-panel: color-mix(in srgb, var(--ctp-overlay1) 75%, var(--ctp-text));
+  --color-border-panel-strong: color-mix(in srgb, var(--ctp-overlay2) 75%, var(--ctp-text));
+
+  /* Line contract — The Seam Contract (DESIGN.md §Lines).
+     Lines are split into three lanes by "where roles meet"; these are the
+     only three entry points allowed across the whole frontend:
+       --line-seam        structural seam: where two surfaces of different
+                          roles meet (split-view seams, header/footer seams,
+                          floating-layer borders). Value equals border-panel,
+                          but the role is independent — adjusting lines wholesale
+                          no longer drags control outlines along.
+       --line-hairline    content hairline: a line belonging to the document
+                          content being read (markdown tables, code blocks,
+                          viewer inner frames).
+       --line-seam-strong one level up of structural seam (modal-level floating borders).
+     Widths are part of the contract too: every 1px seam/hairline uses --line-w;
+     every left-edge type stripe is uniformly --line-stripe-w (2px), striped in a
+     semantic color or seam. Control outlines (AppButton/Chip/inputs) are NOT part
+     of the line contract and keep using the --color-border* control vocabulary;
+     data-layer lines (spectra, grids) use the domain vocabulary, outside this
+     contract's scope. */
+  --line-seam: var(--color-border-panel);
+  --line-seam-strong: var(--color-border-panel-strong);
+  --line-hairline: var(--color-border);
+  --line-w: 1px;
+  --line-stripe-w: 2px;
+
+  /* Chart composites — official colors supplied directly (latte/celadon light series darkened inside the light-theme blocks) */
+  --chart-bg: var(--color-bg);
+  --chart-axis: var(--color-text-muted);
+  --chart-grid: var(--color-border);
+  --chart-series-1: var(--ctp-blue);
+  --chart-series-2: var(--ctp-mauve);
+  --chart-series-3: var(--ctp-pink);
+  --chart-series-4: var(--ctp-green);
+  --chart-series-5: var(--ctp-peach);
+  --chart-series-6: var(--ctp-sky);
+  --chart-tooltip-bg: color-mix(in srgb, var(--color-bg-tertiary) 92%, transparent);
+  --chart-tooltip-text: var(--color-text);
+
+  /* Table composites */
+  --table-header-bg: color-mix(in srgb, var(--color-bg-tertiary) 60%, var(--color-bg-secondary));
+  --table-row-hover: color-mix(in srgb, var(--ctp-rosewater) 8%, transparent);
+  --table-row-selected: var(--color-interact-soft);
+
+  /* Shadows — floating layers must actually float. The 2026-09-05 review
+     found panel/overlay alphas so low (0.04–0.12) that modals and the command
+     palette sat on the page instead of above it; overlay gains a second layer
+     for a controlled, banked falloff. */
+  --shadow-sm: 0 1px 2px 0 rgba(40, 38, 35, 0.05);
+  --shadow-md: 0 4px 10px -1px rgba(40, 38, 35, 0.09), 0 2px 4px -2px rgba(40, 38, 35, 0.05);
+  --shadow-panel: 0 10px 28px rgba(40, 38, 35, 0.14), 0 2px 8px rgba(40, 38, 35, 0.06);
+  --shadow-overlay: 0 12px 32px rgba(40, 38, 35, 0.18), 0 4px 12px rgba(40, 38, 35, 0.08);
+  --shadow-focus: 0 0 0 2px var(--color-ring);
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* Transitions */
+  --transition-fast: 0.14s ease;
+
+  /* Typography — 'Inter Fallback' is the metric-matched local() stand-in
+     for Inter's font-display:block window (see fonts.css); it only renders
+     before the bundled variable font finishes loading. */
+  --font-body: 'Inter', 'Inter Fallback', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+
+  /* Status — run lifecycle */
+  --status-queued: var(--color-text-muted);
+  --status-running: var(--color-primary);
+  --status-succeeded: var(--color-success);
+  --status-failed: var(--color-error);
+  --status-cancelled: var(--color-text-muted);
+}
+
+/* Neutral surfaces: derived from ctp for all themes. celadon is already warmed in Layer 1. */
+:root,
+[data-theme="celadon"],
+[data-theme="latte"] {
+  --color-text: var(--ctp-text);
+  --color-text-secondary: var(--ctp-subtext1);
+  --color-text-muted: var(--ctp-subtext0);
+  --color-text-disabled: var(--ctp-overlay0);
+  --color-text-inverse: var(--ctp-base);
+
+  --color-bg: var(--ctp-base);
+  --color-bg-secondary: var(--ctp-mantle);
+  --color-bg-tertiary: var(--ctp-crust);
+  --color-bg-hover: var(--ctp-surface1);
+  --color-bg-active: var(--ctp-surface2);
+  --color-bg-card: var(--ctp-mantle);
+
+  --color-border: var(--ctp-surface0);
+  --color-border-hover: var(--ctp-surface1);
+  --color-border-active: var(--ctp-surface2);
+
+  --color-on-primary: #ffffff;
+}
+
+/* latte AA fine-tuning: official CTP light colors cannot pass 4.5/3.0 on light
+   surfaces, so color-mix pulls them toward text. The hue family stays the
+   same — only darkened to AA. celadon is split into its own block; the two
+   are fully decoupled. */
+:root,
+[data-theme="latte"] {
+  /* primary teal darkened so white text passes AA */
+  --color-primary: color-mix(in srgb, var(--ctp-teal) 60%, var(--ctp-text));
+
+  /* interact blue darkened to pass text AA (latte blue #1e66f5 is only 4.34) */
+  --color-interact-text: color-mix(in srgb, var(--ctp-blue) 80%, var(--ctp-text));
+
+  /* ring lavender darkened to pass non-text 3.0 (latte lavender is only 2.81) */
+  --color-ring: color-mix(in srgb, var(--ctp-lavender) 60%, var(--ctp-text));
+
+  /* warning yellow darkened to pass text AA (latte yellow is only 2.31) */
+  --color-warning-text: color-mix(in srgb, var(--ctp-yellow) 30%, var(--ctp-text));
+
+  /* success green darkened to pass non-text 3.0 + text AA */
+  --color-success: color-mix(in srgb, var(--ctp-green) 70%, var(--ctp-text));
+  --color-success-text: color-mix(in srgb, var(--ctp-green) 30%, var(--ctp-text));
+
+  /* error red darkened to pass text AA on panel (latte red #d20f39 panel 4.46) */
+  --color-error-text: color-mix(in srgb, var(--ctp-red) 90%, var(--ctp-text));
+
+  /* text-muted: subtext0 is only 4.37 on base; pull toward text to pass 4.5 */
+  --color-text-muted: color-mix(in srgb, var(--ctp-subtext0) 75%, var(--ctp-text));
+
+  /* light chart series darkened to pass 3.0 */
+  --chart-series-3: color-mix(in srgb, var(--ctp-pink) 70%, var(--ctp-text));
+  --chart-series-4: color-mix(in srgb, var(--ctp-green) 70%, var(--ctp-text));
+  --chart-series-5: color-mix(in srgb, var(--ctp-yellow) 70%, var(--ctp-text));
+  --chart-series-6: color-mix(in srgb, var(--ctp-sky) 70%, var(--ctp-text));
+}
+
+/* celadon AA fine-tuning (independent of latte): celadon's hue base is already
+   deeper and warmer than latte, so most chromatic colors need a lighter mix to
+   pass AA. primary #1F7E8C already passes double AA on its own — use directly. */
+[data-theme="celadon"] {
+  /* primary celadon lead color: already passes double AA (white-on 4.75 / on-paper 4.36), no mix */
+  --color-primary: #1F7E8C;
+
+  /* interact blue: tuned for 4.55+ on the deepened mantle (2026-09-05 ladder rework) */
+  --color-interact-text: color-mix(in srgb, var(--ctp-blue) 90%, var(--ctp-text));
+
+  /* ring lavender: on-paper 4.07 passes non-text 3.0, no mix needed */
+  --color-ring: var(--ctp-lavender);
+
+  /* warning yellow: bright hue, needs a deep mix to pass text 4.5 on mantle */
+  --color-warning-text: color-mix(in srgb, var(--ctp-yellow) 47%, var(--ctp-text));
+
+  /* success green: tuned for 4.55+ on the deepened mantle (2026-09-05 ladder rework) */
+  --color-success: color-mix(in srgb, var(--ctp-green) 85%, var(--ctp-text));
+  --color-success-text: color-mix(in srgb, var(--ctp-green) 85%, var(--ctp-text));
+
+  /* error red: celadon red #B83A4A on-paper 5.16 already passes */
+  --color-error-text: var(--ctp-red);
+
+  /* text-muted: celadon subtext0 #5E616E on-paper 4.72 already passes */
+  --color-text-muted: var(--ctp-subtext0);
+
+  /* chart series: celadon hues are already deep — light mix to pass non-text 3.0 */
+  --chart-series-3: color-mix(in srgb, var(--ctp-pink) 85%, var(--ctp-text));
+  --chart-series-4: var(--ctp-green);
+  --chart-series-5: color-mix(in srgb, var(--ctp-yellow) 85%, var(--ctp-text));
+  --chart-series-6: color-mix(in srgb, var(--ctp-sky) 85%, var(--ctp-text));
+}
+
+[data-theme="frappe"],
+[data-theme="macchiato"],
+[data-theme="mocha"] {
+  --color-text: var(--ctp-text);
+  --color-text-secondary: var(--ctp-subtext1);
+  --color-text-muted: var(--ctp-subtext0);
+  --color-text-disabled: var(--ctp-overlay0);
+  --color-text-inverse: var(--ctp-base);
+
+  --color-bg: var(--ctp-base);
+  --color-bg-secondary: var(--ctp-mantle);
+  --color-bg-tertiary: var(--ctp-crust);
+  --color-bg-hover: var(--ctp-surface1);
+  --color-bg-active: var(--ctp-surface2);
+  --color-bg-card: var(--ctp-mantle);
+
+  --color-border: var(--ctp-surface0);
+  --color-border-hover: var(--ctp-surface1);
+  --color-border-active: var(--ctp-surface2);
+
+  --color-on-primary: var(--ctp-crust);
+
+  /* Dark-surface hairlines need to be brighter to read as "lines" */
+  --color-border-panel: var(--ctp-overlay1);
+  --color-border-panel-strong: var(--ctp-overlay2);
+}
+
+/* Dark themes: chromatic colors pass AA directly; -text variants = original color (no mix needed) */
+[data-theme="frappe"],
+[data-theme="macchiato"],
+[data-theme="mocha"] {
+  --color-interact-text: var(--ctp-rosewater);
+  --color-success-text: var(--ctp-green);
+  --color-warning-text: var(--ctp-peach);
+  --color-error-text: var(--ctp-red);
+  --color-info-text: var(--ctp-sky);
+}
+
+/* ================================================================
+   Layer 3 — Domain Tokens (official CTP colors supplied directly)
+   ================================================================ */
+
+:root {
+  --domain-protein: var(--ctp-blue);
+  --domain-peptide: var(--ctp-mauve);
+  --domain-ptm: var(--ctp-pink);
+  --domain-mass-spec: var(--ctp-green);
+  --domain-evalue: var(--ctp-peach);
+  --domain-confidence: var(--ctp-sky);
+  --domain-text-meta: calc(10px * var(--font-scale, 1));
+
+  --domain-data: var(--ctp-green);
+  --domain-file: var(--ctp-blue);
+  --domain-string: var(--ctp-peach);
+  --domain-number: var(--ctp-red);
+  --domain-boolean: var(--ctp-overlay1);
+
+  --domain-ion-a: var(--ctp-mauve);
+  --domain-ion-b: var(--ctp-blue);
+  --domain-ion-c: var(--ctp-sky);
+  --domain-ion-x: var(--ctp-peach);
+  --domain-ion-y: var(--ctp-green);
+  --domain-ion-z: var(--ctp-red);
+}
+
+/* ================================================================
+   Structure Tokens
+   ================================================================ */
+
+:root {
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+}
+
+:root,
+[data-density="comfortable"] {
+  --row-h: 32px;
+  --row-h-sm: 24px;
+  --header-h: 48px;
+}
+[data-density="compact"] {
+  --row-h: 26px;
+  --row-h-sm: 22px;
+  --header-h: 40px;
+}
+
+:root {
+  --font-scale: 1;
+  --text-label: calc(11px * var(--font-scale));
+  --text-label-lh: calc(14px * var(--font-scale));
+  --text-sm: calc(12px * var(--font-scale));
+  --text-sm-lh: calc(16px * var(--font-scale));
+  --text-base: calc(13px * var(--font-scale));
+  --text-base-lh: calc(20px * var(--font-scale));
+  --text-md: calc(15px * var(--font-scale));
+  --text-md-lh: calc(22px * var(--font-scale));
+  --text-lg: calc(17px * var(--font-scale));
+  --text-lg-lh: calc(24px * var(--font-scale));
+  --text-xl: calc(20px * var(--font-scale));
+  --text-xl-lh: calc(28px * var(--font-scale));
+  --text-mono: calc(12px * var(--font-scale));
+  --text-mono-lh: calc(18px * var(--font-scale));
+
+  /* Transcript reading column (rows, composer, empty state share it so their
+     edges stay aligned). 860 over 720: the user asked for density — tables,
+     code blocks and diffs consolidate ~19% more per line at the 13px base,
+     still one glance wide. */
+  --chat-column-width: 860px;
+
+  --dur-instant: 90ms;
+  --dur-fast: 140ms;
+  --dur-normal: 220ms;
+  --dur-slow: 320ms;
+
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.3, 0, 1, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Elevation */
+:root,
+[data-theme="celadon"],
+[data-theme="latte"] {
+  --elev-1: var(--shadow-sm);
+  --elev-1-bg: var(--color-bg);
+  --elev-2: var(--shadow-md);
+  --elev-2-bg: var(--color-bg);
+}
+[data-theme="frappe"],
+[data-theme="macchiato"],
+[data-theme="mocha"] {
+  --elev-1: none;
+  --elev-1-bg: var(--ctp-surface0);
+  --elev-1-border: var(--color-border-panel);
+  --elev-2: none;
+  --elev-2-bg: color-mix(in srgb, var(--ctp-surface0) 88%, var(--ctp-surface1) 12%);
+  --elev-2-border: var(--color-border-panel);
+}
+
+/* Breath animation */
+@keyframes breath {
+  0%, 100% { opacity: var(--breath-lo, 0.35); }
+  50%      { opacity: var(--breath-hi, 0.85); }
+}
+
+@keyframes breath-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--color-live-glow); }
+  50%      { box-shadow: 0 0 12px 2px var(--color-live-glow); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ================================================================
+   z-index ladder — the ONE scale for stacking (VSCode-informed).
+   Never write a literal z-index; pick a rung. Local order inside a
+   component must follow these values too.
+     content   0     in-flow content
+     raised    1     sticky headers, seams that must clear content
+     seam      2     hairline markers (tab drop-borders, gradient fades)
+     elevated  6     sash handles, in-surface floating chips
+     float     10    in-surface floating UI (jump pills, graph tools)
+     overlay   15    region overlays (drop overlay, context menu)
+     dockbar   20    in-page dock headers that float over content
+     popover   30    in-region popovers above overlays
+     handle    40    the window-edge page handle
+     floating  100   app-level popups (completion, menus, readout pills)
+     modal     2000  lightbox / element-plus manager floor
+   ================================================================ */
+:root {
+  --z-content: 0;
+  --z-raised: 1;
+  --z-seam: 2;
+  --z-elevated: 6;
+  --z-float: 10;
+  --z-overlay: 15;
+  --z-dockbar: 20;
+  --z-popover: 30;
+  --z-handle: 40;
+  --z-floating: 100;
+  --z-modal: 2000;
+}

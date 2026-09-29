@@ -1,0 +1,7 @@
+# FILE-LAYOUT.md §4.1: .venv/ and the session event log stay out of git.
+.venv/
+.tdease/events.jsonl
+
+# Runtime-validation experiment outputs (12+ GB) stay on disk, out of git.
+runtime-validation-*/
+validation-archive/

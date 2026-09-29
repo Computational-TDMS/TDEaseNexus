@@ -1,0 +1,377 @@
+{
+  "modelPicker": {
+    "title": "切换模型",
+    "current": "当前模型",
+    "emptyModels": "该服务商暂无可用模型",
+    "empty": "暂无已配置密钥的服务商——在“管理模型”中添加。",
+    "runSettings": "运行设置",
+    "manageModels": "管理模型"
+  },
+  "sessionBar": {
+    "sessionsLabel": "会话",
+    "new": "新建",
+    "fork": "分支",
+    "archive": "归档会话",
+    "archived": "已归档",
+    "unarchive": "恢复会话",
+    "empty": "暂无会话——点击“新建”开始一个。",
+    "untitled": "未命名会话",
+    "recovered": "已恢复会话",
+    "runtimeIdle": "空闲",
+    "runtimeFailed": "失败",
+    "runtimeUnread": "有新结果",
+    "runtimeStreaming": "处理中",
+    "mindsetLabel": "模式",
+    "authority": {
+      "ask": "询问",
+      "auto": "自动"
+    },
+    "mindset": {
+      "explorer": "探索",
+      "executor": "执行",
+      "explorerTitle": "先调查并汇报发现，不立即改动任何东西",
+      "executorTitle": "根据发现采取行动——运行工具并做出编辑以达成目标"
+    }
+  },
+  "inspector": {
+    "empty": {
+      "subagents": "本会话暂无子代理。",
+      "files": "暂无文件。",
+      "evidence": "本会话暂无证据记录。"
+    }
+  },
+  "activity": {
+    "label": "活动",
+    "viewPlan": "计划",
+    "viewSubagents": "子代理",
+    "viewFiles": "文件",
+    "viewRuns": "运行",
+    "viewTrajectory": "轨迹",
+    "expand": "展开",
+    "collapse": "收起",
+    "viewJobs": "后台任务",
+    "spineTitle": "任务",
+    "spineOpenPlan": "查看任务计划",
+    "spineBranch": "{count} 个后台运行",
+    "spineCalls": "{count} 次工具调用"
+  },
+  "tab": {
+    "label": "Agent 视图",
+    "emptyTitle": "这里还没有打开任何内容",
+    "emptyDescription": "点击对话中的文件、链接或资产，即可在此以标签页打开。",
+    "close": "关闭标签页"
+  },
+  "trajectory": {
+    "title": "轨迹",
+    "totals": "{turns} 轮 · {requests} 次请求 · {calls} 次调用",
+    "empty": "暂无轮次。轨迹随会话事件日志的落定逐轮填充。",
+    "laneUser": "用户",
+    "laneModel": "模型",
+    "laneTools": "工具",
+    "chipRequest": "请求 {seq}",
+    "chipThinking": "思考",
+    "chipReply": "回复",
+    "settlementOpen": "进行中",
+    "loading": "加载中…",
+    "snapshotNotFound": "（会话日志旁未找到该快照）",
+    "snapshotReadFailed": "（快照读取失败：{message}）",
+    "hoverExpand": "（点击展开摘要）",
+    "hoverEmptyReasoning": "（空的推理段）",
+    "hoverEmptyMessage": "（空消息）",
+    "hoverStillOpen": "（在该回放前缀处仍未结束）",
+    "hoverMindset": "模式",
+    "hoverModel": "模型",
+    "hoverPrompt": "提示快照"
+  },
+  "subagent": {
+    "cancel": "取消",
+    "confidence": "置信度",
+    "openConversation": "打开对话",
+    "conversationMissingTitle": "对话暂不可用",
+    "conversationMissingDescription": "该 subagent 的会话日志尚未落盘。它可能仍在运行，或该次运行早于会话持久化机制。",
+    "label": "子代理",
+    "groups": "并行组",
+    "individual": "独立子代理",
+    "result": "结果",
+    "findings": "发现",
+    "evidence": "证据",
+    "openQuestions": "待解问题",
+    "peek": "活动",
+    "peekHint": "点击眼睛图标查看活动。",
+    "refreshPeek": "刷新",
+    "noActivity": "暂无活动。",
+    "state": {
+      "running": "运行中",
+      "returned": "已返回",
+      "blocked": "已阻塞",
+      "cancelled": "已取消"
+    },
+    "conversationErrorTitle": "对话记录读取失败",
+    "conversationErrorDescription": "该 subagent 的会话日志存在，但无法读取（原因：{message}）。记录并未丢失——是磁盘上的文件损坏或被截断。"
+  },
+  "files": {
+    "openInDocument": "打开",
+    "turnGroup": "第 {n} 轮",
+    "subagentGroup": "子代理 · {role}"
+  },
+  "evidence": {
+    "nodeCount": "{count} 条证据",
+    "openGraph": "打开图谱",
+    "workspaceScoped": "工作区范围的 PROV 证据。按会话筛选暂不可用。",
+    "loading": "正在检索证据…",
+    "graphTitle": "证据图谱"
+  },
+  "transcript": {
+    "outcomeLabel": "上一轮",
+    "outcome": {
+      "resolved": "已完成",
+      "blocked": "待确认",
+      "halted": "已中止",
+      "cancelled": "已取消",
+      "continueInNewTurn": "在新一轮继续",
+      "calls": "{count} 次调用",
+      "tokens": "{count} tok",
+      "failed": "失败"
+    },
+    "blocked": {
+      "title": "需要你的输入",
+      "neededLabel": "需要：",
+      "optionsLabel": "点击选项直接作答",
+      "customAnswer": "或直接输入你的回答…",
+      "sendAnswer": "发送回答"
+    },
+    "cancelled": "⊘ 已取消",
+    "failedRemedy": "本轮因运行时或供应商错误而终止。",
+    "copy": "复制",
+    "copied": "已复制",
+    "jumpToBottom": "跳转到最新",
+    "jumpToResponse": "跳回本轮回复起点",
+    "working": "思考中",
+    "loadingHistory": "正在载入对话历史…",
+    "failedChip": "失败",
+    "compacted": "上下文已压缩",
+    "compacting": "正在压缩上下文",
+    "askAi": "问 AI"
+  },
+  "approval": {
+    "title": "批准 · {action}",
+    "modalTitle": "需要你批准",
+    "queueRemaining": "后面还有 {n} 个",
+    "allowOnce": "允许一次",
+    "allowSession": "本会话内允许",
+    "allowAlways": "总是允许 {scope}",
+    "allowAlwaysTitle": "同时将一条允许规则写入本工作区权限文件——位于所有手写规则之下、出厂审查策略与默认阶梯之上。可在 设置 → 权限 中编辑。",
+    "deny": "拒绝",
+    "approved": "已同意",
+    "declined": "已拒绝",
+    "timeout": "已超时",
+    "aborted": "已中止",
+    "arguments": "参数",
+    "noArguments": "此操作无需参数。",
+    "reviewRequired": "这一步会提交大量不可逆的工作，本应在专门的审阅页面上确认后再允许。该页面还没有建好，所以请先读完下面的每一个参数。",
+    "approvedWhitelisted": "已允许 · 加入白名单"
+  },
+  "hud": {
+    "phase": {
+      "waiting": "等待模型",
+      "thinking": "思考中",
+      "responding": "生成回复",
+      "executing": "执行工具"
+    },
+    "act": "第 {n} 轮",
+    "calls": "{count} 次调用",
+    "elapsed": "{elapsed} / {deadline}",
+    "waiting": "等待你的操作",
+    "awaitingUser": "等待确认",
+    "stopTurn": "停止回合",
+    "stopTurnHint": "停止当前回合。已完成的结果会保留，未完成的调用标记为已取消。"
+  },
+  "composer": {
+    "placeholder": "向 Agent 提问，输入 / 查看命令，或提及运行、文件或技能",
+    "send": "发送",
+    "stop": "停止",
+    "stopTitle": "停止当前回合。已完成的结果会保留，未完成的调用标记为已取消。",
+    "hint": "⏎ 发送  ·  ⇧⏎ 换行",
+    "hintQueued": "回合运行中 · ⏎ 排队 · ⇧⏎ 换行",
+    "queued": "排队中",
+    "dequeue": "移除这条排队消息",
+    "enqueue": "加入队列：当前回合结束后自动依次发送",
+    "attach": "附图（也可拖入对话框）",
+    "attachRejected": "已忽略 {count} 个非图片文件",
+    "attachedNoVision": "当前模型不支持识图：图片不会进入模型",
+    "removeAttachment": "移除附图",
+    "ctxTokens": "tokens",
+    "ctxUnknown": "上下文占用未知",
+    "ctxCache": "缓存"
+  },
+  "export": {
+    "untitled": "未命名会话",
+    "empty": "这个会话还没有可导出的对话",
+    "failed": "导出失败：{message}"
+  },
+  "contextPanel": {
+    "title": "上下文用量",
+    "capacity": "容量",
+    "cacheHit": "缓存命中率",
+    "cacheRecent": "近期平均",
+    "recentUsage": "近期用量",
+    "loading": "载入中…",
+    "noData": "暂无记录",
+    "requests": "次请求",
+    "window5h": "5 小时",
+    "window7d": "7 天",
+    "tokensLeft": "tokens 可用",
+    "tokens": "tokens",
+    "lastRequest": "最近一次请求",
+    "speed": "生成速度",
+    "tokensPerSec": "tokens/s",
+    "providerUsage": "供应商用量",
+    "input": "输入",
+    "output": "输出",
+    "reasoning": "推理",
+    "cacheRead": "缓存读取",
+    "cacheHitShort": "命中率",
+    "cacheWrite": "缓存写入"
+  },
+  "empty": {
+    "summary": "{raw} 个原始文件 · {fasta} 个 fasta · {runs}",
+    "summaryNoRuns": "尚无运行",
+    "summaryRuns": "{count} 个运行",
+    "goalIdentifyN": "识别 {count} 个原始文件中的蛋白质异构体",
+    "goalShowInside": "展示原始文件里有什么",
+    "goalCensus": "这些运行都发现了什么？",
+    "goalInterpret": "带我解读最近一次运行的结果",
+    "goalPlanAnalysis": "为我的数据设计一个分析工作流",
+    "goalWhatNext": "开始之前我还需要准备什么？",
+    "setupOpenWorkspace": "打开工作区文件夹"
+  },
+  "stop": {
+    "title": "中止当前回复"
+  },
+  "slash": {
+    "compact": "压缩会话历史以腾出上下文",
+    "export": "导出当前对话为独立 HTML（默认）或 PDF 文件，写入 exports/ 并打开",
+    "localMcpServer": "本地 MCP 服务 · {name}",
+    "useMcp": "使用本地已配置的 MCP 服务"
+  },
+  "completion": {
+    "hint": "↑↓ 选择 · Tab 补全 · Enter 确认 · Esc 关闭",
+    "group": {
+      "commands": "命令",
+      "skills": "技能",
+      "mcpServers": "MCP 服务",
+      "runs": "运行",
+      "files": "文件"
+    }
+  },
+  "thinking": {
+    "thinking": "正在思考",
+    "thought": "已思考",
+    "chars": "{count} 字",
+    "rate": "{n} 字/秒",
+    "durationSeconds": "{n} 秒",
+    "effortTitle": "推理强度",
+    "level": {
+      "off": "关闭",
+      "offHint": "不请求模型推理 token",
+      "low": "低",
+      "lowHint": "低推理强度",
+      "medium": "中",
+      "mediumHint": "中等推理强度",
+      "high": "高",
+      "highHint": "高推理强度",
+      "xhigh": "极高",
+      "xhighHint": "极高推理强度",
+      "max": "最大",
+      "maxHint": "模型支持时使用最大推理强度"
+    }
+  },
+  "codeBlock": {
+    "wrap": "换行",
+    "unwrap": "不换行"
+  },
+  "processFold": {
+    "expandDetails": "展开详情",
+    "worked": "工作了",
+    "failures": "{count} 个失败"
+  },
+  "permissionMode": {
+    "askLabel": "询问（副作用需确认）",
+    "autoLabel": "自动（静默执行）"
+  },
+  "settingsTab": {
+    "title": "运行设置",
+    "model": "模型",
+    "provider": "服务商",
+    "modelName": "模型",
+    "modelNote": "下一轮对话生效——上下文窗口在会话重新绑定后更新。",
+    "noCredential": "尚未为 {provider} 配置 API 密钥。请在“设置 → 模型”中添加。",
+    "reasoning": "思考强度",
+    "context": "上下文窗口",
+    "contextNote": "运行中会话 transcript 的实时占用估算；压缩后到下一次响应前显示 —。",
+    "contextCache": "缓存命中 {pct}",
+    "capabilities": "能力",
+    "ptc": "工具脚本（程序化工具调用）",
+    "ptcHint": "开启后 Agent 可用 tdease.ptc.exec 在一次调用内循环执行已注册工具（经同一权限门）。下一轮对话生效。"
+  },
+  "toolGroup": {
+    "ranTools": "执行了 {count} 个工具",
+    "ranToolsWithFailures": "执行了 {count} 个工具（{failed} 个失败）",
+    "runningTools": "正在执行 {count} 个工具…",
+    "output": "输出",
+    "noOutput": "无输出",
+    "cancelled": "已取消",
+    "outputTruncated": "已省略，共 {count} 字符"
+  },
+  "toolAction": {
+    "read": "读取文件",
+    "write": "写入文件",
+    "edit": "编辑文件",
+    "ls": "列出目录",
+    "grep": "搜索内容",
+    "find": "查找文件",
+    "bash": "运行命令",
+    "spawn": "派发子代理",
+    "runWatch": "查看运行状态",
+    "runLog": "查看运行日志",
+    "runFiles": "获取运行文件",
+    "evidenceRead": "查阅证据",
+    "evidenceWrite": "记录证据",
+    "jobStart": "启动后台任务",
+    "jobWatch": "查看后台任务",
+    "jobCancel": "取消后台任务",
+    "ptcExec": "运行工具脚本",
+    "orchestrateRun": "运行编排脚本",
+    "orchestrateWait": "等待编排",
+    "plan": "更新计划"
+  },
+  "mermaid": {
+    "showSource": "查看源码",
+    "hideSource": "隐藏源码",
+    "copySource": "复制源码",
+    "renderFailed": "Mermaid 图渲染失败：{error}"
+  },
+  "jobs": {
+    "title": "后台任务",
+    "empty": "此会话没有后台任务。",
+    "cancel": "取消",
+    "peek": "查看输出",
+    "exit": "退出码 {code}",
+    "close": "关闭",
+    "state": {
+      "running": "运行中",
+      "succeeded": "已成功",
+      "failed": "已失败",
+      "cancelled": "已取消"
+    }
+  },
+  "sideChat": {
+    "tabTitle": "侧聊",
+    "quotePrefix": "关于这段内容：",
+    "fromParent": "来自会话：{title}",
+    "emptyHint": "引用已就绪——输入你的问题。",
+    "inputPlaceholder": "追问这段内容…",
+    "send": "发送",
+    "gone": "该侧聊会话已不存在。"
+  }
+}

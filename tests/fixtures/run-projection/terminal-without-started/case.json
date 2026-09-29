@@ -1,0 +1,13 @@
+{
+  "description": "Pre-launch validation may terminate a queued revision without opening a process range.",
+  "events": [
+    { "seq": 1, "type": "run.submitted", "data": { "revision_id": "rev-1" } },
+    { "seq": 2, "type": "run.queue_requested", "data": { "revision_id": "rev-1", "mode": "execute" } },
+    { "seq": 3, "type": "run.failed", "data": { "revision_id": "rev-1" } }
+  ],
+  "expect": {
+    "status": "FAILED", "projected_at_seq": 3,
+    "current_revision_id": "rev-1", "queued_mode": null, "queued_at_seq": null,
+    "ranges": []
+  }
+}

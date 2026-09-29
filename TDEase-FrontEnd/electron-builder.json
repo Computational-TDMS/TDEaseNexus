@@ -1,0 +1,240 @@
+{
+  "appId": "com.tdeasenexus.app",
+  "productName": "TDEaseNexus",
+  "compression": "maximum",
+  "directories": {
+    "output": "release"
+  },
+  "electronDist": "../.scratch/electron-dist",
+  "npmRebuild": false,
+  "files": [
+    "dist/**",
+    "electron/**",
+    "package.json",
+    "!electron/dist/agent-harness.cjs",
+    "!**/node-pty/prebuilds/darwin-arm64",
+    "!**/node-pty/prebuilds/darwin-x64",
+    "!**/node-pty/prebuilds/win32-arm64",
+    "!node_modules/@earendil-works/**",
+    "!node_modules/@codemirror/**",
+    "!node_modules/@vue-flow/**",
+    "!node_modules/{@element-plus/icons-vue,@formkit/auto-animate,@modelcontextprotocol/client,@tanstack/vue-query,@traptitech/markdown-it-katex,@types/dagre,@vueuse/core}",
+    "!node_modules/{ag-grid-community,ag-grid-vue3,codemirror,d3,dagre,dompurify,element-plus,katex,loglevel,markdown-it,markdown-it-task-lists,mermaid,pinia,plotly.js-dist-min,typebox,vue,vue-i18n,vue-router,vue-virtual-scroller,vue3-plotly-ts,xlsx,yaml}"
+  ],
+  "extraResources": [
+    {
+      "from": "electron/license-agreement.txt",
+      "to": "license-agreement.txt"
+    },
+    {
+      "from": "config/components.packaged.json",
+      "to": "installation/components.json"
+    },
+    {
+      "from": "../tdease-backend/app",
+      "to": "backend/app",
+      "filter": [
+        "**/*",
+        "!**/__pycache__",
+        "!**/__pycache__/**",
+        "!**/*.pyc",
+        "!**/.venv",
+        "!**/.venv/**",
+        "!**/.pytest_cache",
+        "!**/.pytest_cache/**",
+        "!**/*.egg-info",
+        "!**/*.egg-info/**",
+        "!**/.DS_Store"
+      ]
+    },
+    {
+      "from": "../tdease-backend/src",
+      "to": "backend/src",
+      "filter": [
+        "**/*",
+        "!**/__pycache__",
+        "!**/__pycache__/**",
+        "!**/*.pyc",
+        "!**/.venv",
+        "!**/.venv/**",
+        "!**/.pytest_cache",
+        "!**/.pytest_cache/**",
+        "!**/*.egg-info",
+        "!**/*.egg-info/**",
+        "!**/.DS_Store"
+      ]
+    },
+    {
+      "from": "../tdease-backend/cli.py",
+      "to": "backend/cli.py"
+    },
+    {
+      "from": "../tdease-backend/pyproject.toml",
+      "to": "backend/pyproject.toml"
+    },
+    {
+      "from": "../tdease-backend/uv.lock",
+      "to": "backend/uv.lock"
+    },
+    {
+      "from": "../tdease-backend/README.md",
+      "to": "backend/README.md"
+    },
+    {
+      "from": "../.scratch/runtime",
+      "to": "backend/runtime",
+      "filter": [
+        "**/*",
+        "!uv-cache/**",
+        "!wheelhouse/**",
+        "!backend-requirements.txt",
+        "!tdease_backend-*.whl",
+        "!nodes.zip",
+        "!cpython-*/tcl/**",
+        "!cpython-*/Lib/test/**",
+        "!cpython-*/Lib/idlelib/**",
+        "!cpython-*/Lib/tkinter/**",
+        "!cpython-*/Lib/lib2to3/**"
+      ]
+    },
+    {
+      "from": "../tdease-ai-capability/system/tools",
+      "to": "native",
+      "filter": [
+        "**/*",
+        "!**/__pycache__",
+        "!**/__pycache__/**",
+        "!**/*.pyc",
+        "!**/.venv",
+        "!**/.venv/**",
+        "!**/.pytest_cache",
+        "!**/.pytest_cache/**",
+        "!**/*.egg-info",
+        "!**/*.egg-info/**",
+        "!**/.DS_Store"
+      ]
+    },
+    {
+      "from": "../.scratch/vendor/search-tools",
+      "to": "vendor/search-tools"
+    },
+    {
+      "from": "../.scratch/vendor/git",
+      "to": "vendor/git"
+    },
+    {
+      "from": "../.scratch/runtime/settings.seed.json",
+      "to": "backend/settings.seed.json"
+    },
+    {
+      "from": "../tdease-ai-capability/system/templates",
+      "to": "app/assets/templates",
+      "filter": [
+        "**/*",
+        "!**/__pycache__",
+        "!**/__pycache__/**",
+        "!**/*.pyc",
+        "!**/.venv",
+        "!**/.venv/**",
+        "!**/.pytest_cache",
+        "!**/.pytest_cache/**",
+        "!**/*.egg-info",
+        "!**/*.egg-info/**",
+        "!**/.DS_Store"
+      ]
+    },
+    {
+      "from": "../tdease-ai-capability/system/skills",
+      "to": "app/assets/skills",
+      "filter": [
+        "**/*",
+        "!**/__pycache__",
+        "!**/__pycache__/**",
+        "!**/*.pyc",
+        "!**/.venv",
+        "!**/.venv/**",
+        "!**/.pytest_cache",
+        "!**/.pytest_cache/**",
+        "!**/*.egg-info",
+        "!**/*.egg-info/**",
+        "!**/.DS_Store",
+        "!**/cache",
+        "!**/cache/**"
+      ]
+    },
+    {
+      "from": "../tdease-ai-capability/system/prompts",
+      "to": "app/assets/prompts",
+      "filter": [
+        "**/*",
+        "!**/__pycache__",
+        "!**/__pycache__/**",
+        "!**/*.pyc",
+        "!**/.venv",
+        "!**/.venv/**",
+        "!**/.pytest_cache",
+        "!**/.pytest_cache/**",
+        "!**/*.egg-info",
+        "!**/*.egg-info/**",
+        "!**/.DS_Store"
+      ]
+    },
+    {
+      "from": "../tdease-ai-capability/system/reference",
+      "to": "app/assets/reference",
+      "filter": [
+        "**/*",
+        "!**/__pycache__",
+        "!**/__pycache__/**",
+        "!**/*.pyc",
+        "!**/.venv",
+        "!**/.venv/**",
+        "!**/.pytest_cache",
+        "!**/.pytest_cache/**",
+        "!**/*.egg-info",
+        "!**/*.egg-info/**",
+        "!**/.DS_Store"
+      ]
+    },
+    {
+      "from": "../.scratch/runtime/nodes.zip",
+      "to": "backend/nodes.zip"
+    }
+  ],
+  "extraMetadata": {
+    "main": "electron/dist/main.bundle.cjs"
+  },
+  "asarUnpack": [
+    "**/node_modules/node-pty/**",
+    "**/node_modules/koffi/**",
+    "**/node_modules/@koromix/koffi-*/**"
+  ],
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "Tisen-Ray",
+      "repo": "TDEaseNexus-Releases",
+      "releaseType": "release"
+    }
+  ],
+  "win": {
+    "icon": "electron/assets/icon.ico",
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    ]
+  },
+  "nsis": {
+    "license": "electron/license-agreement.txt",
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "perMachine": false,
+    "allowElevation": false,
+    "deleteAppDataOnUninstall": true,
+    "include": "electron/installer.nsh"
+  }
+}

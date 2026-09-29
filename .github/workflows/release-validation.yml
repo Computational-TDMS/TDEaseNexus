@@ -1,0 +1,63 @@
+name: Release validation
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: release-validation
+  cancel-in-progress: false
+
+jobs:
+  windows-release:
+    name: Windows VM — zero-skip desktop release
+    runs-on: [self-hosted, Windows, X64, tdease-release]
+    timeout-minutes: 90
+    env:
+      TDEASE_RELEASE_GATE: '1'
+      TDEASE_CLI_GATE: '1'
+      SKIP_HEAVY: '0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Runtime and licensed/large node payloads are provisioned on the VM
+          # outside Git and staged under ignored roots for packaging.
+          clean: false
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: TDEase-FrontEnd/pnpm-lock.yaml
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install client
+        working-directory: TDEase-FrontEnd
+        run: pnpm install --frozen-lockfile
+      - name: Release preflight
+        shell: pwsh
+        run: ./scripts/release/test-vm-preflight.ps1
+      - name: Backend tests — no skips allowed
+        run: uv run --project tdease-backend pytest tests/ -q
+      - name: Frontend build and unit tests
+        working-directory: TDEase-FrontEnd
+        run: |
+          pnpm run build
+          pnpm test:run
+      - name: Real Electron desktop E2E
+        working-directory: TDEase-FrontEnd
+        run: pnpm run test:e2e:desktop
+      - name: Build installer and checksum
+        shell: pwsh
+        run: ./scripts/release/build-desktop.ps1 -Installer
+      - name: Upload release evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: tdease-windows-release-${{ github.sha }}
+          path: |
+            TDEase-FrontEnd/release/*.exe
+            TDEase-FrontEnd/release/*.sha256
+            TDEase-FrontEnd/playwright-report/
+          if-no-files-found: error

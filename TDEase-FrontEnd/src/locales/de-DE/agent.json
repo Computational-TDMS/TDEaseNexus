@@ -1,0 +1,377 @@
+{
+  "modelPicker": {
+    "title": "Modell wechseln",
+    "current": "Aktuelles Modell",
+    "emptyModels": "Keine Modelle für diesen Anbieter verfügbar",
+    "empty": "Noch kein Anbieter mit konfiguriertem Schlüssel — fügen Sie einen unter „Modelle verwalten“ hinzu.",
+    "runSettings": "Laufzeiteinstellungen",
+    "manageModels": "Modelle verwalten"
+  },
+  "sessionBar": {
+    "sessionsLabel": "Sitzung",
+    "new": "Neu",
+    "fork": "Abspalten",
+    "archive": "Sitzung archivieren",
+    "archived": "Archiviert",
+    "unarchive": "Sitzung wiederherstellen",
+    "empty": "Noch keine Sitzungen — starten Sie eine mit „Neu“.",
+    "untitled": "Unbenannte Sitzung",
+    "recovered": "Wiederhergestellte Sitzung",
+    "runtimeIdle": "Inaktiv",
+    "runtimeFailed": "Fehlgeschlagen",
+    "runtimeUnread": "Neues Ergebnis",
+    "runtimeStreaming": "Arbeitet",
+    "mindsetLabel": "Modus",
+    "authority": {
+      "ask": "Nachfragen",
+      "auto": "Auto"
+    },
+    "mindset": {
+      "explorer": "Erkunden",
+      "executor": "Ausführen",
+      "explorerTitle": "Untersucht und berichtet Befunde, bevor irgendetwas geändert wird.",
+      "executorTitle": "Setzt Befunde um — führt Werkzeuge aus und nimmt Änderungen vor, um das Ziel zu erreichen."
+    }
+  },
+  "inspector": {
+    "empty": {
+      "subagents": "Noch keine Subagenten in dieser Sitzung.",
+      "files": "Noch keine Dateien gesammelt.",
+      "evidence": "Für diese Sitzung wurde keine Evidence aufgezeichnet."
+    }
+  },
+  "activity": {
+    "label": "Aktivität",
+    "viewPlan": "Plan",
+    "viewSubagents": "Subagenten",
+    "viewFiles": "Dateien",
+    "viewRuns": "Runs",
+    "viewTrajectory": "Trajektorie",
+    "expand": "Ausklappen",
+    "collapse": "Einklappen",
+    "viewJobs": "Hintergrund-Jobs",
+    "spineTitle": "Aufgaben",
+    "spineOpenPlan": "Aufgabenplan öffnen",
+    "spineBranch": "{count} Hintergrundläufe",
+    "spineCalls": "{count} Tool-Aufrufe"
+  },
+  "tab": {
+    "label": "Agent-Ansichten",
+    "emptyTitle": "Hier ist noch nichts geöffnet",
+    "emptyDescription": "Klicken Sie in der Konversation auf eine Datei, einen Link oder eine Datei, um es hier als Tab zu öffnen.",
+    "close": "Tab schließen"
+  },
+  "trajectory": {
+    "title": "Trajektorie",
+    "totals": "{turns} Züge · {requests} Anfr. · {calls} Aufrufe",
+    "empty": "Noch keine Züge. Die Trajektorie füllt sich aus dem festgeschriebenen Ereignisprotokoll der Sitzung, sobald Züge abgeschlossen sind.",
+    "laneUser": "Nutzer",
+    "laneModel": "Modell",
+    "laneTools": "Werkzeuge",
+    "chipRequest": "Anfr. {seq}",
+    "chipThinking": "Denken",
+    "chipReply": "Antwort",
+    "settlementOpen": "offen",
+    "loading": "wird geladen…",
+    "snapshotNotFound": "(Snapshot neben dem Sitzungsprotokoll nicht gefunden)",
+    "snapshotReadFailed": "(Snapshot konnte nicht gelesen werden: {message})",
+    "hoverExpand": "(zum Ausklappen der Zusammenfassungen klicken)",
+    "hoverEmptyReasoning": "(leeres Denksegment)",
+    "hoverEmptyMessage": "(leere Nachricht)",
+    "hoverStillOpen": "(an dieser Wiedergabestelle noch offen)",
+    "hoverMindset": "Modus",
+    "hoverModel": "Modell",
+    "hoverPrompt": "Prompt-Snapshot"
+  },
+  "subagent": {
+    "cancel": "Abbrechen",
+    "confidence": "Konfidenz",
+    "openConversation": "Konversation öffnen",
+    "conversationMissingTitle": "Konversation noch nicht verfügbar",
+    "conversationMissingDescription": "Das Sitzungsprotokoll dieses Subagenten ist nicht auf der Festplatte. Er läuft möglicherweise noch, oder der Run stammt von vor der Sitzungspersistenz.",
+    "label": "Subagenten",
+    "groups": "Parallele Gruppen",
+    "individual": "Einzelne Subagenten",
+    "result": "Ergebnis",
+    "findings": "Befunde",
+    "evidence": "Evidence",
+    "openQuestions": "offene Fragen",
+    "peek": "Aktivität",
+    "peekHint": "Klicken Sie auf das Augen-Symbol, um hineinzuschauen.",
+    "refreshPeek": "aktualisieren",
+    "noActivity": "Noch keine Aktivität.",
+    "state": {
+      "running": "Läuft",
+      "returned": "Zurückgekehrt",
+      "blocked": "Blockiert",
+      "cancelled": "Abgebrochen"
+    },
+    "conversationErrorTitle": "Konversation konnte nicht gelesen werden",
+    "conversationErrorDescription": "Das Sitzungsprotokoll dieses Subagenten existiert, konnte aber nicht gelesen werden (Grund: {message}). Der Datensatz ist nicht verloren — die Datei auf der Festplatte ist beschädigt oder abgeschnitten."
+  },
+  "files": {
+    "openInDocument": "Öffnen",
+    "turnGroup": "Zug {n}",
+    "subagentGroup": "Subagent · {role}"
+  },
+  "evidence": {
+    "nodeCount": "{count} Aussage | {count} Aussagen",
+    "openGraph": "Graph öffnen",
+    "workspaceScoped": "Workspace-weite PROV-Aussagen. Sitzungsbezogene Filterung ist noch nicht verfügbar.",
+    "loading": "Evidence wird durchsucht…",
+    "graphTitle": "Evidence-Graph"
+  },
+  "transcript": {
+    "outcomeLabel": "Letzter Zug",
+    "outcome": {
+      "resolved": "Gelöst",
+      "blocked": "Blockiert",
+      "halted": "Angehalten",
+      "cancelled": "Abgebrochen",
+      "continueInNewTurn": "In einem neuen Zug fortfahren",
+      "calls": "{count} Aufruf | {count} Aufrufe",
+      "tokens": "{count} Tok",
+      "failed": "Fehlgeschlagen"
+    },
+    "blocked": {
+      "title": "Ihre Eingabe wird benötigt",
+      "neededLabel": "Benötigt:",
+      "optionsLabel": "Tippen Sie eine Option an, um zu antworten",
+      "customAnswer": "Oder tippen Sie Ihre Antwort…",
+      "sendAnswer": "Antwort senden"
+    },
+    "cancelled": "⊘ Abgebrochen",
+    "failedRemedy": "Der Zug wurde durch einen Laufzeit- oder Anbieterfehler gestoppt.",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "jumpToBottom": "Zum Neuesten springen",
+    "jumpToResponse": "Zum Anfang der Antwort springen",
+    "working": "Denkt nach",
+    "loadingHistory": "Konversation wird geladen…",
+    "failedChip": "Fehlgeschlagen",
+    "compacted": "Kontext verdichtet",
+    "compacting": "Kontext wird verdichtet",
+    "askAi": "Frag KI"
+  },
+  "approval": {
+    "title": "Zustimmen · {action}",
+    "modalTitle": "Ihre Zustimmung ist erforderlich",
+    "queueRemaining": "{n} weitere in der Warteschlange",
+    "allowOnce": "Einmal erlauben",
+    "allowSession": "Für die Sitzung erlauben",
+    "allowAlways": "{scope} immer erlauben",
+    "allowAlwaysTitle": "Schreibt zudem eine Erlaubnisregel in die Workspace-Berechtigungen — unter handgeschriebenen Regeln, über der mitgelieferten Prüfstrategie und der Standardleiter. Bearbeitbar unter Einstellungen → Berechtigungen.",
+    "deny": "Ablehnen",
+    "approved": "Genehmigt",
+    "declined": "Abgelehnt",
+    "timeout": "Zeitüberschreitung",
+    "aborted": "Abgebrochen",
+    "arguments": "Argumente",
+    "noArguments": "Diese Aktion nimmt keine Argumente entgegen.",
+    "reviewRequired": "Dies fasst bedeutende Arbeit an und sollte vor der Zustimmung auf einer eigenen Oberfläche geprüft werden. Diese Oberfläche existiert noch nicht — lesen Sie daher zuerst jedes Argument unten.",
+    "approvedWhitelisted": "Erlaubt · zur Whitelist hinzugefügt"
+  },
+  "hud": {
+    "phase": {
+      "waiting": "Wartet auf das Modell",
+      "thinking": "Denkt nach",
+      "responding": "Antwortet",
+      "executing": "Führt Werkzeuge aus"
+    },
+    "act": "Aktion {n}",
+    "calls": "{count} Aufruf | {count} Aufrufe",
+    "elapsed": "{elapsed} / {deadline}",
+    "waiting": "wartet auf Sie",
+    "awaitingUser": "Wartet auf Zustimmung",
+    "stopTurn": "Zug stoppen",
+    "stopTurnHint": "Stoppt den aktuellen Zug. Fertige Ergebnisse bleiben erhalten; unvollendete Aufrufe werden als abgebrochen markiert."
+  },
+  "composer": {
+    "placeholder": "Fragen, / für Befehle oder einen Run, eine Datei oder einen Skill erwähnen",
+    "send": "Senden",
+    "stop": "Stopp",
+    "stopTitle": "Stoppt den aktuellen Zug. Fertige Ergebnisse bleiben erhalten; unvollendete Aufrufe werden als abgebrochen markiert.",
+    "hint": "⏎ senden  ·  ⇧⏎ neue Zeile",
+    "hintQueued": "Zug läuft · ⏎ in Warteschlange · ⇧⏎ neue Zeile",
+    "queued": "In Warteschlange",
+    "dequeue": "Diese Nachricht aus der Warteschlange entfernen",
+    "enqueue": "In Warteschlange stellen — wird automatisch gesendet, sobald der aktuelle Zug abschließt",
+    "attach": "Bild anhängen (oder hier ablegen)",
+    "attachRejected": "{count} Nicht-Bilddatei(en) ignoriert",
+    "attachedNoVision": "Das gebundene Modell hat keine Bilderkennung — Bilder erreichen das Modell nicht",
+    "removeAttachment": "Anhang entfernen",
+    "ctxTokens": "Token",
+    "ctxUnknown": "Kontextauslastung unbekannt",
+    "ctxCache": "Cache"
+  },
+  "export": {
+    "untitled": "Unbenannte Sitzung",
+    "empty": "Diese Sitzung hat noch keine Konversation zum Exportieren",
+    "failed": "Export fehlgeschlagen: {message}"
+  },
+  "contextPanel": {
+    "title": "Kontextauslastung",
+    "capacity": "Kapazität",
+    "cacheHit": "Cache-Trefferquote",
+    "cacheRecent": "Durchschnitt der letzten Anfragen",
+    "recentUsage": "Letzte Auslastung",
+    "loading": "Wird geladen…",
+    "noData": "Noch keine Aufzeichnungen",
+    "requests": "Anfragen",
+    "window5h": "5 Stunden",
+    "window7d": "7 Tage",
+    "tokensLeft": "Token übrig",
+    "tokens": "Token",
+    "lastRequest": "Dieser Zug",
+    "speed": "Generierungsgeschwindigkeit",
+    "tokensPerSec": "Token/s",
+    "providerUsage": "Anbieternutzung",
+    "input": "Eingabe",
+    "output": "Ausgabe",
+    "reasoning": "Denkprozess",
+    "cacheRead": "Cache-Lesezugriff",
+    "cacheHitShort": "Trefferquote",
+    "cacheWrite": "Cache-Schreibzugriff"
+  },
+  "empty": {
+    "summary": "{raw} Rohdateien · {fasta} FASTA · {runs}",
+    "summaryNoRuns": "noch keine Runs",
+    "summaryRuns": "{count} Run | {count} Runs",
+    "goalIdentifyN": "Proteoformen in den {count} Rohdateien identifizieren",
+    "goalShowInside": "Zeig mir, was in den Rohdateien steckt",
+    "goalCensus": "Was haben die Runs ergeben?",
+    "goalInterpret": "Führe mich durch die Ergebnisse des neuesten Runs",
+    "goalPlanAnalysis": "Richte eine Analyse für meine Daten ein",
+    "goalWhatNext": "Was brauche ich, bevor ich loslegen kann?",
+    "setupOpenWorkspace": "Workspace-Ordner öffnen"
+  },
+  "stop": {
+    "title": "Den aktuellen Zug abbrechen"
+  },
+  "slash": {
+    "compact": "Sitzungsverlauf zusammenfassen, um Kontext zurückzugewinnen",
+    "export": "Diese Konversation als eigenständiges HTML (Standard) oder PDF exportieren — wird nach exports/ geschrieben und geöffnet",
+    "localMcpServer": "Lokaler MCP-Server · {name}",
+    "useMcp": "Einen lokal konfigurierten MCP-Server verwenden"
+  },
+  "completion": {
+    "hint": "↑↓ auswählen · Tab vervollständigen · Enter bestätigen · Esc schließen",
+    "group": {
+      "commands": "Befehle",
+      "skills": "Skills",
+      "mcpServers": "MCP-Server",
+      "runs": "Runs",
+      "files": "Dateien"
+    }
+  },
+  "thinking": {
+    "thinking": "Denkt nach",
+    "thought": "Hat nachgedacht",
+    "chars": "{count} Zeichen",
+    "rate": "{n} Zeichen/s",
+    "durationSeconds": "{n} s",
+    "effortTitle": "Denkaufwand",
+    "level": {
+      "off": "Aus",
+      "offHint": "Keine Denk-Token vom Modell anfordern",
+      "low": "Niedrig",
+      "lowHint": "Niedriger Denkaufwand",
+      "medium": "Mittel",
+      "mediumHint": "Mittlerer Denkaufwand",
+      "high": "Hoch",
+      "highHint": "Hoher Denkaufwand",
+      "xhigh": "Sehr hoch",
+      "xhighHint": "Sehr hoher Denkaufwand",
+      "max": "Maximal",
+      "maxHint": "Den maximal vom Modell unterstützten Denkaufwand nutzen"
+    }
+  },
+  "codeBlock": {
+    "wrap": "Umbruch",
+    "unwrap": "Ohne Umbruch"
+  },
+  "processFold": {
+    "expandDetails": "Details anzeigen",
+    "worked": "ausgeführt",
+    "failures": "{count} fehlgeschlagen | {count} fehlgeschlagen"
+  },
+  "permissionMode": {
+    "askLabel": "Nachfragen (Nebenwirkungen bestätigen)",
+    "autoLabel": "Auto (unbemerkt ausführen)"
+  },
+  "settingsTab": {
+    "title": "Run-Einstellungen",
+    "model": "Modell",
+    "provider": "Anbieter",
+    "modelName": "Modell",
+    "modelNote": "Gilt ab dem nächsten Zug — das Kontextfenster aktualisiert sich, sobald die Sitzung neu bindet.",
+    "noCredential": "Kein API-Schlüssel für {provider} konfiguriert. Fügen Sie einen unter Einstellungen → Modelle hinzu.",
+    "reasoning": "Denkaufwand",
+    "context": "Kontextfenster",
+    "contextNote": "Live-Schätzung der Auslastung aus dem Transkript der laufenden Sitzung. Nach der Verdichtung zeigt es „—“, bis die nächste Antwort eintrifft.",
+    "contextCache": "Cache-Treffer {pct}",
+    "capabilities": "Fähigkeiten",
+    "ptc": "Werkzeugskripte (programmatic tool calling)",
+    "ptcHint": "Erlaubt dem Agenten tdease.ptc.exec — ein skriptierter Aufruf, der registrierte Werkzeuge durch dieselbe Berechtigungsprüfung schleust. Gilt ab dem nächsten Zug."
+  },
+  "toolGroup": {
+    "ranTools": "{count} Werkzeug ausgeführt | {count} Werkzeuge ausgeführt",
+    "ranToolsWithFailures": "{count} Werkzeug ausgeführt ({failed} fehlgeschlagen) | {count} Werkzeuge ausgeführt ({failed} fehlgeschlagen)",
+    "runningTools": "{count} Werkzeug wird ausgeführt… | {count} Werkzeuge werden ausgeführt…",
+    "output": "Ausgabe",
+    "noOutput": "Keine Ausgabe",
+    "cancelled": "Abgebrochen",
+    "outputTruncated": "Gekürzt — insgesamt {count} Zeichen"
+  },
+  "toolAction": {
+    "read": "Datei lesen",
+    "write": "Datei schreiben",
+    "edit": "Datei bearbeiten",
+    "ls": "Verzeichnis auflisten",
+    "grep": "Inhalte durchsuchen",
+    "find": "Dateien finden",
+    "bash": "Befehl ausführen",
+    "spawn": "Subagenten starten",
+    "runWatch": "Run-Status prüfen",
+    "runLog": "Run-Protokoll lesen",
+    "runFiles": "Run-Dateien abrufen",
+    "evidenceRead": "Evidence lesen",
+    "evidenceWrite": "Evidence aufzeichnen",
+    "jobStart": "Hintergrund-Job starten",
+    "jobWatch": "Hintergrund-Job prüfen",
+    "jobCancel": "Hintergrund-Job abbrechen",
+    "ptcExec": "Werkzeugskript ausführen",
+    "orchestrateRun": "Orchestrierung starten",
+    "orchestrateWait": "Auf Orchestrierung warten",
+    "plan": "Plan aktualisieren"
+  },
+  "mermaid": {
+    "showSource": "Quelltext anzeigen",
+    "hideSource": "Quelltext verbergen",
+    "copySource": "Quelltext kopieren",
+    "renderFailed": "Mermaid-Diagramm konnte nicht gerendert werden: {error}"
+  },
+  "jobs": {
+    "title": "Hintergrund-Jobs",
+    "empty": "Keine Hintergrund-Jobs in dieser Sitzung.",
+    "cancel": "Abbrechen",
+    "peek": "Ausgabe ansehen",
+    "exit": "Exit {code}",
+    "close": "Schließen",
+    "state": {
+      "running": "Läuft",
+      "succeeded": "Erfolgreich",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen"
+    }
+  },
+  "sideChat": {
+    "tabTitle": "Seitenchat",
+    "quotePrefix": "Zu dieser Auswahl:",
+    "fromParent": "Aus: {title}",
+    "emptyHint": "Das Zitat ist bereit — stelle deine Frage.",
+    "inputPlaceholder": "Frag zum Zitat…",
+    "send": "Senden",
+    "gone": "Dieser Seitenchat existiert nicht mehr."
+  }
+}

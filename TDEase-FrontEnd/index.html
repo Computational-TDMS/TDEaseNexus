@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TDEaseNexus · TD通</title>
+
+    <!--
+      The UI font is `font-display: block` (fonts.css: no invisible-text-free
+      swap, so tables never reflow mid-read). Without this preload the font
+      request only starts after the CSS is parsed, lengthening the block
+      window by the whole JS-evaluation span; preloading starts it beside the
+      CSS in parallel. Fonts are always fetched CORS-mode, hence crossorigin.
+      Relative href matches the built CSS's own ../fonts/ rebasing under
+      base './' (Electron file:// included).
+    -->
+    <link rel="preload" href="./fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!--
+      Pre-paint shell background. The bare `:root` palette in
+      unified-design-tokens.css is Latte (light), so until the module graph
+      boots and the theme store sets `data-theme`, a dark-theme user gets a
+      white first frame — a visible flash on every cold start of the desktop
+      app. These four values are `--lab-shell-bg` (base 78% / crust 22%, see
+      unified-design-tokens.css) resolved per theme; the real tokens take over
+      as soon as the stylesheets land.
+    -->
+    <style>
+      html[data-theme="celadon"] { background-color: #F7F5F2; }
+      html[data-theme="latte"] { background-color: #ebedf2; }
+      html[data-theme="frappe"] { background-color: #2d3142; }
+      html[data-theme="macchiato"] { background-color: #212436; }
+      html[data-theme="mocha"] { background-color: #1b1b2a; }
+    </style>
+    <script>
+      // Runs before first paint. Mirrors src/stores/theme.ts (THEME_STORAGE_KEY,
+      // defaultTheme) and src/locales/index.ts (LOCALE_STORAGE_KEY) — the store
+      // re-reads the same keys on boot, so this only moves the decision earlier.
+      (function () {
+        var root = document.documentElement;
+        var THEMES = ['celadon', 'latte', 'frappe', 'macchiato', 'mocha'];
+        var theme = 'celadon'; // defaultTheme
+        try {
+          var saved = localStorage.getItem('tdease-theme');
+          if (saved && THEMES.indexOf(saved) !== -1) theme = saved;
+        } catch (e) { /* storage unavailable */ }
+        root.setAttribute('data-theme', theme);
+
+        try {
+          var locale = localStorage.getItem('locale');
+          if (locale === 'zh-CN' || locale === 'en-US') root.lang = locale;
+        } catch (e) { /* storage unavailable */ }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <script src="/env-config.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

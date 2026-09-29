@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "backend": {
+    "root": "../backend",
+    "command": "tdease-backend"
+  },
+  "scientific": {
+    "root": "../app/assets"
+  }
+}
