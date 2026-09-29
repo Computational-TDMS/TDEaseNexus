@@ -183,7 +183,15 @@ Write-Output "--- Phase 1: Electron build ---"
     try {
         Write-Output "  Building frontend + electron..."
         if ($Publish) {
-            & pnpm.cmd run desktop:dist -- -p always 2>&1 | ForEach-Object { Write-Output "    $_" }
+            # desktop:dist 是 && 链；pnpm 会把追参（含 "--"）原样追加到链尾，
+            # electron-builder 的 yargs 把 "--" 之后的 -p always 当位置参数丢弃
+            # → 静默不发布（0.9.0-beta 的三件套因此手动补传过）。发布路径：
+            # 先跑链的前置段，再直接调 electron-builder 携带发布旗标。
+            & pnpm.cmd run desktop:dist:prep 2>&1 | ForEach-Object { Write-Output "    $_" }
+            if ($LASTEXITCODE -ne 0) {
+                throw "dist prep failed"
+            }
+            & pnpm.cmd exec electron-builder --config electron-builder.json -p always 2>&1 | ForEach-Object { Write-Output "    $_" }
         } else {
             $buildCommand = if ($Installer) { "desktop:dist" } else { "desktop:build" }
             & pnpm.cmd run $buildCommand 2>&1 | ForEach-Object { Write-Output "    $_" }
