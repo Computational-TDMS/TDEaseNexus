@@ -127,4 +127,5 @@ archive/
 /TDEase-paper-*.zip
 /search-*.json
 .claude/
-release/
+/release/
+TDEase-FrontEnd/release/

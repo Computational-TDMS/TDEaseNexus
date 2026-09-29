@@ -123,9 +123,34 @@ if (-not (Test-Path -LiteralPath $gitVendorBash)) {
     $mingitUrl = "https://github.com/git-for-windows/git/releases/download/$gitVersion/MinGit-2.55.0.5-64-bit.zip"
     $mingitZip = Join-Path $env:TEMP "tdease-mingit-$gitVersion.zip"
     Write-Output "  Downloading MinGit $gitVersion ..."
-    curl.exe -sL -o $mingitZip $mingitUrl
-    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $mingitZip)) {
-        throw "MinGit download failed: $mingitUrl"
+    # curl -f so an HTTP error body never becomes the "zip"; validate the PK
+    # magic + a size floor before extraction, retry through transient flakiness.
+    function Test-MinGitZip {
+        if (-not (Test-Path -LiteralPath $mingitZip)) { return $false }
+        $zip = Get-Item -LiteralPath $mingitZip
+        if ($zip.Length -lt 10MB) { return $false }
+        $stream = [System.IO.File]::OpenRead($zip.FullName)
+        try {
+            $magic = New-Object byte[] 2
+            [void]$stream.Read($magic, 0, 2)
+            return ($magic[0] -eq 0x50 -and $magic[1] -eq 0x4B)
+        } finally {
+            $stream.Close()
+        }
+    }
+    if (Test-MinGitZip) {
+        Write-Output "  Valid MinGit zip already staged: $mingitZip"
+    } else {
+        $mingitOk = $false
+        for ($attempt = 1; $attempt -le 3; $attempt++) {
+            curl.exe -fsSL -o $mingitZip $mingitUrl
+            if (Test-MinGitZip) { $mingitOk = $true; break }
+            Write-Output "  MinGit download attempt ${attempt} invalid — retrying..."
+            Start-Sleep -Seconds 5
+        }
+        if (-not $mingitOk) {
+            throw "MinGit download failed after 3 attempts: $mingitUrl"
+        }
     }
     New-Item -ItemType Directory -Path $gitVendorDir -Force | Out-Null
     # System32 bsdtar explicitly (same reason as Phase 0.6): a Git-Bash PATH
