@@ -61,4 +61,29 @@ describe('dockLayout', () => {
     dock.setPx(300, 1000)
     expect(dock.entries()).toEqual([['dockWidth', 300], ['dockWidthRatio', 0.3]])
   })
+
+  it('reproject re-derives the px from the proportion when the axis changes', () => {
+    const dock = createDockMemory(SPEC)
+    dock.setPx(400, 1000)
+    dock.reproject(750)
+    expect(dock.px.value).toBe(300)
+    // A resize moves the projection; it never re-learns the layout.
+    expect(dock.ratio.value).toBeCloseTo(0.4)
+
+    // A widened axis grows the dock back up to its range ceiling.
+    dock.reproject(4000)
+    expect(dock.px.value).toBe(420)
+    expect(dock.ratio.value).toBeCloseTo(0.4)
+  })
+
+  it('reproject gives way to a range the container tightened', () => {
+    let max = 420
+    const dock = createDockMemory({ ...SPEC, range: () => ({ min: 240, max }) })
+    dock.setPx(420, 0)
+    expect(dock.px.value).toBe(420)
+
+    max = 240
+    dock.reproject(0)
+    expect(dock.px.value).toBe(240)
+  })
 })

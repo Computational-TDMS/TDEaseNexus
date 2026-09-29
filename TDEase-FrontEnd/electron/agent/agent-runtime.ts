@@ -37,6 +37,7 @@ import { createSystemTemplateCatalog } from '../../src/services/catalog/systemTe
 import { containedPath } from '../path_containment.cjs'
 import { resolveUv, skillRuntimeEnv } from '../skill_runtime.cjs'
 
+import { createViewPort } from './view-port'
 import { NodeApprovalCoordinator } from './approval-coordinator'
 import type { RuntimeEventSink, RuntimePush } from './contracts'
 import { NodeEventAdapter } from './event-adapter'
@@ -370,6 +371,13 @@ export class AgentRuntime {
       const unsubscribeSessionRuns = studio.runs.onChange(pushSessionRuns)
       const { subagents, unsubscribeSubagents, jobs, unsubscribeJobs, orchestrate } =
         this.attachBackgroundTasks(input, binding, context, permission)
+      // view.* — only a top-level session has a Workbench to point at; a
+      // delegated child never drives the user's viewers. Set before the tool
+      // surface so the family's `enabled` gate sees it.
+      const emitView = this.options.push.view
+      if (!input.delegation && emitView) {
+        context.view = createViewPort({ workspaceRoot, sessionId: input.sessionId, emit: (envelope) => emitView(input.sessionId, envelope) })
+      }
       const { producedPaths, ptcInternals } = this.attachPtc(input, binding, context, approvals, store)
       const { ptyTerminals, canonicalTools, toolNames, tools, activeToolNames, costGuard } =
         this.createToolSurface(binding, context, permission, registry, toolProfile, toolCeiling, producedPaths)

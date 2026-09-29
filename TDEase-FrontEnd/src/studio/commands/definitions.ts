@@ -12,6 +12,7 @@ import { subagentCommands } from './families/subagent'
 import { orchestrateCommands } from './families/orchestrate'
 import { ptcCommands } from './families/ptc'
 import { jobCommands } from './families/job'
+import { viewCommands } from './families/view'
 
 /**
  * The Studio command surface, assembled.
@@ -44,6 +45,7 @@ export function studioCommandDefinitions(): ReadonlyArray<CommandDefinition> {
     ...orchestrateCommands(),
     ...ptcCommands(),
     ...jobCommands(),
+    ...viewCommands(),
   ]
 }
 

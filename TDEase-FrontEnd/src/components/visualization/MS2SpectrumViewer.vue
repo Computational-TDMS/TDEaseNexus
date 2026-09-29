@@ -9,11 +9,14 @@
   spectrum already uses) and the proteoform is parsed with `utils/proforma.ts`.
   There is no second fetch and no second artifact resolution here.
 
-  HONEST GAP (stated in the UI, not hidden): no fragment-matching result reaches
-  the client yet — `MS2SequenceViewer.loadFragmentAnnotations` is still a stub.
-  So the track is handed `annotationState="sequence-only"`, which makes it say in
-  words that blank ion rows mean "not computed", not "no coverage found", and
-  name whichever MS2 peak list the selected row points at.
+  Fragment matching runs client-side: scan-attributed peak tables supplied on
+  the viewer's `peaks_table` port (`peakTableToSpectra`) are matched against
+  the selected proteoform with `composePrsmViewerModel` — the same model
+  MS2SequenceViewer uses, so the spectrum, its table and this track can never
+  disagree. When no scan-attributed peak table is supplied, the track falls
+  back to `annotationState="sequence-only"`, which says in words that blank
+  ion rows mean "not computed", not "no coverage found", and names whichever
+  MS2 peak list the selected row points at.
 -->
 <template>
   <div class="ms2-spectrum-viewer">
@@ -23,6 +26,7 @@
         :data="resolvedData"
         :config="config"
         :selection="selection"
+        :spectra="spectra"
         @selection-change="$emit('selectionChange', $event)"
         @config-change="$emit('configChange', $event)"
       />
@@ -63,6 +67,9 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Dataset, SelectionState, TableData } from '@/types/visualization'
 import type { MatchedFragment } from '@/composables/ms2-sequence/fragmentation'
+import type { MsAlignSpectrum } from '@/services/visualization/msalign'
+import { composePrsmViewerModel } from '@/services/visualization/prsm-viewer-model'
+import { peakTableToSpectra } from '@/services/visualization/spectrumInput'
 import { parseProteoformAnnotation } from '@/utils/proforma'
 import MS2SequenceViewer from './MS2SequenceViewer.vue'
 import SequenceTrack from './ms2-sequence/SequenceTrack.vue'
@@ -148,11 +155,31 @@ const rawProteoform = computed<string>(() => {
 const parsedProteoform = computed(() => parseProteoformAnnotation(rawProteoform.value))
 
 /**
- * No fragment-matching result crosses into the client today. This stays an
- * explicit empty list rather than a fabricated one, and `annotationState`
- * below makes the track say so.
+ * Fragment matching from the peaks the pipeline already supplied on the
+ * `peaks_table` port — through the same `composePrsmViewerModel` the inner
+ * viewer uses, so the track and the spectrum can never disagree. With no
+ * scan-attributed peak table this stays an explicit empty list rather than a
+ * fabricated one, and `annotationState` below makes the track say so.
  */
-const matchedFragments = computed<MatchedFragment[]>(() => [])
+const spectra = computed<MsAlignSpectrum[]>(() =>
+  (props.datasets ?? [])
+    .filter((dataset) => dataset.kind === 'peak_table')
+    .flatMap((dataset) => peakTableToSpectra(dataset)))
+
+const matchedFragments = computed<MatchedFragment[]>(() => {
+  const row = selectedRow.value
+  if (!row || spectra.value.length === 0) return []
+  return composePrsmViewerModel(row, spectra.value, {
+    maxCharge: optionNumber(props.config.maxFragmentCharge),
+    tolerancePpm: optionNumber(props.config.tolerancePpm),
+    includeNeutralLosses: props.config.showNeutralLosses === true,
+  })?.matchedFragments ?? []
+})
+
+function optionNumber(value: unknown): number | undefined {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
 
 const annotationState = computed<'matched' | 'sequence-only' | 'no-sequence'>(() => {
   if (!parsedProteoform.value.sequence) return 'no-sequence'

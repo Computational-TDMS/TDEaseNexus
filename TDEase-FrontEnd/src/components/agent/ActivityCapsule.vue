@@ -118,13 +118,25 @@ const assetTotal = computed(() => visibleSubagents.value + fileCount.value + run
  *   2. currentTask — while working, the spine's in-progress intent says more
  *      than the loop phase ("Editing config" beats "Tools").
  *   3. phase — the generic loop phase when no plan carries an intent.
- * At rest shows the mindset label (compact, always meaningful).
+ * At rest the pill reports OUTCOME, not posture (the mode row in the card
+ * already says the posture): a resolved turn names what it produced — the
+ * capsule's own Files row is the destination — a blocked/failed turn names
+ * the outcome, and the quiet outcomes keep the mindset label.
  */
 const pillText = computed(() => {
   if (props.sending) {
     if (props.suspended) return t('agent.hud.awaitingUser')
     if (currentTask.value) return currentTask.value
     return t(`agent.hud.phase.${props.hud.phase}`)
+  }
+  if (props.lastOutcome === 'resolved') {
+    const files = agentFilesStore.active
+    if (files.length === 1) return t('agent.activity.pillDoneFile', { name: files[0].name })
+    if (files.length > 1) return t('agent.activity.pillDoneFiles', { count: files.length })
+    return t('agent.activity.pillDone')
+  }
+  if (props.lastOutcome === 'blocked' || props.lastOutcome === 'failed') {
+    return t(`agent.transcript.outcome.${props.lastOutcome}`)
   }
   return t(`agent.sessionBar.mindset.${props.mindset}`)
 })
@@ -529,7 +541,14 @@ function openRun(run: { id: string; title: string }): void {
   background: color-mix(in srgb, var(--color-warning) 12%, var(--elev-2-bg));
 }
 
-.capsule-pill__text { line-height: 1; }
+/* A settled file name rides in this span, so it needs a ceiling — the pill
+   stays a badge, never a path viewer (the full path lives in the Files row). */
+.capsule-pill__text {
+  line-height: 1;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .capsule-pill__chev { opacity: 0.4; flex-shrink: 0; }
 
 /* Asset count chip — a tiny rounded counter. */

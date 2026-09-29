@@ -50,7 +50,8 @@
     "closeDirtyConfirm": "此文档有未保存的更改，仍要关闭吗？",
     "closeDirtyTitle": "有未保存的更改",
     "closeDirtyConfirmAction": "不保存并关闭",
-    "closeDirtyCancelAction": "保持打开"
+    "closeDirtyCancelAction": "保持打开",
+    "openedByAgent": "由 Agent 打开"
   },
   "runIndex": {
     "columnStatus": "状态",
@@ -155,7 +156,9 @@
       "table": "表格",
       "featuremap": "特征图",
       "spectrum": "谱图",
-      "variants": "变体"
+      "variants": "变体",
+      "discrimination": "候选模型",
+      "ledger": "质量账本"
     },
     "fasta": {
       "sequences": "条序列",
@@ -210,6 +213,15 @@
       "loadFailedRemedy": "请确认 FASTA 与本表格来自同一搜索，然后重试。"
     }
   },
+  "massLedger": {
+    "observed": "观测位移",
+    "model": "模型",
+    "modelShift": "模型位移",
+    "error": "闭合误差",
+    "residual": "未归属残差",
+    "shift": "质量位移",
+    "site": "位点 {site}"
+  },
   "agent": {
     "label": "Agent",
     "emptyTitle": "尚未打开工作区",
@@ -227,6 +239,7 @@
     "emptyRuns": "这个工作区还没有运行。提交一次分析后，它的进度会在这里滚动。",
     "emptyLogs": "还没有日志。运行开始后，引擎输出会在这里逐行到达。",
     "viewLog": "查看日志",
+    "runProgress": "{finished}/{total} 任务",
     "refreshLog": "刷新",
     "positionBottom": "面板移到底部",
     "positionRight": "面板移到右侧",
@@ -247,7 +260,9 @@
     "backendReconnect": "重新连接",
     "backendRetryWithError": "重新连接后端。上次错误：{error}",
     "toggleRuns": "运行面板",
-    "toggleLogs": "日志面板"
+    "toggleLogs": "日志面板",
+    "followAgent": "跟随 Agent",
+    "followAgentHint": "Agent 打开或指向查看器时将其切到前台。关闭时在后台打开，并在你查看前保留标记。"
   },
   "layout": {
     "resizeNavigator": "调整导航器大小",
@@ -283,7 +298,10 @@
     "shell": "Shell",
     "shellHint": "在 Executor 中启用 bash，仍受权限策略约束。默认关闭。",
     "mcp": "MCP",
-    "mcpHint": "把已配置的 MCP server bridge 加入当前 Agent 工具表。默认关闭。"
+    "mcpHint": "把已配置的 MCP server bridge 加入当前 Agent 工具表。默认关闭。",
+    "experimental": "实验性",
+    "viewTools": "查看器指引（view.*）",
+    "viewToolsHint": "实验性 Beta：让 Agent 打开查看器、聚焦区域或选中离子。会占用每次会话的工具 schema token——不开启不影响任何原生查看器渲染。默认关闭。"
   },
   "settingsPermissions": {
     "decisionAllow": "允许",
@@ -433,6 +451,13 @@
     "edgesTitle": "关系",
     "claimRef": "主张",
     "status": "状态",
+    "statusValue": {
+      "proposed": "提案",
+      "challenged": "受质疑",
+      "inconclusive": "尚无定论",
+      "supported": "已支持",
+      "refuted": "已反驳"
+    },
     "summary": "陈述",
     "path": "文件",
     "relations": "关系数",
@@ -600,7 +625,10 @@
       "densityCompact": "紧凑",
       "theme": "主题",
       "themeLabel": "配色主题",
-      "themeHint": "4 套 Catppuccin 配色。也可在标题栏切换。"
+      "themeHint": "4 套 Catppuccin 配色。也可在标题栏切换。",
+      "agentTranscript": "Agent 对话",
+      "showReasoning": "显示推理过程",
+      "showReasoningHint": "在 Agent 工作时内联显示思考与原始工具调用。关闭时折叠为一行摘要，进度由任务树呈现。失败或受阻的回合始终完整显示。"
     },
     "general": {
       "providerModel": "Provider 与模型",

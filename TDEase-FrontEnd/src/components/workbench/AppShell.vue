@@ -24,6 +24,7 @@
 -->
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { useAgentViewStore } from '@/stores/agentView'
 import { useI18n } from 'vue-i18n'
 import { useUiLayoutStore } from '@/stores/uiLayout'
 import { useSettingsStore } from '@/stores/settings'
@@ -144,6 +145,8 @@ function schedulePersist() {
 }
 
 onMounted(() => {
+  // Agent → Workbench viewer commands (view.*): one subscription per window.
+  useAgentViewStore().start()
   // Boot-time restoration no longer happens here: uiLayout.hydrate, the
   // documents restore and the no-tabs landing-page decision all run in
   // `src/main.ts` BEFORE `app.mount()`, so the first painted frame is already

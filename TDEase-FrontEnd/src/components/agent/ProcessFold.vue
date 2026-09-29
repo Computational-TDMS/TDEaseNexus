@@ -32,7 +32,9 @@ import Collapse from './Collapse.vue'
 import ThinkingBlock from './ThinkingBlock.vue'
 import ToolGroupBlock from './ToolGroupBlock.vue'
 import MarkdownContent from './MarkdownContent.vue'
-import { CircleCheckFilled, CopyDocument } from '@element-plus/icons-vue'
+import { CircleCheckFilled, CopyDocument, Loading } from '@element-plus/icons-vue'
+import TaskTreeCard from './TaskTreeCard.vue'
+import { useSettingsStore } from '@/stores/settings'
 import IconButton from '@/components/primitives/IconButton.vue'
 import { renderMarkdown } from '@/utils/markdown'
 import { splitTopLevelBlocks } from '@/utils/markdown-blocks'
@@ -89,10 +91,14 @@ const props = withDefaults(defineProps<{
    * Absent for acts that ran outside any plan: the fold line stays as-is.
    */
   intent?: string
+  /** This act anchors the session's task tree (the latest act the plan
+   *  attributes work to) — the card renders at the top of its bubble. */
+  showPlan?: boolean
 }>(), {
   streaming: false,
   settlement: undefined,
   intent: undefined,
+  showPlan: false,
 })
 
 const emit = defineEmits<{
@@ -135,7 +141,19 @@ const failedToolCount = computed(() =>
   toolGroupBlocks.value.reduce(
     (sum, g) => sum + g.tools.filter(isToolFailure).length, 0)
 )
-const shouldFold = computed(() => isResolved.value && hasProcess.value)
+// Reasoning hidden (the default): the process also folds while the turn is
+// LIVE — the summary line and the task tree carry the progress. A settled
+// turn that did not resolve (failed / blocked / halted / cancelled) never
+// folds, in either mode: those outcomes must stay visible in full.
+const settings = useSettingsStore()
+const isLive = computed(() => !props.settlement)
+const shouldFold = computed(() =>
+  hasProcess.value && (isResolved.value || (!settings.showReasoning && isLive.value)))
+/** Live tool calls so far (the settled count comes from the settlement). */
+const liveCallCount = computed(() =>
+  toolGroupBlocks.value.reduce((n, g) => n + g.tools.length, 0))
+const liveToolRunning = computed(() =>
+  toolGroupBlocks.value.some((g) => g.tools.some((tool) => !tool.done)))
 
 // The outer fold's state is persisted in the transcript-wide fold-state map
 // (keyed by the message id, which is stable for a settled turn) rather than a
@@ -165,6 +183,11 @@ const summaryLabel = computed(() => {
     // line instead of keeping the whole process expanded (see header note).
     if (failedToolCount.value > 0) parts.push(t('agent.processFold.failures', { count: failedToolCount.value }))
     return parts.join(' · ')
+  }
+  if (isLive.value) {
+    const working = props.intent || t('agent.processFold.working')
+    const n = liveCallCount.value
+    return n > 0 ? `${working} · ${t('agent.transcript.outcome.calls', { count: n })}` : working
   }
   return t('agent.processFold.expandDetails')
 })
@@ -235,11 +258,13 @@ function copyText() {
   <div class="bubble-agent">
     <div class="agent-indicator" />
     <div class="bubble-body">
+      <TaskTreeCard v-if="showPlan" class="bubble-plan" @open-file="emit('open-file', $event)" />
       <!-- Heavy message: fold the process trace under a summary line. -->
       <template v-if="shouldFold">
         <button class="fold-summary" :class="{ open: isOpen }" :aria-expanded="isOpen" :aria-controls="foldPanelId" @click="toggle">
           <span class="fold-arrow" :class="{ open: isOpen }">›</span>
-          <el-icon class="fold-summary__glyph" :size="14" aria-hidden="true"><CircleCheckFilled /></el-icon>
+          <el-icon v-if="isLive" class="fold-summary__glyph fold-summary__glyph--live" :class="{ spinning: liveToolRunning || streaming }" :size="14" aria-hidden="true"><Loading /></el-icon>
+          <el-icon v-else class="fold-summary__glyph" :size="14" aria-hidden="true"><CircleCheckFilled /></el-icon>
           <span class="fold-title">{{ summaryLabel }}</span>
         </button>
         <Collapse :id="foldPanelId" :open="isOpen">
@@ -355,6 +380,11 @@ function copyText() {
 .fold-title { white-space: nowrap; }
 
 .fold-summary__glyph { color: var(--status-succeeded); flex-shrink: 0; }
+.fold-summary__glyph--live { color: var(--status-running); }
+.fold-summary__glyph--live.spinning { animation: fold-spin 1.1s linear infinite; }
+@keyframes fold-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .fold-summary__glyph--live.spinning { animation: none; } }
+.bubble-plan { margin-bottom: var(--space-2); }
 
 .fold-panel {
   margin: 0 0 var(--space-1);

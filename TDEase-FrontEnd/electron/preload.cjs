@@ -105,6 +105,15 @@ contextBridge.exposeInMainWorld("tdeaseDesktop", {
       return () => { ipcRenderer.removeListener("job:changed", handler); };
     },
   },
+  // Agent → Workbench viewer commands (view.open/focus/select), owner-routed
+  // by main. Push-only: the renderer decides focus (Follow agent).
+  agentView: {
+    onCommand: (callback) => {
+      const handler = (_event, envelope) => callback(envelope);
+      ipcRenderer.on("agent-view:command", handler);
+      return () => { ipcRenderer.removeListener("agent-view:command", handler); };
+    },
+  },
   // Session-run read-side — mirrors `job`. `list` is an invoke;
   // `onChanged` pushes on `session-run:changed`, owner-routed by main. The
   // renderer's sessionRuns store mirrors this one snapshot per parent session:

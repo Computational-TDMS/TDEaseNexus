@@ -144,6 +144,22 @@ export const useSettingsStore = defineStore('settings', () => {
    */
   const ptcEnabled = ref<boolean>(stored.ptcEnabled !== false)
   /**
+   * Agent transcript: show the reasoning (thinking + raw tool calls) inline.
+   * Off by default — the task tree carries the progress and each act folds
+   * its process behind one summary line, even while streaming. On restores
+   * the fully expanded live process. Failed/blocked/halted turns always show
+   * in full regardless.
+   */
+  const showReasoning = ref<boolean>(stored.showReasoning === true)
+  function setShowReasoning(value: boolean): void { showReasoning.value = value }
+  /**
+   * Follow agent: when the Agent opens or points a viewer (`view.*`), the tab
+   * takes focus. Off → it opens in the background with a marker, so the Agent
+   * never pulls a reading user away. On by default.
+   */
+  const followAgent = ref<boolean>(stored.followAgent !== false)
+  function setFollowAgent(value: boolean): void { followAgent.value = value }
+  /**
    * User-driven font zoom (Phase E of the palot inspector migration). Applied
    * to <html> as `--font-scale`, which every type token multiplies by in
    * unified-design-tokens.css — the single choke point. Range 0.85–1.4 in
@@ -391,6 +407,8 @@ export const useSettingsStore = defineStore('settings', () => {
       backendUrl: backendUrl.value,
       agentTools: agentTools.value,
       ptcEnabled: ptcEnabled.value,
+      showReasoning: showReasoning.value,
+      followAgent: followAgent.value,
       fontScale: fontScale.value,
       permissionMode: permissionMode.value,
       thinkingLevel: thinkingLevel.value,
@@ -398,7 +416,7 @@ export const useSettingsStore = defineStore('settings', () => {
     }))
   }
 
-  watch([provider, model, backendMode, backendUrl, agentTools, ptcEnabled, fontScale, permissionMode, thinkingLevel], persist, { deep: true })
+  watch([provider, model, backendMode, backendUrl, agentTools, ptcEnabled, showReasoning, followAgent, fontScale, permissionMode, thinkingLevel], persist, { deep: true })
 
   /**
    * Write the current `fontScale` to <html> as `--font-scale`. Mirrors the
@@ -712,6 +730,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setAgentTool,
     resetAgentTools,
     ptcEnabled,
+    showReasoning,
+    setShowReasoning,
+    followAgent,
+    setFollowAgent,
     fontScale,
     setFontScale,
     stepFontScale,

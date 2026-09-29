@@ -72,7 +72,7 @@
               </div>
             </div>
 
-            <ProcessFold v-else-if="item.kind === 'act'" :message="item.message" :streaming="item.message.id === streamingMessageId" :settlement="item.settlement" :intent="intents.get(item.message.id)" @open-file="emit('open-file', $event)" />
+            <ProcessFold v-else-if="item.kind === 'act'" :message="item.message" :streaming="item.message.id === streamingMessageId" :settlement="item.settlement" :intent="intents.get(item.message.id)" :show-plan="item.message.id === planAnchorId" @open-file="emit('open-file', $event)" />
 
             <TurnOutcomeCard v-else-if="item.kind === 'outcome'" :settlement="item.settlement" @continue="emit('continue-turn', item.turnId)" @answer="emit('answer-turn', item.turnId, $event)" />
 
@@ -281,6 +281,14 @@ const blocks = computed(() => buildTranscriptBlocks(props.messages, props.settle
 // in ONE traversal per recompute and handed down as a plain prop — never a
 // per-ProcessFold walk, which would re-scan the whole projection per row.
 const intents = computeIntents(toRef(props, 'messages'))
+// The task tree anchors on the LATEST act the plan attributes work to, so the
+// card rides the tail of the work as the turn advances (one card per session,
+// never a copy per turn). Map iteration follows message order.
+const planAnchorId = computed(() => {
+  let last: string | undefined
+  for (const id of intents.value.keys()) last = id
+  return last
+})
 
 // ── Live row entrance (the chat "flow" beat) ────────────────────────────────
 // A block APPENDED while the user watches — the sent user message, a new

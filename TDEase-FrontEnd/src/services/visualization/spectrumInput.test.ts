@@ -1,5 +1,52 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeSpectrumViewerInput } from './spectrumInput'
+import { normalizeSpectrumViewerInput, peakTableToSpectra } from './spectrumInput'
+
+describe('peakTableToSpectra', () => {
+  const base = {
+    id: 'peaks',
+    kind: 'peak_table',
+    columns: [
+      { name: 'Spectrum ID', type: 'integer' as const },
+      { name: 'mass', type: 'number' as const },
+      { name: 'intensity', type: 'number' as const },
+    ],
+    rows: [
+      { 'Spectrum ID': 88, mass: 300.1, intensity: 10 },
+      { 'Spectrum ID': 88, mass: '400.2', intensity: 20 },
+      { 'Spectrum ID': 90, mass: 500.3, intensity: 30 },
+    ],
+  }
+
+  it('groups rows into scan-attributed spectra and coerces numeric strings', () => {
+    const spectra = peakTableToSpectra(base)
+    expect(spectra).toHaveLength(2)
+    expect(spectra[0]).toMatchObject({
+      spectrumId: 88,
+      peaks: [{ mz: 300.1, intensity: 10 }, { mz: 400.2, intensity: 20 }],
+    })
+    expect(spectra[1]).toMatchObject({ spectrumId: 90, peaks: [{ mz: 500.3, intensity: 30 }] })
+  })
+
+  it('refuses tables whose peaks cannot be attributed to a scan', () => {
+    expect(peakTableToSpectra({ ...base, columns: base.columns.slice(1) })).toEqual([])
+  })
+
+  it('refuses tables without a mass column', () => {
+    expect(peakTableToSpectra({ ...base, columns: [base.columns[0]] })).toEqual([])
+  })
+
+  it('skips rows with unusable masses instead of fabricating peaks', () => {
+    const spectra = peakTableToSpectra({
+      ...base,
+      rows: [
+        { 'Spectrum ID': 88, mass: 'bad', intensity: 10 },
+        { 'Spectrum ID': 88, mass: 300.1, intensity: 10 },
+      ],
+    })
+    expect(spectra).toHaveLength(1)
+    expect(spectra[0].peaks).toEqual([{ index: 0, mz: 300.1, intensity: 10 }])
+  })
+})
 
 describe('normalizeSpectrumViewerInput', () => {
   it('normalizes multi-series datasets with explicit columns and annotations', () => {

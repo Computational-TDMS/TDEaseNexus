@@ -405,6 +405,12 @@ function getAgentRuntime(): AgentRuntimeInstance {
       const owner = agentSessionOwners.get(sessionId);
       if (owner && !owner.isDestroyed()) owner.send("session-run:changed", sessionId, snapshot);
     },
+      view: (sessionId, envelope) => {
+      // Same owner-map routing: the Agent points the window that bound its
+      // session at a file — never another window's Workbench.
+      const owner = agentSessionOwners.get(sessionId);
+      if (owner && !owner.isDestroyed()) owner.send("agent-view:command", envelope);
+    },
       contextUsage: (sessionId, usage) => {
       // Same owner-map routing as subagent:changed/job:changed. Deliberately NOT
       // routed through parentSessionOf: child (subagent) sessions have no gauge

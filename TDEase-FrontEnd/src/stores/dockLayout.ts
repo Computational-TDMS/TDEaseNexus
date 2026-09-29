@@ -56,6 +56,15 @@ export interface DockMemory {
    * after restore cannot clobber the stored proportion with 0.
    */
   restore(repo: DockSnapshotReader, workspaceId: string, axisSize: number): void
+  /**
+   * Re-derive the live px after the dock's AXIS changed (a window resize).
+   * The ratio is the durable truth, so a captured proportion maps onto the
+   * new axis exactly as restore() maps it at boot; a dock whose proportion
+   * was never captured only gives way to the — possibly tighter — range.
+   * Deliberately never captures a ratio: a resize must not re-learn the
+   * layout from a window the user happened to be dragging.
+   */
+  reproject(axisSize: number): void
   /** The [key, value] pairs this dock contributes to a persist pass. */
   entries(): Array<[string, unknown]>
 }
@@ -105,6 +114,14 @@ export function createDockMemory(spec: DockMemorySpec): DockMemory {
     px.value = clamp(spec.defaultPx, range)
   }
 
+  function reproject(axisSize: number): void {
+    if (ratio.value > 0 && axisSize > 0) {
+      px.value = clamp(Math.round(ratio.value * axisSize), spec.range())
+      return
+    }
+    px.value = clamp(px.value, spec.range())
+  }
+
   function entries(): Array<[string, unknown]> {
     return [
       [spec.pxKey, px.value],
@@ -112,5 +129,5 @@ export function createDockMemory(spec: DockMemorySpec): DockMemory {
     ]
   }
 
-  return { px, ratio, setPx, restore, entries }
+  return { px, ratio, setPx, restore, reproject, entries }
 }

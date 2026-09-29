@@ -25,6 +25,7 @@
  */
 
 import { getSupportedThinkingLevels } from '@earendil-works/pi-ai/compat'
+import type { Api, Model } from '@earendil-works/pi-ai'
 
 export type ThinkingLevel = 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max'
 
@@ -57,8 +58,11 @@ export interface CapabilityModel {
   maxTokens?: number
   thinkingLevelMap?: ThinkingLevelMap
   /** pi-ai wire-compat slice this layer may correct. getCompat merges each
-   *  field over its URL detection, so a partial object is enough. */
-  compat?: { supportsReasoningEffort?: boolean }
+   *  field over its URL detection, so a partial object is enough. Typed by
+   *  indexed access into pi's own `Model` rather than a hand-written shape:
+   *  a closed local shape shares no optional property with the Anthropic /
+   *  Bedrock members, so it rejects the very `Model` this seam is handed. */
+  compat?: Model<Api>['compat']
 }
 
 /**

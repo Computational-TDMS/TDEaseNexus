@@ -9,6 +9,7 @@ import type { RunStatus } from '@/services/backend/backend'
 import type { RunSummary } from '@/studio/domain/run'
 import { useDocumentsStore } from '@/stores/documents'
 import { useRunsStore } from '@/stores/runs'
+import { useRunProgress, type RunProgress } from '@/composables/useRunProgress'
 import { useUiLayoutStore, type ActivityTab } from '@/stores/uiLayout'
 
 const { t } = useI18n()
@@ -42,6 +43,39 @@ const allRuns = computed<RunSummary[]>(() => [
 ])
 const selectedRun = computed(() => allRuns.value.find((run) => run.id === selectedRunId.value) ?? null)
 
+// Live rows answer "how far along?" — a per-run job accounting reduced from
+// the run event stream (see useRunProgress). Only live runs subscribe; a
+// settled run drops its subscription and its row falls back to the status
+// label alone.
+const runProgress = useRunProgress()
+const liveRunIds = computed(() =>
+  allRuns.value
+    .filter((run) => run.status === 'RUNNING' || run.status === 'QUEUED')
+    .map((run) => run.id))
+watch(liveRunIds, (ids) => runProgress.sync(ids), { immediate: true })
+
+function liveProgress(run: RunSummary): RunProgress | undefined {
+  const entry = runProgress.progress.value[run.id]
+  return entry && entry.total > 0 ? entry : undefined
+}
+function progressTitle(run: RunSummary): string | undefined {
+  const entry = liveProgress(run)
+  return entry
+    ? t('workbench.activityDock.runProgress', { finished: entry.finished, total: entry.total })
+    : undefined
+}
+function progressWidth(run: RunSummary): string {
+  const entry = liveProgress(run)
+  return entry ? `${Math.round((entry.finished / entry.total) * 100)}%` : '0%'
+}
+function progressCount(run: RunSummary): string {
+  const entry = liveProgress(run)
+  return entry ? `${entry.finished}/${entry.total}` : ''
+}
+function hasFailedJobs(run: RunSummary): boolean {
+  return (liveProgress(run)?.failed ?? 0) > 0
+}
+
 const statusLabels = computed<Record<RunStatus, string>>(() => ({
   QUEUED: t('workbench.runIndex.status.queued'),
   RUNNING: t('workbench.runIndex.status.running'),
@@ -63,7 +97,7 @@ watch(
 watch([() => uiLayout.activityTab, selectedRunId], configureLogRefresh)
 
 onMounted(() => { void runsStore.ensureLoaded() })
-onBeforeUnmount(stopLogRefresh)
+onBeforeUnmount(() => { stopLogRefresh(); runProgress.stop() })
 
 function newestFirst(a: RunSummary, b: RunSummary): number {
   return Date.parse(b.createdAt) - Date.parse(a.createdAt)
@@ -223,6 +257,16 @@ async function refreshLog() {
             <StatusMark :status="toMarkStatus(run.status)" size="sm" />
             <span class="activity-dock__run-name">{{ run.title || run.id }}</span>
             <span class="activity-dock__run-status">{{ statusLabels[run.status] }}</span>
+            <span class="activity-dock__run-progress" :title="progressTitle(run)">
+              <template v-if="liveProgress(run)">
+                <span class="activity-dock__run-bar" aria-hidden="true">
+                  <i :style="{ width: progressWidth(run) }" />
+                </span>
+                <span class="activity-dock__run-count mono" :class="{ 'has-failed': hasFailedJobs(run) }">
+                  {{ progressCount(run) }}
+                </span>
+              </template>
+            </span>
             <span class="activity-dock__run-id">{{ run.id.slice(0, 16) }}</span>
             <button
               type="button"
@@ -269,7 +313,7 @@ async function refreshLog() {
 .activity-dock__action, .activity-dock__close { flex: none; }
 .activity-dock__body { flex: 1 1 auto; min-height: 0; overflow: auto; background: var(--color-bg); }
 .activity-dock__runs { display: grid; align-content: start; }
-.activity-dock__run { display: grid; grid-template-columns: 16px minmax(140px, 1fr) 90px 150px auto; align-items: center; gap: var(--space-2); min-height: var(--row-h); padding: var(--pad-y) var(--space-3); border: 0; border-bottom: var(--line-w) solid var(--line-seam); background: transparent; color: var(--color-text); text-align: left; cursor: pointer; transition: background-color var(--dur-instant) var(--ease-out); }
+.activity-dock__run { display: grid; grid-template-columns: 16px minmax(120px, 1fr) 76px minmax(90px, 150px) minmax(0, 110px) auto; align-items: center; gap: var(--space-2); min-height: var(--row-h); padding: var(--pad-y) var(--space-3); border: 0; border-bottom: var(--line-w) solid var(--line-seam); background: transparent; color: var(--color-text); text-align: left; cursor: pointer; transition: background-color var(--dur-instant) var(--ease-out); }
 .activity-dock__run:hover, .activity-dock__run.is-selected { background: var(--color-hover); }
 .activity-dock__run.is-selected { background: var(--color-interact-soft); }
 /* A RUNNING run is the one live thing in this list — it gets a 2px --color-live
@@ -284,6 +328,14 @@ async function refreshLog() {
 }
 .activity-dock__run-name, .activity-dock__run-id { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .activity-dock__run-status, .activity-dock__run-id { color: var(--color-text-muted); font-size: var(--text-xs); }
+/* The live row's job accounting: a 3px determinate bar + the finished/total
+   count. Empty for every row without a known total — the column keeps the
+   grid aligned either way. */
+.activity-dock__run-progress { display: inline-flex; align-items: center; gap: var(--space-1-5); min-width: 0; }
+.activity-dock__run-bar { position: relative; flex: 1 1 auto; height: 3px; border-radius: 2px; background: var(--line-seam); overflow: hidden; }
+.activity-dock__run-bar i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 2px; background: var(--color-live); transition: width var(--dur-normal) var(--ease-out); }
+.activity-dock__run-count { flex: none; font-size: var(--text-xs); color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+.activity-dock__run-count.has-failed { color: var(--status-failed); }
 .activity-dock__log-link, .activity-dock__refresh { border: 0; background: transparent; color: var(--color-interact); font-size: var(--text-xs); cursor: pointer; }
 .activity-dock__log-link { justify-self: end; padding: 2px 0; border-radius: var(--radius-sm); }
 .activity-dock__logs { min-height: 100%; }
@@ -293,5 +345,5 @@ async function refreshLog() {
 .activity-dock__refresh:disabled { opacity: 0.5; cursor: default; }
 .activity-dock__log-text { min-height: 100%; margin: 0; padding: var(--space-2) var(--space-3); overflow: auto; color: var(--color-text); font-family: var(--font-mono); font-size: var(--text-xs); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
 .activity-dock__error { margin: 0; padding: var(--space-2) var(--space-3); color: var(--status-failed); font-size: var(--text-xs); }
-@media (max-width: 760px) { .activity-dock__run { grid-template-columns: 16px minmax(100px, 1fr) 76px auto; } .activity-dock__run-id { display: none; } }
+@media (max-width: 760px) { .activity-dock__run { grid-template-columns: 16px minmax(100px, 1fr) 76px auto; } .activity-dock__run-id, .activity-dock__run-progress { display: none; } }
 </style>

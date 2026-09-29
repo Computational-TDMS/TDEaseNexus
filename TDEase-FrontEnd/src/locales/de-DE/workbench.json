@@ -50,7 +50,8 @@
     "closeDirtyConfirm": "Dieses Dokument hat ungespeicherte Änderungen. Trotzdem schließen?",
     "closeDirtyTitle": "Ungespeicherte Änderungen",
     "closeDirtyConfirmAction": "Ohne Speichern schließen",
-    "closeDirtyCancelAction": "Geöffnet lassen"
+    "closeDirtyCancelAction": "Geöffnet lassen",
+    "openedByAgent": "Vom Agent geöffnet"
   },
   "runIndex": {
     "columnStatus": "Status",
@@ -155,7 +156,9 @@
       "table": "Tabelle",
       "featuremap": "Feature-Karte",
       "spectrum": "Spektrum",
-      "variants": "Varianten"
+      "variants": "Varianten",
+      "discrimination": "Kandidaten",
+      "ledger": "Massenbilanz"
     },
     "fasta": {
       "sequences": "Sequenzen",
@@ -210,6 +213,15 @@
       "loadFailedRemedy": "Prüfen Sie, ob FASTA und Tabelle zur selben Suche gehören, und versuchen Sie es erneut."
     }
   },
+  "massLedger": {
+    "observed": "Beobachtete Verschiebung",
+    "model": "Modell",
+    "modelShift": "Modellverschiebung",
+    "error": "Schließfehler",
+    "residual": "Nicht zugeordneter Rest",
+    "shift": "Massenverschiebung",
+    "site": "Position {site}"
+  },
   "agent": {
     "label": "Agent",
     "emptyTitle": "Kein Workspace geöffnet",
@@ -227,6 +239,7 @@
     "emptyRuns": "Noch keine Runs in diesem Workspace. Reichen Sie eine Analyse ein, und ihr Fortschritt scrollt hier vorbei.",
     "emptyLogs": "Noch keine Protokolle. Sobald ein Run startet, trifft die Ausgabe der Engine hier Zeile für Zeile ein.",
     "viewLog": "Protokoll ansehen",
+    "runProgress": "{finished}/{total} Jobs",
     "refreshLog": "Aktualisieren",
     "positionBottom": "Panel nach unten verschieben",
     "positionRight": "Panel nach rechts verschieben",
@@ -247,7 +260,9 @@
     "backendReconnect": "Neu verbinden",
     "backendRetryWithError": "Backend-Verbindung wiederherstellen. Letzter Fehler: {error}",
     "toggleRuns": "Runs-Panel",
-    "toggleLogs": "Protokoll-Panel"
+    "toggleLogs": "Protokoll-Panel",
+    "followAgent": "Agent folgen",
+    "followAgentHint": "Wenn der Agent einen Viewer öffnet oder darauf zeigt, nach vorn holen. Aus: öffnet im Hintergrund, markiert bis du hinsiehst."
   },
   "layout": {
     "resizeNavigator": "Navigator in der Größe ändern",
@@ -283,7 +298,10 @@
     "shell": "Shell",
     "shellHint": "Bash im Executor aktivieren, weiterhin der Berechtigungsrichtlinie unterworfen. Standardmäßig aus.",
     "mcp": "MCP",
-    "mcpHint": "Die konfigurierte MCP-Server-Brücke in die Agent-Werkzeugtabelle aufnehmen. Standardmäßig aus."
+    "mcpHint": "Die konfigurierte MCP-Server-Brücke in die Agent-Werkzeugtabelle aufnehmen. Standardmäßig aus.",
+    "experimental": "Experimentell",
+    "viewTools": "Viewer-Zeiger (view.*)",
+    "viewToolsHint": "Experimentelle Beta: erlaubt dem Agenten, Viewer zu öffnen, Bereiche zu fokussieren oder Ionen auszuwählen. Beworbene Tools belegen in jeder Sitzung Schema-Tokens — die native Viewer-Darstellung hängt davon nie ab. Standardmäßig aus."
   },
   "settingsPermissions": {
     "decisionAllow": "Erlauben",
@@ -433,6 +451,13 @@
     "edgesTitle": "Beziehungen",
     "claimRef": "Aussage",
     "status": "Status",
+    "statusValue": {
+      "proposed": "Vorgeschlagen",
+      "challenged": "Angefochten",
+      "inconclusive": "Unentschieden",
+      "supported": "Gestützt",
+      "refuted": "Widerlegt"
+    },
     "summary": "Aussage",
     "path": "Datei",
     "relations": "Beziehungen",
@@ -600,7 +625,10 @@
       "densityCompact": "Kompakt",
       "theme": "Design",
       "themeLabel": "Farbschema",
-      "themeHint": "Die 4 Catppuccin-Paletten. Auch über die Titelleiste umschaltbar."
+      "themeHint": "Die 4 Catppuccin-Paletten. Auch über die Titelleiste umschaltbar.",
+      "agentTranscript": "Agent-Verlauf",
+      "showReasoning": "Überlegungen zeigen",
+      "showReasoningHint": "Zeigt Denken und rohe Tool-Aufrufe des Agents während der Arbeit. Aus: eingeklappt in eine Zeile, der Fortschritt steht im Aufgabenbaum. Fehlgeschlagene oder blockierte Züge werden immer vollständig gezeigt."
     },
     "general": {
       "providerModel": "Anbieter & Modell",

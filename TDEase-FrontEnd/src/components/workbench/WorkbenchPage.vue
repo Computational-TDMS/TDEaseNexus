@@ -15,10 +15,10 @@
   the dock's subtree unmounts.
 -->
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useElementSize } from '@vueuse/core'
-import { useUiLayoutStore, PANEL_BOTTOM_RANGE, PANEL_RIGHT_RANGE, AGENT_SIDEBAR_WIDTH_RANGE, NAVIGATOR_WIDTH_RANGE } from '@/stores/uiLayout'
+import { useUiLayoutStore, CENTER_FLOOR, PANEL_BOTTOM_RANGE, PANEL_RIGHT_RANGE } from '@/stores/uiLayout'
 import ResizableSplit from './ResizableSplit.vue'
 import NavigatorPanel from './NavigatorPanel.vue'
 import DocumentHost from './DocumentHost.vue'
@@ -30,15 +30,21 @@ const uiLayout = useUiLayoutStore()
 
 // --- Container sizes: the dock sizes are stored as RATIOS of these axes
 // (uiLayout's proportional memory), so every drag reports the container the
-// px came from. ---
+// px came from. Each axis is also handed to the store, which clamps both its
+// own live projection and the bounds below with the same numbers — a dock
+// cannot overflow a container it was measured against. ---
 const pageRootRef = ref<HTMLElement | null>(null)
 const rightZoneRef = ref<HTMLElement | null>(null)
 const { width: pageWidth } = useElementSize(pageRootRef)
 const { width: rightZoneWidth } = useElementSize(rightZoneRef)
 
+watch(pageWidth, (px) => uiLayout.setNavigatorAxis(px), { immediate: true })
+watch(rightZoneWidth, (px) => uiLayout.setAgentSidebarAxis(px), { immediate: true })
+
 // --- Panel vs. editor surface: the split sizes its SECOND pane (the panel);
 // drag deltas and arrow keys invert accordingly. The panel's declared range
-// is expressed as bounds on that trailing pane; the editor keeps ≥170px. ---
+// is expressed as bounds on that trailing pane; the editor keeps
+// CENTER_FLOOR. ---
 const centerRef = ref<HTMLElement | null>(null)
 const { width: centerWidth, height: centerHeight } = useElementSize(centerRef)
 const isRight = computed(() => uiLayout.panelPosition === 'right')
@@ -59,7 +65,7 @@ function panelBounds(): { min: number; max: number } {
   if (!uiLayout.panelVisible) return { min: 0, max: 0 }
   const range = isRight.value ? PANEL_RIGHT_RANGE : PANEL_BOTTOM_RANGE
   if (containerSize.value === 0) return range
-  const ceiling = Math.max(0, containerSize.value - 170)
+  const ceiling = Math.max(0, containerSize.value - CENTER_FLOOR)
   return { min: range.min, max: Math.max(range.min, Math.min(range.max, ceiling)) }
 }
 
@@ -87,8 +93,8 @@ function onPanelResize(px: number) {
     <ResizableSplit
       direction="horizontal"
       :size="uiLayout.navigatorCollapsed ? 0 : uiLayout.navigatorWidth"
-      :min="uiLayout.navigatorCollapsed ? 0 : NAVIGATOR_WIDTH_RANGE.min"
-      :max="uiLayout.navigatorCollapsed ? 0 : NAVIGATOR_WIDTH_RANGE.max"
+      :min="uiLayout.navigatorBounds.min"
+      :max="uiLayout.navigatorBounds.max"
       :collapsed="uiLayout.navigatorCollapsed"
       collapsible
       :aria-label="t('workbench.layout.resizeNavigator')"
@@ -103,8 +109,8 @@ function onPanelResize(px: number) {
           <ResizableSplit
             direction="horizontal"
             :size="uiLayout.agentSidebarCollapsed ? 0 : uiLayout.agentSidebarWidth"
-            :min="uiLayout.agentSidebarCollapsed ? 0 : AGENT_SIDEBAR_WIDTH_RANGE.min"
-            :max="uiLayout.agentSidebarCollapsed ? 0 : AGENT_SIDEBAR_WIDTH_RANGE.max"
+            :min="uiLayout.agentSidebarBounds.min"
+            :max="uiLayout.agentSidebarBounds.max"
             sized-pane="second"
             :collapsed="uiLayout.agentSidebarCollapsed"
             collapsible

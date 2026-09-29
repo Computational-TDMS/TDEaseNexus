@@ -31,12 +31,15 @@ import {
   documentTabDomId,
 } from '@/components/documents/registry'
 import { useDocumentsStore } from '@/stores/documents'
+import { useAgentViewStore } from '@/stores/agentView'
+import { Sparkles } from '@lucide/vue'
 import { useConfirmDialogStore } from '@/stores/confirmDialog'
 import { TAB_DRAG_TYPE, currentTabDrag, clearTabDrag, setTabDrag, isCopyDrop } from './tabDrag'
 
 const props = defineProps<{ groupId: string }>()
 
 const { t } = useI18n()
+const agentView = useAgentViewStore()
 const documentsStore = useDocumentsStore()
 
 const group = computed(() => documentsStore.groupOf(props.groupId))
@@ -296,6 +299,8 @@ function onStripDblclick(event: MouseEvent) {
           'is-preview': documentsStore.tierOf(doc) === 'preview',
           'is-drop-before': dropMarker?.tabId === doc.id && dropMarker.side === 'before',
           'is-drop-after': dropMarker?.tabId === doc.id && dropMarker.side === 'after',
+          'is-agent': Boolean(agentView.openedBy[doc.id]),
+          'is-agent-unseen': agentView.unseen.has(doc.id),
         }"
         :data-tab="doc.id"
         :aria-controls="panelId"
@@ -311,6 +316,12 @@ function onStripDblclick(event: MouseEvent) {
         @dblclick="keepOpen(doc)"
         @keydown="onTabKeydown($event, doc)"
       >
+        <span
+          v-if="agentView.openedBy[doc.id]"
+          class="document-tabs__agent"
+          :title="t('workbench.documentTabs.openedByAgent')"
+          :aria-label="t('workbench.documentTabs.openedByAgent')"
+        ><Sparkles :size="11" :stroke-width="2" aria-hidden="true" /></span>
         <span class="document-tabs__title">{{ doc.title }}</span>
         <button
           type="button"
@@ -477,6 +488,25 @@ function onStripDblclick(event: MouseEvent) {
   white-space: nowrap;
 }
 
+.document-tabs__agent {
+  position: relative; display: inline-grid; place-items: center; flex: none;
+  color: var(--color-live);
+  margin-right: 2px;
+}
+/* A tab the Agent opened arrives softly (once, on mount) instead of popping —
+   motion that marks a live event, per the "light only for living states" rule. */
+.is-agent { animation: agent-tab-in var(--dur-normal) var(--ease-out); }
+@keyframes agent-tab-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+/* Opened in the background (Follow off) and not yet looked at. */
+.is-agent-unseen .document-tabs__agent::after {
+  content: ''; position: absolute; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--color-live);
+  transform: translate(6px, -6px);
+}
+@media (prefers-reduced-motion: reduce) { .is-agent { animation: none; } }
 .document-tabs__dirty-dot {
   flex: none;
   width: 10px;

@@ -119,5 +119,15 @@
     "fieldCompositionPlaceholder": "e.g., H3 P O4",
     "fieldUnimodId": "UniMOD ID",
     "fieldUnimodIdPlaceholder": "e.g., UNIMOD:21"
+  },
+  "ms2Discrimination": {
+    "models": "Candidate models",
+    "stats": "b {b} · y {y} · {cov}% coverage · {disc} discriminating",
+    "sequence": "Sequence coverage (click a residue)",
+    "zoomDiscriminating": "Zoom to discriminating ions",
+    "resetZoom": "Full scan",
+    "hint": "Drag to zoom · double-click to reset · click a peak or residue",
+    "plot": "MS2 spectrum with fragment matches per candidate model",
+    "notObserved": "not observed"
   }
 }

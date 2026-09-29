@@ -53,7 +53,10 @@
     "spineTitle": "Tasks",
     "spineOpenPlan": "Open task plan",
     "spineBranch": "{count} background runs",
-    "spineCalls": "{count} tool calls"
+    "spineCalls": "{count} tool calls",
+    "pillDone": "Done",
+    "pillDoneFile": "Done · wrote {name}",
+    "pillDoneFiles": "Done · {count} files"
   },
   "tab": {
     "label": "Agent views",
@@ -293,7 +296,8 @@
   "processFold": {
     "expandDetails": "Show details",
     "worked": "worked",
-    "failures": "{count} failed | {count} failed"
+    "failures": "{count} failed | {count} failed",
+    "working": "Working"
   },
   "permissionMode": {
     "askLabel": "Ask (confirm side effects)",
@@ -343,7 +347,10 @@
     "ptcExec": "Run tool script",
     "orchestrateRun": "Run orchestration",
     "orchestrateWait": "Wait for orchestration",
-    "plan": "Update plan"
+    "plan": "Update plan",
+    "viewOpen": "Open in viewer",
+    "viewFocus": "Focus viewer",
+    "viewSelect": "Select in viewer"
   },
   "mermaid": {
     "showSource": "Show source",
@@ -373,5 +380,26 @@
     "inputPlaceholder": "Ask about the quote…",
     "send": "Send",
     "gone": "This side chat no longer exists."
+  },
+  "taskTree": {
+    "ariaLabel": "Task tree",
+    "title": "Plan",
+    "showReasoning": "Show reasoning",
+    "hideReasoning": "Hide reasoning",
+    "opened": "opened",
+    "openedIn": "opened in {viewer}",
+    "runStatus": {
+      "QUEUED": "queued",
+      "RUNNING": "running",
+      "SUCCEEDED": "succeeded",
+      "FAILED": "failed",
+      "CANCELLED": "cancelled"
+    },
+    "subagentState": {
+      "running": "working",
+      "returned": "returned",
+      "blocked": "blocked",
+      "cancelled": "cancelled"
+    }
   }
 }

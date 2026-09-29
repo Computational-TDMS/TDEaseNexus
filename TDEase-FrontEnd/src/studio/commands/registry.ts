@@ -105,6 +105,13 @@ export interface SubagentFollowupInput {
 // model calls `job.start`, gets a jobId back immediately, and keeps working;
 // completion is injected into the next provider request via the context hook
 // (tdease-extension.ts), so the model never `bash sleep + status` polls.
+/** The Agent's pointer into the Workbench viewers (contracts/view-runtime.ts).
+ *  `issue` validates the path against the Workspace and pushes the command to
+ *  the session's owning window; it resolves with the delivery fact only. */
+export interface ViewCommandPort {
+  issue(command: import('@/contracts/view-runtime').ViewCommand): Promise<{ delivered: boolean; path: string; note: string }>
+}
+
 export interface JobCommandPort {
   start(input: JobStartInput): Promise<JobStartResult>
   status(jobId: string): Promise<JobStatus>
@@ -362,6 +369,9 @@ export interface CommandContext {
   /** Present only when the binding opted into PTC (`ptcEnabled`). */
   ptc?: PtcCommandPort
   jobs?: JobCommandPort
+  /** Present only for top-level sessions bound by a window (subagents and
+   *  headless sessions have no Workbench to point at). */
+  view?: ViewCommandPort
   /** Local Node-catalog installation. Present only in local Backend mode —
    *  a remote Backend connection owns its own catalog on its own host, so
    *  `nodes.install` gates off and reports that boundary instead. */

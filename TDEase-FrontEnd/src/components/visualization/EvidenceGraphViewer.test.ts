@@ -50,4 +50,52 @@ describe('EvidenceGraphViewer', () => {
     )
     expect(wrapper.find('[data-testid="evidence-node-detail"]').text()).toContain('accepted')
   })
+
+  it('renders the claim verdict as a node tag, a node class and a detail line', async () => {
+    const wrapper = mount(EvidenceGraphViewer, {
+      props: {
+        datasets: [{
+          id: 'nodes',
+          kind: 'evidence_nodes',
+          columns: [],
+          rows: [
+            { id: 'claim:a', kind: 'claim', statement: 'Dual lipidation', status: 'supported' },
+            { id: 'claim:b', kind: 'claim', statement: 'Swapped sites', status: 'refuted' },
+            { id: 'claim:c', kind: 'claim', statement: 'Open bound', status: 'inconclusive' },
+            { id: 'claim:x', kind: 'claim', statement: 'Future word', status: 'sequestered' },
+          ],
+        }],
+      },
+    })
+
+    const nodes = wrapper.findAll('[data-evidence-node]')
+    expect(nodes[0].classes()).toContain('evidence-graph__node--status-supported')
+    expect(nodes[1].classes()).toContain('evidence-graph__node--status-refuted')
+    // The closed five-state vocabulary localizes; an unknown status renders
+    // verbatim — shown, never swallowed.
+    expect(nodes[0].text()).toContain('已支持')
+    expect(nodes[1].text()).toContain('已反驳')
+    expect(nodes[2].text()).toContain('尚无定论')
+    expect(nodes[3].text()).toContain('sequestered')
+
+    await wrapper.find('[data-node-id="claim:b"]').trigger('click')
+    const detail = wrapper.find('[data-testid="evidence-node-detail"]')
+    expect(detail.text()).toContain('状态')
+    expect(detail.text()).toContain('已反驳')
+  })
+
+  it('stays silent about status when a node carries none', () => {
+    const wrapper = mount(EvidenceGraphViewer, {
+      props: {
+        datasets: [{
+          id: 'nodes',
+          kind: 'evidence_nodes',
+          columns: [],
+          rows: [{ id: 'artifact:1', kind: 'artifact' }],
+        }],
+      },
+    })
+    expect(wrapper.find('.evidence-graph__status').exists()).toBe(false)
+    expect(wrapper.findAll('[data-evidence-node]')[0].text()).not.toContain('状态')
+  })
 })

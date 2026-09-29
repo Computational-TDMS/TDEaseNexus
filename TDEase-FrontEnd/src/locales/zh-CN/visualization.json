@@ -119,5 +119,15 @@
     "fieldCompositionPlaceholder": "例如,H3 P O4",
     "fieldUnimodId": "UniMOD ID",
     "fieldUnimodIdPlaceholder": "例如,UNIMOD:21"
+  },
+  "ms2Discrimination": {
+    "models": "候选模型",
+    "stats": "b {b} · y {y} · 覆盖 {cov}% · 判别离子 {disc}",
+    "sequence": "序列覆盖（点击残基）",
+    "zoomDiscriminating": "缩放到判别离子",
+    "resetZoom": "全谱",
+    "hint": "拖动缩放 · 双击复位 · 点击峰或残基",
+    "plot": "按候选模型标注碎片匹配的 MS2 谱图",
+    "notObserved": "未观测到"
   }
 }

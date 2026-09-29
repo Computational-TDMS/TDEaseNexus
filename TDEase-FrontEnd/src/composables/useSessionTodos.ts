@@ -16,7 +16,7 @@
 
 import { computed, type ComputedRef, type Ref } from 'vue'
 import type { AgentChatMessage, ToolCall } from '@/stores/chat-types'
-import { toolIconName, type ToolIconName } from '@/utils/tool-identity'
+import { bareToolName, toolIconName, type ToolIconName } from '@/utils/tool-identity'
 
 export type TodoStatus = 'pending' | 'in_progress' | 'completed'
 
@@ -33,6 +33,64 @@ export interface TodoItem {
 export interface TodoCallStats {
   calls: number
   icons: ToolIconName[]
+  /** What the todo's calls PRODUCED — the task tree's branches. Read off the
+   *  producing call itself (its args or result head), so a branch exists
+   *  exactly when a tool row in the transcript does. */
+  products: TodoProduct[]
+}
+/** A task-tree branch: a durable thing a todo's work left behind. */
+export type TodoProduct =
+  | { kind: 'run'; runId: string; callId: string }
+  | { kind: 'subagent'; role: string; subagentId?: string; callId: string }
+  | { kind: 'job'; command: string; callId: string }
+  | { kind: 'file'; path: string; callId: string }
+  | { kind: 'view'; path: string; viewer?: string; callId: string }
+
+/** First `"key":"value"` string in a (possibly truncated) JSON result head. */
+function jsonString(text: string | undefined, key: string): string | undefined {
+  if (!text) return undefined
+  const match = new RegExp(`"${key}"\\s*:\\s*"([^"]+)"`).exec(text)
+  return match?.[1]
+}
+
+/** The product a SUCCEEDED call left behind, or null for pure reads/probes. */
+export function toolProduct(tool: ToolCall): TodoProduct | null {
+  if (tool.status !== 'succeeded') return null
+  const bare = bareToolName(tool.name)
+  const args = tool.args ?? {}
+  const result = tool.resultPreview?.text
+  const str = (v: unknown): string | undefined => (typeof v === 'string' && v.trim() ? v.trim() : undefined)
+  switch (bare) {
+    case 'workflow.submit':
+    case 'workflow.run':
+    case 'runs.resume':
+    case 'runs.overwrite': {
+      // The run object leads the result (`{status:'submitted', run:{id,…}}`);
+      // a resume/overwrite names its run in args.
+      const runId = str(args.runId) ?? str(args.run_id) ?? jsonString(result, 'id')
+      return runId?.startsWith('run') ? { kind: 'run', runId, callId: tool.id } : null
+    }
+    case 'subagent.spawn': {
+      const role = str(args.role)
+      return role ? { kind: 'subagent', role, subagentId: jsonString(result, 'subagentId'), callId: tool.id } : null
+    }
+    case 'job.start': {
+      const command = str(args.command)
+      return command ? { kind: 'job', command, callId: tool.id } : null
+    }
+    case 'write':
+    case 'edit':
+    case 'evidence.write': {
+      const path = str(args.path) ?? str(args.file_path)
+      return path ? { kind: 'file', path, callId: tool.id } : null
+    }
+    case 'view.open': {
+      const path = str(args.path)
+      return path ? { kind: 'view', path, viewer: str(args.viewer), callId: tool.id } : null
+    }
+    default:
+      return null
+  }
 }
 
 /**
@@ -113,12 +171,17 @@ function walkPlan(messages: ReadonlyArray<AgentChatMessage>): {
   const bump = (tool: ToolCall): void => {
     if (!era) return
     const icon = toolIconName(tool.name)
-    const entry = stats.get(era)
-    if (!entry) stats.set(era, { calls: 1, icons: [icon] })
-    else {
-      entry.calls += 1
-      if (!entry.icons.includes(icon)) entry.icons.push(icon)
+    let entry = stats.get(era)
+    if (!entry) {
+      entry = { calls: 0, icons: [], products: [] }
+      stats.set(era, entry)
     }
+    entry.calls += 1
+    if (!entry.icons.includes(icon)) entry.icons.push(icon)
+    const product = toolProduct(tool)
+    // One branch per durable thing: re-editing a file or re-opening a view
+    // is the same branch, not a new one.
+    if (product && !entry.products.some((p) => sameProduct(p, product))) entry.products.push(product)
   }
   for (const message of messages) {
     const blocks = message.blocks ?? []
@@ -149,6 +212,16 @@ function walkPlan(messages: ReadonlyArray<AgentChatMessage>): {
     if (intent) intents.set(message.id, intent)
   }
   return { latest, intents, stats }
+}
+
+function sameProduct(a: TodoProduct, b: TodoProduct): boolean {
+  if (a.kind !== b.kind) return false
+  switch (a.kind) {
+    case 'run': return a.runId === (b as typeof a).runId
+    case 'file': return a.path === (b as typeof a).path
+    case 'view': return a.path === (b as typeof a).path
+    default: return a.callId === b.callId
+  }
 }
 
 /**

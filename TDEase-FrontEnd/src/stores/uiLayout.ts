@@ -19,7 +19,7 @@
 
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import { createDockMemory } from './dockLayout'
+import { createDockMemory, type DockRange } from './dockLayout'
 import { createLocalUiStateRepository } from '@/services/storage/uiStateRepository'
 import type { UiStateRepository } from '@/studio/ports/ui-state-repository'
 import { useWorkspaceStore } from './workspace'
@@ -39,6 +39,35 @@ export const PANEL_RIGHT_RANGE = { min: 280, max: 560 }
 // The Workbench's right-docked Agent sidebar (a second view of the one
 // conversation; see agentConversation.ts).
 export const AGENT_SIDEBAR_WIDTH_RANGE = { min: 240, max: 440 }
+
+/**
+ * What must survive on a shared axis besides the docks themselves: the
+ * document surface's readable floor. One number for the whole shell — the
+ * panel split keeps this same reserve for the editor.
+ */
+export const CENTER_FLOOR = 170
+
+/** The icon rail — the only chrome outside `.workbench-page`. Used solely to
+ *  estimate a dock's axis before the Workbench has measured the real one. */
+const RAIL_WIDTH = 56
+
+/**
+ * A dock's declared range, tightened so `reserve` px survive on its axis. The
+ * two docks and the document surface share ONE axis (navigator | [surface |
+ * agent sidebar]), so each ceiling must also reserve its sibling's minimum;
+ * otherwise both sit at their maximums while the surface collapses to 0 and
+ * the trailing dock is pushed out past the window edge behind it (measured
+ * 2026-09-27 at a 760px window: navigator 420 + sidebar 440 → surface 0,
+ * overflow 156px, content clipped mid-glyph). An axis that cannot even hold
+ * the reserve opens the dock's own bounds from below (min ≤ max) so the dock
+ * gives way rather than overflowing the container.
+ */
+export function tightenDockRange(range: DockRange, axis: number, reserve: number): DockRange {
+  if (axis <= 0) return range
+  const ceiling = Math.max(0, axis - reserve)
+  const max = Math.max(0, Math.min(range.max, ceiling))
+  return { min: Math.min(range.min, max), max }
+}
 
 const DEFAULTS = {
   navigatorWidth: 320,
@@ -93,12 +122,39 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
   const panelPosition = ref<PanelPosition>(DEFAULTS.panelPosition)
   const panelMaximized = ref<boolean>(DEFAULTS.panelMaximized)
 
+  // The collapse flags are declared before the docks because a dock's range
+  // reserves its open sibling's minimum (see tightenDockRange) — the range
+  // functions read these, and `createDockMemory` resolves a range eagerly.
+  const navigatorCollapsed = ref<boolean>(DEFAULTS.navigatorCollapsed)
+  const agentSidebarCollapsed = ref<boolean>(DEFAULTS.agentSidebarCollapsed)
+
+  // --- The axis each dock is projected onto ---------------------------------
+  // Measured by the Workbench at runtime (`setNavigatorAxis` /
+  // `setAgentSidebarAxis`); until that first measurement lands the range
+  // falls back to the declared bounds, exactly as it always did. Keeping the
+  // axes here — not in the component — is what lets the store clamp a live
+  // projection and the component's bounds be the SAME numbers, so a window
+  // resize converges instead of ping-ponging a correction.
+  const navigatorAxis = ref(0)
+  const agentSidebarAxis = ref(0)
+
+  const navigatorRange = () => tightenDockRange(
+    NAVIGATOR_WIDTH_RANGE,
+    navigatorAxis.value,
+    CENTER_FLOOR + (agentSidebarCollapsed.value ? 0 : AGENT_SIDEBAR_WIDTH_RANGE.min),
+  )
+  const agentSidebarRange = () => tightenDockRange(
+    AGENT_SIDEBAR_WIDTH_RANGE,
+    agentSidebarAxis.value,
+    CENTER_FLOOR,
+  )
+
   // --- Docks: size memory delegated to the dockLayout module ----------------
   const docks = {
     navigator: createDockMemory({
       pxKey: 'navigatorWidth',
       ratioKey: 'navigatorWidthRatio',
-      range: () => NAVIGATOR_WIDTH_RANGE,
+      range: navigatorRange,
       defaultPx: DEFAULTS.navigatorWidth,
     }),
     panel: createDockMemory({
@@ -112,7 +168,7 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
     agentSidebar: createDockMemory({
       pxKey: 'agentSidebarWidth',
       ratioKey: 'agentSidebarWidthRatio',
-      range: () => AGENT_SIDEBAR_WIDTH_RANGE,
+      range: agentSidebarRange,
       defaultPx: DEFAULTS.agentSidebarWidth,
     }),
   }
@@ -120,7 +176,21 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
   const panelSize = docks.panel.px
   const agentSidebarWidth = docks.agentSidebar.px
 
-  const navigatorCollapsed = ref<boolean>(DEFAULTS.navigatorCollapsed)
+  /** The bounds the Workbench binds to each split: the container-aware range,
+   *  and zero-open-close while collapsed (the split renders that state). */
+  const navigatorBounds = computed(() => (navigatorCollapsed.value ? { min: 0, max: 0 } : navigatorRange()))
+  const agentSidebarBounds = computed(() => (agentSidebarCollapsed.value ? { min: 0, max: 0 } : agentSidebarRange()))
+
+  // A narrower axis (or a sibling dock appearing on the shared one) must make
+  // the docks give way: the stored px was measured against whatever window
+  // was there when the user last sized them, and nothing else was re-deriving
+  // it, so a shrunken window used to leave both docks at their old px with
+  // the document surface squeezed to 0.
+  watch([navigatorAxis, agentSidebarAxis, navigatorCollapsed, agentSidebarCollapsed], () => {
+    docks.navigator.reproject(navigatorAxis.value)
+    docks.agentSidebar.reproject(agentSidebarAxis.value)
+  })
+
   const agentSessionsWidth = ref<number>(DEFAULTS.agentSessionsWidth)
 
   const activePage = ref<AppPage>(DEFAULTS.activePage)
@@ -131,7 +201,6 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
   // at run ids that stop existing across Workspace switches, so it is never
   // persisted and the panel falls back to its newest run when the id is stale.
   const activityRunId = ref('')
-  const agentSidebarCollapsed = ref<boolean>(DEFAULTS.agentSidebarCollapsed)
 
   // Bound at hydrate() time; persist() writes back through the same pair.
   let repository: UiStateRepository = defaultRepository
@@ -139,6 +208,19 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
 
   function setNavigatorWidth(px: number, containerSize = 0) {
     docks.navigator.setPx(px, containerSize)
+  }
+
+  /** The Workbench reports the measured page axis (its own width) so the
+   *  docks — and the bounds the splits bind — are clamped against the real
+   *  container rather than the window estimate. */
+  function setNavigatorAxis(px: number) {
+    navigatorAxis.value = Math.max(0, Math.round(px))
+  }
+
+  /** The measured right zone (what the navigator left behind): the axis the
+   *  document surface and the agent sidebar share. */
+  function setAgentSidebarAxis(px: number) {
+    agentSidebarAxis.value = Math.max(0, Math.round(px))
   }
 
   function setAgentSessionsWidth(px: number) {
@@ -255,7 +337,13 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
     const windowWidth = typeof window === 'undefined' ? 0 : window.innerWidth
     const windowHeight = typeof window === 'undefined' ? 0 : window.innerHeight
 
-    docks.navigator.restore(repo, workspaceId, windowWidth)
+    // The axes are set BEFORE the restores so each dock's range (and so its
+    // clamp) already knows the container it has to fit in — the Workbench
+    // replaces both with real measurements on its first layout pass.
+    const pageAxis = Math.max(0, windowWidth - RAIL_WIDTH)
+    navigatorAxis.value = pageAxis
+
+    docks.navigator.restore(repo, workspaceId, pageAxis)
     navigatorCollapsed.value = storedBoolean(repo, workspaceId, 'navigatorCollapsed', DEFAULTS.navigatorCollapsed)
     setAgentSessionsWidth(storedNumber(repo, workspaceId, 'agentSessionsWidth', DEFAULTS.agentSessionsWidth))
     // The panel's ratio rides its own axis, so the dock side must be known first.
@@ -272,7 +360,11 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
     ))
     setDensity(storedEnum(repo, workspaceId, 'density', ['comfortable', 'compact'], DEFAULTS.density))
     activityTab.value = storedEnum(repo, workspaceId, 'activityTab', ['runs', 'logs'], DEFAULTS.activityTab)
-    docks.agentSidebar.restore(repo, workspaceId, windowWidth)
+    // The sidebar shares the right zone with the document surface, so its
+    // axis is whatever the navigator left of the page.
+    const rightZoneAxis = Math.max(0, pageAxis - (navigatorCollapsed.value ? 0 : navigatorWidth.value))
+    agentSidebarAxis.value = rightZoneAxis
+    docks.agentSidebar.restore(repo, workspaceId, rightZoneAxis)
     agentSidebarCollapsed.value = storedBoolean(
       repo, workspaceId, 'agentSidebarCollapsed', DEFAULTS.agentSidebarCollapsed,
     )
@@ -327,6 +419,8 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
   return {
     navigatorWidth,
     navigatorCollapsed,
+    navigatorBounds,
+    agentSidebarBounds,
     agentSessionsWidth,
     panelVisible,
     panelSize,
@@ -341,6 +435,8 @@ export const useUiLayoutStore = defineStore('uiLayout', () => {
     agentSidebarWidth,
     persistSignature,
     setNavigatorWidth,
+    setNavigatorAxis,
+    setAgentSidebarAxis,
     setAgentSessionsWidth,
     setPanelSize,
     setNavigatorCollapsed,

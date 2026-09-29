@@ -12,13 +12,18 @@
 import type { Component } from 'vue'
 import { bareToolName } from '@/utils/tool-identity'
 import ToolCallRow from './ToolCallRow.vue'
+import BashCallRow from './BashCallRow.vue'
 
 /**
  * Entries whose expanded body deserves more than the generic row. Seeded
  * empty ON PURPOSE: a per-tool entry must be a real, better rendering —
  * never a cosmetic clone of the default with a different file name.
  */
-const RENDERERS: Readonly<Record<string, Component>> = {}
+const RENDERERS: Readonly<Record<string, Component>> = {
+  // A mass-spec kernel call (tdeasenexus-toolbox) gets a typed result card;
+  // every other shell call renders exactly the generic row.
+  bash: BashCallRow,
+}
 
 /** Module-level animation LRU (ZCode's stream-animate rule): the row entry
  *  animation plays ONCE per group, not on every virtual-scroller remount or

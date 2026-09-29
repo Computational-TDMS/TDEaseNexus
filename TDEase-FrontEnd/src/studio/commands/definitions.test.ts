@@ -35,6 +35,7 @@ describe('Studio command definitions', () => {
       'orchestrate.run', 'orchestrate.wait', 'orchestrate.status',
       'ptc.exec',
       'job.start', 'job.wait', 'job.status', 'job.peek', 'job.cancel', 'job.list',
+      'view.open', 'view.focus', 'view.select',
     ])
   })
 

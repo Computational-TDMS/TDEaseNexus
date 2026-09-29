@@ -76,6 +76,23 @@ describe('Agent tool profile', () => {
     expect(executor.allowsStudioCommand('runs.overwrite')).toBe(false)
   })
 
+  it('keeps view.* out of every default profile; the viewer-pointer beta is opt-in', () => {
+    // Experimental beta: advertised tools spend schema tokens in every
+    // session, and the Workbench renders natively without the pointer — so
+    // viewTools defaults OFF. Safe from the phantom-tool defect: no prompt or
+    // skill names view.* (grep agent/prompt to keep that true).
+    const explorer = createAgentToolProfile('explorer', DEFAULT_AGENT_TOOL_SETTINGS)
+    const executor = createAgentToolProfile('executor', DEFAULT_AGENT_TOOL_SETTINGS)
+    expect(explorer.allowsStudioCommand('view.open')).toBe(false)
+    expect(executor.allowsStudioCommand('view.open')).toBe(false)
+    expect(executor.allowsStudioCommand('view.focus')).toBe(false)
+    expect(executor.allowsStudioCommand('view.select')).toBe(false)
+
+    const optedIn = normalizeAgentToolSettings({ ...DEFAULT_AGENT_TOOL_SETTINGS, viewTools: true })
+    expect(createAgentToolProfile('executor', optedIn).allowsStudioCommand('view.open')).toBe(true)
+    expect(createAgentToolProfile('explorer', optedIn).allowsStudioCommand('view.select')).toBe(true)
+  })
+
   it('registers no wiki commands at all (the wiki is plain files; the agent reads and writes it through the file tools)', () => {
     // The former wiki.* command family (and its opt-in setting) is gone: wiki
     // pages are markdown files the agent reaches with read/grep/write, like

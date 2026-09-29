@@ -28,6 +28,12 @@ const groups: ReadonlyArray<{
       { key: 'mcp', label: 'mcp', hint: 'mcpHint' },
     ],
   },
+  {
+    title: 'experimental',
+    items: [
+      { key: 'viewTools', label: 'viewTools', hint: 'viewToolsHint' },
+    ],
+  },
 ]
 
 function update(key: AgentToolSettingKey, event: Event) {

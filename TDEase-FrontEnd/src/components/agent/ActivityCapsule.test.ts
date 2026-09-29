@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { ref } from 'vue'
 import ActivityCapsule from './ActivityCapsule.vue'
 import { useAgentTabsStore } from '@/stores/agentTabs'
+import { useAgentStore } from '@/stores/agent'
 import type { TurnHudState } from './TurnHud.vue'
 import type { AgentChatMessage, ToolCall } from '@/stores/chat-types'
 
@@ -85,5 +86,47 @@ describe('ActivityCapsule spine meta', () => {
     const tabs = useAgentTabsStore().tabs
     expect(tabs).toHaveLength(1)
     expect(tabs[0].key).toMatchObject({ kind: 'agent-plan' })
+  })
+})
+
+/**
+ * The resting pill's contract (the trailer's rule: at rest, say what happened
+ * and where to look, not the session's posture — the card's mode row owns
+ * that): a resolved turn names the files it produced, one file by name, many
+ * by count; blocked/failed name the outcome; the quiet outcomes keep the
+ * mindset label.
+ */
+describe('ActivityCapsule resting pill', () => {
+  beforeEach(() => setActivePinia(createPinia()))
+
+  function mountResting(lastOutcome: 'resolved' | 'blocked' | 'failed' | null, citations?: string) {
+    const agents = useAgentStore()
+    agents.bindWorkspace('ws-test')
+    agents.createSession()
+    if (citations) {
+      const msg = agents.addMessage(agents.active!.id, 'assistant')
+      msg.blocks = [{ type: 'text', text: citations }] as never
+    }
+    return mount(ActivityCapsule, {
+      props: { hud, mindset: 'executor', lastOutcome, sending: false, suspended: false, expanded: false },
+      global: { provide: { chatMessages: ref([]) } },
+    })
+  }
+
+  it('a resolved turn names its single produced file', () => {
+    const wrapper = mountResting('resolved', '![fig](runs/r1/spec.png)')
+    expect(wrapper.find('.capsule-pill__text').text()).toBe('完成 · 写入 spec.png')
+  })
+
+  it('several files collapse to a count', () => {
+    const wrapper = mountResting('resolved', '![fig](runs/r1/spec.png)\n![](runs/r1/candidates.tsv)')
+    expect(wrapper.find('.capsule-pill__text').text()).toBe('完成 · 2 个文件')
+  })
+
+  it('resolved without artifacts, blocked, and idle keep honest short labels', () => {
+    expect(mountResting('resolved').find('.capsule-pill__text').text()).toBe('已完成')
+    expect(mountResting('blocked').find('.capsule-pill__text').text()).toBe('待确认')
+    expect(mountResting('failed').find('.capsule-pill__text').text()).toBe('失败')
+    expect(mountResting(null).find('.capsule-pill__text').text()).toBe('执行')
   })
 })

@@ -16,6 +16,7 @@
 import { i18n } from '@/locales'
 import { useWorkspaceStore } from '@/stores/workspace'
 import { readWorkspaceBlob } from '@/services/workspace/desktopWorkspace'
+import { injectHtmlFit } from '@/utils/html-fit'
 import {
   beginMediaLoad,
   cachedMediaBlob,
@@ -235,6 +236,12 @@ export function hydrateInlineMedia(target: HTMLElement): void {
 // button hands the file to the OS's default app. The iframe mounts into the
 // body on scroll-in. It renders as HTML because the workspace byte reader
 // stamps the blob's MIME from the extension.
+//
+// The served bytes pass through injectHtmlFit (utils/html-fit): the iframe is
+// sandboxed with an opaque origin, so scale-to-width cannot be driven from
+// this page — the fit script must ship inside the document. The cache holds
+// the fitted blob, and every .html path is only ever consumed as a frame, so
+// no raw-bytes consumer of this cache is affected.
 
 const frameObservers = new WeakMap<HTMLElement, IntersectionObserver>()
 
@@ -301,7 +308,9 @@ async function loadFrameBody(target: HTMLElement, frame: HTMLElement): Promise<v
   beginMediaLoad(key)
   try {
     const blob = await readWorkspaceBlob(rootPath, path)
-    const url = URL.createObjectURL(blob)
+    // Frame documents serve fitted: wide content scales to the frame width.
+    const fitted = new Blob([injectHtmlFit(await blob.text())], { type: blob.type || 'text/html' })
+    const url = URL.createObjectURL(fitted)
     cacheMediaBlob(key, url)
     applyFrameSrc(target, path, url)
   } catch {

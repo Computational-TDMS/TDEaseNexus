@@ -53,7 +53,10 @@
     "spineTitle": "Aufgaben",
     "spineOpenPlan": "Aufgabenplan öffnen",
     "spineBranch": "{count} Hintergrundläufe",
-    "spineCalls": "{count} Tool-Aufrufe"
+    "spineCalls": "{count} Tool-Aufrufe",
+    "pillDone": "Fertig",
+    "pillDoneFile": "Fertig · {name} geschrieben",
+    "pillDoneFiles": "Fertig · {count} Dateien"
   },
   "tab": {
     "label": "Agent-Ansichten",
@@ -293,7 +296,8 @@
   "processFold": {
     "expandDetails": "Details anzeigen",
     "worked": "ausgeführt",
-    "failures": "{count} fehlgeschlagen | {count} fehlgeschlagen"
+    "failures": "{count} fehlgeschlagen | {count} fehlgeschlagen",
+    "working": "Arbeitet"
   },
   "permissionMode": {
     "askLabel": "Nachfragen (Nebenwirkungen bestätigen)",
@@ -343,7 +347,10 @@
     "ptcExec": "Werkzeugskript ausführen",
     "orchestrateRun": "Orchestrierung starten",
     "orchestrateWait": "Auf Orchestrierung warten",
-    "plan": "Plan aktualisieren"
+    "plan": "Plan aktualisieren",
+    "viewOpen": "Im Viewer öffnen",
+    "viewFocus": "Viewer fokussieren",
+    "viewSelect": "Im Viewer auswählen"
   },
   "mermaid": {
     "showSource": "Quelltext anzeigen",
@@ -373,5 +380,26 @@
     "inputPlaceholder": "Frag zum Zitat…",
     "send": "Senden",
     "gone": "Dieser Seitenchat existiert nicht mehr."
+  },
+  "taskTree": {
+    "ariaLabel": "Aufgabenbaum",
+    "title": "Plan",
+    "showReasoning": "Überlegungen zeigen",
+    "hideReasoning": "Überlegungen ausblenden",
+    "opened": "geöffnet",
+    "openedIn": "geöffnet in {viewer}",
+    "runStatus": {
+      "QUEUED": "wartend",
+      "RUNNING": "läuft",
+      "SUCCEEDED": "erfolgreich",
+      "FAILED": "fehlgeschlagen",
+      "CANCELLED": "abgebrochen"
+    },
+    "subagentState": {
+      "running": "arbeitet",
+      "returned": "zurückgekehrt",
+      "blocked": "blockiert",
+      "cancelled": "abgebrochen"
+    }
   }
 }

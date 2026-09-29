@@ -111,6 +111,19 @@ const workspaceName = computed(() => {
     </button>
     <span class="status-bar__spacer" />
 
+    <!-- Follow agent: whether the Agent's view.* opens take focus. -->
+    <button
+      type="button"
+      class="status-bar__panel-toggle status-bar__follow"
+      :class="{ 'is-active': settingsStore.followAgent }"
+      :aria-pressed="settingsStore.followAgent"
+      :title="t('workbench.statusBar.followAgentHint')"
+      @click="settingsStore.setFollowAgent(!settingsStore.followAgent)"
+    >
+      <span class="status-bar__follow-dot" aria-hidden="true" />
+      {{ t('workbench.statusBar.followAgent') }}
+    </button>
+
     <!-- Runs/Logs dock toggles + the Agent sidebar toggle: fixed chrome, never
          floating over content. -->
     <div class="status-bar__panels" role="group" :aria-label="t('workbench.activityDock.label')">
@@ -140,6 +153,16 @@ const workspaceName = computed(() => {
 </template>
 
 <style scoped>
+.status-bar__follow { display: inline-flex; align-items: center; gap: 6px; }
+.status-bar__follow-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--color-text-muted);
+  transition: background var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.status-bar__follow.is-active .status-bar__follow-dot {
+  background: var(--color-live);
+  box-shadow: none;
+}
 .status-bar {
   flex: none;
   display: flex;

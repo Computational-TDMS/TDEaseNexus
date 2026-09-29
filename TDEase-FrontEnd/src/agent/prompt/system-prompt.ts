@@ -38,11 +38,12 @@ const ASSET_SEQUENCE: ReadonlyArray<{
 /**
  * The tool-policy family, split from the former monolithic default_tool_policy.
  * The fragments are assembled in this fixed order between base_role and
- * delegation_policy. The explorer-only fragments (native_toolchain,
- * analysis_layout, evidence_presentation) are gated by mindset: executor
- * drives `tdease.workflow.run` and does not carry the tdeasenexus-toolbox
- * chemistry usage or the analysis slug layout, so it reads only the universal
- * three. All map to the same external 'tool-policy' slot in prompt-pipeline's
+ * delegation_policy. The explorer-only fragments (wiki_policy,
+ * native_toolchain, analysis_layout, evidence_presentation) are gated by
+ * mindset: executor drives `tdease.workflow.run` and does not carry the
+ * tdeasenexus-toolbox chemistry usage, the analysis slug layout, or the
+ * wiki/verdict-card experience loop, so it reads only the universal three.
+ * All map to the same external 'tool-policy' slot in prompt-pipeline's
  * SLOT_BY_KIND.
  */
 const TOOL_POLICY_SEQUENCE: ReadonlyArray<{
@@ -51,7 +52,7 @@ const TOOL_POLICY_SEQUENCE: ReadonlyArray<{
   mindsets?: readonly MindsetId[]
 }> = Object.freeze([
   { kind: 'tool_policy', asset: PROMPT_ASSETS.toolPolicy },
-  { kind: 'wiki_policy', asset: PROMPT_ASSETS.wikiPolicy },
+  { kind: 'wiki_policy', asset: PROMPT_ASSETS.wikiPolicy, mindsets: ['explorer'] },
   { kind: 'native_toolchain', asset: PROMPT_ASSETS.nativeToolchain, mindsets: ['explorer'] },
   { kind: 'scientific_honesty', asset: PROMPT_ASSETS.scientificHonesty },
   { kind: 'terminology', asset: PROMPT_ASSETS.terminology },

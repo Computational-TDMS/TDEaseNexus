@@ -53,7 +53,10 @@
     "spineTitle": "任务",
     "spineOpenPlan": "查看任务计划",
     "spineBranch": "{count} 个后台运行",
-    "spineCalls": "{count} 次工具调用"
+    "spineCalls": "{count} 次工具调用",
+    "pillDone": "已完成",
+    "pillDoneFile": "完成 · 写入 {name}",
+    "pillDoneFiles": "完成 · {count} 个文件"
   },
   "tab": {
     "label": "Agent 视图",
@@ -293,7 +296,8 @@
   "processFold": {
     "expandDetails": "展开详情",
     "worked": "工作了",
-    "failures": "{count} 个失败"
+    "failures": "{count} 个失败",
+    "working": "工作中"
   },
   "permissionMode": {
     "askLabel": "询问（副作用需确认）",
@@ -343,7 +347,10 @@
     "ptcExec": "运行工具脚本",
     "orchestrateRun": "运行编排脚本",
     "orchestrateWait": "等待编排",
-    "plan": "更新计划"
+    "plan": "更新计划",
+    "viewOpen": "在查看器中打开",
+    "viewFocus": "聚焦查看器",
+    "viewSelect": "在查看器中选中"
   },
   "mermaid": {
     "showSource": "查看源码",
@@ -373,5 +380,26 @@
     "inputPlaceholder": "追问这段内容…",
     "send": "发送",
     "gone": "该侧聊会话已不存在。"
+  },
+  "taskTree": {
+    "ariaLabel": "任务树",
+    "title": "计划",
+    "showReasoning": "显示推理",
+    "hideReasoning": "隐藏推理",
+    "opened": "已打开",
+    "openedIn": "已在 {viewer} 中打开",
+    "runStatus": {
+      "QUEUED": "排队中",
+      "RUNNING": "运行中",
+      "SUCCEEDED": "已完成",
+      "FAILED": "失败",
+      "CANCELLED": "已取消"
+    },
+    "subagentState": {
+      "running": "工作中",
+      "returned": "已返回",
+      "blocked": "受阻",
+      "cancelled": "已取消"
+    }
   }
 }

@@ -107,6 +107,7 @@ export const AGENT_TOOL_SETTING_KEYS = [
   'workspaceWrite',
   'shell',
   'mcp',
+  'viewTools',
 ] as const
 
 export type AgentToolSettingKey = (typeof AGENT_TOOL_SETTING_KEYS)[number]
@@ -127,6 +128,11 @@ export const DEFAULT_AGENT_TOOL_SETTINGS: AgentToolSettings = Object.freeze({
   workspaceWrite: true,
   shell: true,
   mcp: true,
+  // The one deliberate default-OFF: view.* is an experimental beta (the
+  // Workbench viewer pointer). Advertised tools spend context tokens in
+  // EVERY session's schema, and no prompt or skill names view.* — so the
+  // default-off here cannot recreate the phantom-tool defect.
+  viewTools: false,
 })
 
 /** Fill missing keys with defaults; unknown keys are dropped. */

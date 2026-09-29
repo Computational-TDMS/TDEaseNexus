@@ -358,6 +358,8 @@ export interface RuntimePush {
   /** Runs DISPATCHED by this session, with live status — the Agent page's
    *  run list shows only these, never the workspace's run history. */
   sessionRuns?(sessionId: string, snapshot: ReadonlyArray<import('../../src/studio/domain/run').RunSummary>): void
+  /** Agent → Workbench viewer commands (`view.*`): open / focus / select. */
+  view?(sessionId: string, envelope: import('../../src/contracts/view-runtime').ViewCommandEnvelope): void
   /** Live context occupancy. */
   contextUsage?(sessionId: string, usage: import('../../src/contracts/agent-runtime').ContextUsageSnapshot): void
 }

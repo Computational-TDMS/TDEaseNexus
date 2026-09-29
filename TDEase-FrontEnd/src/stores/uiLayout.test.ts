@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { nextTick } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
 import type { UiStateRepository } from '@/studio/ports/ui-state-repository'
-import { useUiLayoutStore } from './uiLayout'
+import { CENTER_FLOOR, AGENT_SIDEBAR_WIDTH_RANGE, NAVIGATOR_WIDTH_RANGE, useUiLayoutStore } from './uiLayout'
 
 function createFakeRepository(initial: Record<string, unknown> = {}): UiStateRepository {
   const store = new Map<string, unknown>(Object.entries(initial))
@@ -250,5 +251,51 @@ describe('useUiLayoutStore', () => {
 
     store.setAgentSidebarCollapsed(false)
     expect(store.agentSidebarCollapsed).toBe(false)
+  })
+
+  // The navigator, the document surface and the agent sidebar share ONE axis.
+  // Both docks used to hold absolute px (420 + 440), so a 760px window left
+  // the surface at 0 and pushed the sidebar 156px past the window edge
+  // (measured 2026-09-27). Each dock's ceiling now reserves the surface floor
+  // AND its sibling's minimum, so neither can overrun the axis.
+  it('shares one axis between both docks so a shrunken window cannot overrun it', async () => {
+    const store = useUiLayoutStore()
+    store.hydrate('ws-1', createFakeRepository())
+
+    // A 760px window: 704 of workbench page after the icon rail, and 410 left
+    // for the surface + sidebar once the navigator has given way.
+    store.setAgentSidebarCollapsed(false)
+    store.setNavigatorAxis(704)
+    store.setAgentSidebarAxis(410)
+    await nextTick()
+
+    expect(store.navigatorWidth).toBe(704 - CENTER_FLOOR - AGENT_SIDEBAR_WIDTH_RANGE.min)
+    expect(store.agentSidebarWidth).toBe(AGENT_SIDEBAR_WIDTH_RANGE.min)
+    // The two docks plus the surface floor fit the axis exactly — no overflow.
+    expect(store.navigatorWidth + store.agentSidebarWidth + CENTER_FLOOR).toBe(704)
+    expect(store.navigatorBounds).toEqual({ min: 240, max: 294 })
+  })
+
+  it('lets a dock open below its declared minimum rather than overrun a tiny window', async () => {
+    const store = useUiLayoutStore()
+    store.hydrate('ws-1', createFakeRepository())
+    store.setAgentSidebarCollapsed(false)
+
+    // 240 (navigator) + 240 (sidebar) + 170 (floor) cannot fit in 500.
+    store.setNavigatorAxis(500)
+    await nextTick()
+
+    const ceiling = 500 - CENTER_FLOOR - AGENT_SIDEBAR_WIDTH_RANGE.min
+    expect(ceiling).toBeLessThan(NAVIGATOR_WIDTH_RANGE.min)
+    expect(store.navigatorBounds).toEqual({ min: ceiling, max: ceiling })
+    expect(store.navigatorWidth).toBe(ceiling)
+  })
+
+  it('falls back to the declared ranges before the Workbench has measured anything', () => {
+    const store = useUiLayoutStore()
+    // No measurement (axis 0) → exactly the old behaviour, so a boot path that
+    // never reports an axis cannot tighten a dock to nothing.
+    expect(store.navigatorBounds).toEqual(NAVIGATOR_WIDTH_RANGE)
+    expect(store.agentSidebarBounds).toEqual({ min: 0, max: 0 }) // collapsed
   })
 })

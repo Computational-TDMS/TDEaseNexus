@@ -6,11 +6,14 @@ import type {
   SpectrumViewerInput,
   TableData,
 } from '@/types/visualization'
+import type { MsAlignSpectrum } from './msalign'
 import { projectDatasetRowsByIdentity } from '@/services/visualization/selectionProjection'
 
 const MZ_PATTERNS = ['m/z', 'mz']
 const INTENSITY_PATTERNS = ['intensity', 'apexintensity', 'abundance', 'height']
 const MASS_PATTERNS = ['mass']
+const SPECTRUM_ID_PATTERNS = ['spectrum id', 'spectrum_id', 'spectrumid']
+const SCAN_PATTERNS = ['scan']
 
 interface NormalizeSpectrumInputParams {
   data?: TableData | null
@@ -175,4 +178,53 @@ function normalizeInteractionConfig(
     ...(selectionKeyField ? { selectionKeyField } : {}),
     ...(broadcastColumn ? { broadcastColumn } : {}),
   }
+}
+
+// ---------------------------------------------------------------------------
+// Peak table → scan-attributed spectra (fragment-matching input)
+// ---------------------------------------------------------------------------
+
+/**
+ * Convert a `peak_table` dataset into the `MsAlignSpectrum[]` shape the PRSM
+ * fragment matching consumes. A table participates only when it attributes
+ * its rows to scans: rows group by a spectrum-id/scan column, and a table
+ * without one contributes nothing — peaks that cannot be attributed to a
+ * scan must never be matched against whichever row happens to be selected.
+ */
+export function peakTableToSpectra(dataset: Dataset): MsAlignSpectrum[] {
+  const columns = dataset.columns.map((column) => ({ name: column.name, key: column.name.toLowerCase() }))
+  const findColumn = (patterns: string[]): string | undefined =>
+    columns.find((column) => patterns.some((pattern) => column.key.includes(pattern)))?.name
+  const mzColumn = findColumn([...MZ_PATTERNS, ...MASS_PATTERNS])
+  if (!mzColumn) return []
+  const idColumn = findColumn(SPECTRUM_ID_PATTERNS)
+  const scanColumn = findColumn(SCAN_PATTERNS)
+  if (!idColumn && !scanColumn) return []
+  const intensityColumn = findColumn(INTENSITY_PATTERNS)
+
+  const groups = new Map<number, { spectrumId: number | undefined; scan: number | undefined; peaks: Array<{ mz: number; intensity: number }> }>()
+  for (const row of dataset.rows) {
+    const spectrumId = idColumn ? finiteOrUndefined(row[idColumn]) : undefined
+    const scan = scanColumn ? finiteOrUndefined(row[scanColumn]) : undefined
+    const key = spectrumId ?? scan
+    if (key === undefined) continue
+    const mz = finiteOrUndefined(row[mzColumn])
+    if (mz === undefined) continue
+    const intensity = (intensityColumn ? finiteOrUndefined(row[intensityColumn]) : undefined) ?? 0
+    const group = groups.get(key) ?? { spectrumId, scan, peaks: [] }
+    group.peaks.push({ mz, intensity })
+    groups.set(key, group)
+  }
+
+  return [...groups.entries()].map(([key, group]) => ({
+    spectrumId: group.spectrumId ?? key,
+    scan: group.scan,
+    peaks: group.peaks.map((peak, index) => ({ index, ...peak })),
+    metadata: {},
+  }))
+}
+
+/** The file's `toFiniteNumber` answers `number | null`; the matcher wants absent, not null. */
+function finiteOrUndefined(value: unknown): number | undefined {
+  return toFiniteNumber(value) ?? undefined
 }

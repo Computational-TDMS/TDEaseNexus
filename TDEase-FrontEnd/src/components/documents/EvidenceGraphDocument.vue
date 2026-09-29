@@ -62,6 +62,18 @@ const failure = computed<StructuredError | null>(() => evidenceGraphStore.error
 
 const hasWorkspace = computed(() => workspaceStore.hasWorkspace)
 
+/**
+ * The claim verdict in the paradigm's own five-state vocabulary
+ * (`evidence.write` statuses). Unknown values render verbatim — a status this
+ * surface does not know is still shown, never swallowed.
+ */
+const STATUS_KEYS = ['proposed', 'challenged', 'inconclusive', 'supported', 'refuted'] as const
+function statusLabel(status: string): string {
+  return STATUS_KEYS.includes(status as typeof STATUS_KEYS[number])
+    ? t(`workbench.evidenceGraph.statusValue.${status}`)
+    : status
+}
+
 /** Datasets/table rows come from the shared projection service — the same
  *  layering and shapes any other surface gets, not a view-local fork. */
 const view = computed(() => graph.value ? projectWorkspaceEvidenceGraph(graph.value) : null)
@@ -241,7 +253,7 @@ async function exportPng() {
             <tbody>
               <tr v-for="row in view?.rows ?? []" :key="row.path" :data-status="row.status">
                 <td class="evidence-graph-document__mono">{{ row.ref }}</td>
-                <td>{{ row.status }}</td>
+                <td>{{ statusLabel(row.status) }}</td>
                 <td>{{ row.summary }}</td>
                 <td class="evidence-graph-document__mono">{{ row.path }}</td>
                 <td>{{ row.relations }}</td>

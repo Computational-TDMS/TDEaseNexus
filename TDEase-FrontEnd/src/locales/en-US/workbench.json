@@ -50,7 +50,8 @@
     "closeDirtyConfirm": "This document has unsaved changes. Close it anyway?",
     "closeDirtyTitle": "Unsaved changes",
     "closeDirtyConfirmAction": "Close without saving",
-    "closeDirtyCancelAction": "Keep open"
+    "closeDirtyCancelAction": "Keep open",
+    "openedByAgent": "Opened by the Agent"
   },
   "runIndex": {
     "columnStatus": "Status",
@@ -155,7 +156,9 @@
       "table": "Table",
       "featuremap": "Feature Map",
       "spectrum": "Spectrum",
-      "variants": "Variants"
+      "variants": "Variants",
+      "discrimination": "Candidates",
+      "ledger": "Mass ledger"
     },
     "fasta": {
       "sequences": "sequences",
@@ -210,6 +213,15 @@
       "loadFailedRemedy": "Check that the FASTA and this table belong to the same search, then retry."
     }
   },
+  "massLedger": {
+    "observed": "Observed shift",
+    "model": "Model",
+    "modelShift": "Model shift",
+    "error": "Closure error",
+    "residual": "Unassigned residual",
+    "shift": "Mass shift",
+    "site": "site {site}"
+  },
   "agent": {
     "label": "Agent",
     "emptyTitle": "No Workspace is open",
@@ -227,6 +239,7 @@
     "emptyRuns": "No runs in this Workspace yet. Submit an analysis and its progress scrolls here.",
     "emptyLogs": "No logs yet. Once a run starts, engine output arrives here line by line.",
     "viewLog": "View log",
+    "runProgress": "{finished}/{total} jobs",
     "refreshLog": "Refresh",
     "positionBottom": "Move panel to bottom",
     "positionRight": "Move panel to right",
@@ -247,7 +260,9 @@
     "backendReconnect": "Reconnect",
     "backendRetryWithError": "Reconnect to backend. Last error: {error}",
     "toggleRuns": "Runs panel",
-    "toggleLogs": "Logs panel"
+    "toggleLogs": "Logs panel",
+    "followAgent": "Follow agent",
+    "followAgentHint": "When the Agent opens or points a viewer, bring it to front. Off: it opens in the background, marked until you look."
   },
   "layout": {
     "resizeNavigator": "Resize navigator",
@@ -283,7 +298,10 @@
     "shell": "Shell",
     "shellHint": "Enable bash in Executor, still governed by permission policy. Off by default.",
     "mcp": "MCP",
-    "mcpHint": "Add the configured MCP server bridge to the Agent tool table. Off by default."
+    "mcpHint": "Add the configured MCP server bridge to the Agent tool table. Off by default.",
+    "experimental": "Experimental",
+    "viewTools": "Viewer pointer (view.*)",
+    "viewToolsHint": "Experimental beta: lets the Agent open viewers, focus regions, or select ions. Advertised tools spend schema tokens in every session — native viewer rendering never depends on it. Off by default."
   },
   "settingsPermissions": {
     "decisionAllow": "Allow",
@@ -433,6 +451,13 @@
     "edgesTitle": "Relations",
     "claimRef": "Claim",
     "status": "Status",
+    "statusValue": {
+      "proposed": "Proposed",
+      "challenged": "Challenged",
+      "inconclusive": "Inconclusive",
+      "supported": "Supported",
+      "refuted": "Refuted"
+    },
     "summary": "Statement",
     "path": "File",
     "relations": "Relations",
@@ -600,7 +625,10 @@
       "densityCompact": "Compact",
       "theme": "Theme",
       "themeLabel": "Color theme",
-      "themeHint": "The 4 Catppuccin palettes. Also switchable from the title bar."
+      "themeHint": "The 4 Catppuccin palettes. Also switchable from the title bar.",
+      "agentTranscript": "Agent transcript",
+      "showReasoning": "Show reasoning",
+      "showReasoningHint": "Show the Agent's thinking and raw tool calls inline while it works. Off keeps them folded behind one line; progress reads from the task tree. Failed or blocked turns always show in full."
     },
     "general": {
       "providerModel": "Provider & Model",

@@ -59,20 +59,19 @@ describe('SystemPromptAssembler', () => {
 
     expect(assets.readText).toHaveBeenNthCalledWith(1, PROMPT_ASSETS.baseRole)
     expect(assets.readText).toHaveBeenNthCalledWith(2, PROMPT_ASSETS.toolPolicy)
-    expect(assets.readText).toHaveBeenNthCalledWith(3, PROMPT_ASSETS.wikiPolicy)
-    expect(assets.readText).toHaveBeenNthCalledWith(4, PROMPT_ASSETS.scientificHonesty)
-    expect(assets.readText).toHaveBeenNthCalledWith(5, PROMPT_ASSETS.terminology)
-    expect(assets.readText).toHaveBeenNthCalledWith(6, PROMPT_ASSETS.delegationPolicy)
-    expect(assets.readText).toHaveBeenNthCalledWith(7, PROMPT_ASSETS.executorMode)
-    expect(assets.readText).toHaveBeenNthCalledWith(8, PROMPT_ASSETS.safetyPolicy)
-    // executor mindset skips the explorer-only fragments (native_toolchain, analysis_layout, evidence_presentation)
+    expect(assets.readText).toHaveBeenNthCalledWith(3, PROMPT_ASSETS.scientificHonesty)
+    expect(assets.readText).toHaveBeenNthCalledWith(4, PROMPT_ASSETS.terminology)
+    expect(assets.readText).toHaveBeenNthCalledWith(5, PROMPT_ASSETS.delegationPolicy)
+    expect(assets.readText).toHaveBeenNthCalledWith(6, PROMPT_ASSETS.executorMode)
+    expect(assets.readText).toHaveBeenNthCalledWith(7, PROMPT_ASSETS.safetyPolicy)
+    // executor mindset skips the explorer-only fragments (wiki_policy, native_toolchain, analysis_layout, evidence_presentation)
+    expect(assets.readText).not.toHaveBeenCalledWith(PROMPT_ASSETS.wikiPolicy)
     expect(assets.readText).not.toHaveBeenCalledWith(PROMPT_ASSETS.nativeToolchain)
     expect(assets.readText).not.toHaveBeenCalledWith(PROMPT_ASSETS.analysisLayout)
     expect(assets.readText).not.toHaveBeenCalledWith(PROMPT_ASSETS.evidencePresentation)
     expect(snapshot.content).toBe([
       'BASE ROLE',
       'TOOL POLICY',
-      'WIKI POLICY',
       'SCIENTIFIC HONESTY',
       'TERMINOLOGY',
       'DELEGATION POLICY',
@@ -84,7 +83,7 @@ describe('SystemPromptAssembler', () => {
       '## Workspace Context\n\nWORKSPACE CONTEXT',
     ].join('\n\n---\n\n'))
     expect(snapshot.fragments.map(({ kind }) => kind)).toEqual([
-      'base_role', 'tool_policy', 'wiki_policy', 'scientific_honesty', 'terminology', 'delegation_policy', 'mode', 'safety_policy',
+      'base_role', 'tool_policy', 'scientific_honesty', 'terminology', 'delegation_policy', 'mode', 'safety_policy',
       'skill', 'skill', 'skill', 'workspace_context',
     ])
     expect(snapshot.skills.map(({ id }) => id)).toEqual([

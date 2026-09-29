@@ -72,7 +72,7 @@ export interface AgentFileGroup {
 
 /** The single extension vocabulary (fileTypes), with `file` as the honest
  *  fallback for an unknown extension — the renderer cards it, so it collects. */
-function classifyKind(path: string): AgentFileKind {
+export function classifyKind(path: string): AgentFileKind {
   const ext = extensionOf(path)
   if (ext === 'svg') return 'svg'
   if (HTML_EXTENSIONS.has(ext)) return 'html'

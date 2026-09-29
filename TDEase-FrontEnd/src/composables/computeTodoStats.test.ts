@@ -48,8 +48,8 @@ describe('computeTodoStats', () => {
       act('m4', [tool('tdease.bash'), todoTool(plan2)]), // bash before the write → the OLD era
       act('m5', [tool('tdease.edit')]),                  // after the write → the new era
     ])).value
-    expect(stats.get('0:排查构建')).toEqual({ calls: 4, icons: ['terminal', 'search'] })
-    expect(stats.get('1:写修复')).toEqual({ calls: 1, icons: ['pencil'] })
+    expect(stats.get('0:排查构建')).toEqual({ calls: 4, icons: ['terminal', 'search'], products: [] })
+    expect(stats.get('1:写修复')).toEqual({ calls: 1, icons: ['pencil'], products: [] })
     expect(stats.size).toBe(2)
   })
 
@@ -61,7 +61,7 @@ describe('computeTodoStats', () => {
       act('m3', [todoTool(planAllDone)]),                         // nothing in progress anymore → era off
       act('m4', [tool('tdease.bash')]),                           // no era → unattributed
     ])).value
-    expect(stats.get('0:排查构建')).toEqual({ calls: 1, icons: ['file'] })
+    expect(stats.get('0:排查构建')).toEqual({ calls: 1, icons: ['file'], products: [] })
     expect(stats.size).toBe(1)
   })
 
@@ -70,6 +70,20 @@ describe('computeTodoStats', () => {
       act('m1', [todoTool(plan1)]),
       act('m2', [tool('tdease.bash', 'failed'), tool('tdease.read', 'cancelled'), tool('tdease.grep')]),
     ])).value
-    expect(stats.get('0:排查构建')).toEqual({ calls: 3, icons: ['terminal', 'file', 'search'] })
+    expect(stats.get('0:排查构建')).toEqual({ calls: 3, icons: ['terminal', 'file', 'search'], products: [] })
+  })
+
+  it('records what the era produced — the task tree branches — once per durable thing', () => {
+    const submit = { ...tool('tdease.workflow.submit'), resultPreview: { text: '{"status":"submitted","stage":"submitted","run":{"id":"run_abc123","title":"soybean-all"' } }
+    const failedSubmit = { ...tool('tdease.workflow.submit', 'failed'), resultPreview: { text: '{"run":{"id":"run_zzz"' } }
+    const edit = (path: string) => ({ ...tool('tdease.edit'), args: { path } })
+    const stats = computeTodoStats(ref([
+      act('m1', [todoTool(plan1)]),
+      act('m2', [submit, failedSubmit, edit('analysis/a.md'), edit('analysis/a.md'), tool('tdease.read')]),
+    ])).value
+    expect(stats.get('0:排查构建')?.products).toEqual([
+      { kind: 'run', runId: 'run_abc123', callId: submit.id },
+      { kind: 'file', path: 'analysis/a.md', callId: expect.any(String) },
+    ])
   })
 })

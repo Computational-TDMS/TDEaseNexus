@@ -21,6 +21,7 @@
  * using the throwing variants in `agentSessionStorage.ts`.
  */
 
+import type { ViewBridge } from '@/contracts/view-runtime'
 import type { AgentBridge } from '@/contracts/agent-runtime'
 import type { SubagentBridge } from '@/contracts/subagent-runtime'
 import type { JobBridge } from '@/contracts/job-runtime'
@@ -76,6 +77,7 @@ export interface TDEaseDesktop {
   subagent?: SubagentBridge
   job?: JobBridge
   sessionRun?: SessionRunBridge
+  agentView?: ViewBridge
   runs?: { subscribe(listener: (event: { workspaceId: string }) => void): () => void }
   agentProviders?: {
     read(): Promise<{ providers: Record<string, { configured: boolean; name?: string; baseUrl?: string; models?: string[] }> }>
@@ -367,6 +369,11 @@ export function desktopJobBridge(): JobBridge | undefined {
 /** The read-side session-run bridge, or `undefined` outside Electron. */
 export function desktopSessionRunBridge(): SessionRunBridge | undefined {
   return desktop()?.sessionRun
+}
+
+/** Agent → Workbench viewer commands (`view.*`). Absent outside Electron. */
+export function desktopAgentViewBridge(): ViewBridge | undefined {
+  return desktop()?.agentView
 }
 
 /**

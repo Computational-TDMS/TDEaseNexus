@@ -22,7 +22,7 @@ function call(overrides: Partial<ToolCall> = {}): ToolCall {
 
 describe('tool-call registry', () => {
   it('falls through to the generic row for unknown tools', () => {
-    expect(resolveToolCallRenderer('tdease.bash')).toBe(resolveToolCallRenderer('tdease.unknown-plugin.widget'))
+    expect(resolveToolCallRenderer('tdease.read')).toBe(resolveToolCallRenderer('tdease.unknown-plugin.widget'))
   })
 
   it('plays the entry animation once per key, then reports settled', () => {

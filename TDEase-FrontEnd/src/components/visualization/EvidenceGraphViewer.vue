@@ -56,6 +56,13 @@
         >
           <rect :width="nodeWidth" :height="nodeHeight" rx="6" />
           <text x="12" y="20" class="evidence-graph__kind">{{ node.kind }}</text>
+          <text
+            v-if="node.status"
+            :x="nodeWidth - 12"
+            y="20"
+            text-anchor="end"
+            :class="['evidence-graph__status', `evidence-graph__status--${node.status}`]"
+          >{{ statusLabel(node.status) }}</text>
           <text x="12" y="40" class="evidence-graph__label">{{ node.label }}</text>
         </g>
       </svg>
@@ -67,6 +74,13 @@
       data-testid="evidence-node-detail"
     >
       <div class="evidence-graph__detail-kind">{{ selectedNode.kind }}</div>
+      <div
+        v-if="selectedNode.status"
+        class="evidence-graph__detail-status"
+      >
+        <span class="evidence-graph__detail-label">{{ $t('workbench.evidenceGraph.status') }}</span>
+        <span :class="['evidence-graph__status', `evidence-graph__status--${selectedNode.status}`]">{{ statusLabel(selectedNode.status) }}</span>
+      </div>
       <div class="evidence-graph__detail-title">{{ selectedNode.statement || selectedNode.id }}</div>
       <div v-if="selectedNode.rationale" class="evidence-graph__detail-copy">
         {{ selectedNode.rationale }}
@@ -90,8 +104,17 @@
 
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import type { Dataset } from '@/types/visualization'
+
+/**
+ * The claim verdict vocabulary — the evidence.write contract's five statuses
+ * (`evidence/*.prov.json`), the paradigm's own words. Labels localize through
+ * `workbench.evidenceGraph.statusValue.*`; anything outside the closed set
+ * renders verbatim rather than pretending it is known.
+ */
+const STATUS_KEYS = ['proposed', 'challenged', 'inconclusive', 'supported', 'refuted'] as const
 
 type EvidenceNode = Record<string, unknown> & {
   id: string
@@ -119,6 +142,14 @@ const props = withDefaults(defineProps<{
   viewSpec: () => ({}),
   unframed: false,
 })
+
+const { t } = useI18n()
+
+function statusLabel(status: string): string {
+  return STATUS_KEYS.includes(status as typeof STATUS_KEYS[number])
+    ? t(`workbench.evidenceGraph.statusValue.${status}`)
+    : status
+}
 
 const nodeWidth = 196
 const nodeHeight = 54
@@ -262,10 +293,26 @@ const selectedNode = computed(() => nodes.value.find((node) => node.id === selec
 .evidence-graph__node--conclusion rect { fill: var(--color-success-soft); stroke: var(--color-success); }
 .evidence-graph__node.is-selected rect,
 .evidence-graph__node:focus rect { stroke-width: 3; }
+/* The claim verdict, rendered: the tag on the node (SVG text paints by fill)
+   and the detail line (HTML paints by color) share the state classes — both
+   properties set so one vocabulary serves both outputs. Node strokes follow:
+   refuted/challenged claim trouble, inconclusive reads as a dashed outline
+   (an open bound, not a failure), supported keeps the claim green. */
+.evidence-graph__status { font-size: var(--text-label); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.evidence-graph__status--supported { fill: var(--color-success-text); color: var(--color-success-text); }
+.evidence-graph__status--refuted { fill: var(--color-error-text); color: var(--color-error-text); }
+.evidence-graph__status--challenged { fill: var(--color-warning-text); color: var(--color-warning-text); }
+.evidence-graph__status--proposed { fill: var(--color-info-text); color: var(--color-info-text); }
+.evidence-graph__status--inconclusive { fill: var(--color-text-muted); color: var(--color-text-muted); }
+.evidence-graph__node--status-refuted rect { stroke: var(--color-error); }
+.evidence-graph__node--status-challenged rect { stroke: var(--color-warning); }
+.evidence-graph__node--status-inconclusive rect { stroke-dasharray: 4 3; }
 .evidence-graph__kind { fill: var(--color-text-secondary); font-size: var(--text-label); font-weight: 700; text-transform: uppercase; }
 .evidence-graph__label { fill: var(--color-text); font-size: var(--text-sm); }
 .evidence-graph__detail { padding: 18px; border-left: var(--line-w) solid var(--line-seam); background: var(--color-bg-muted); overflow-wrap: anywhere; }
 .evidence-graph__detail-kind { color: var(--color-info-text); font-size: var(--text-label); font-weight: 700; text-transform: uppercase; }
+.evidence-graph__detail-status { display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-1); }
+.evidence-graph__detail-label { color: var(--color-text-secondary); font-size: var(--text-sm); }
 .evidence-graph__detail-title { margin-top: var(--space-2); color: var(--color-text); font-size: var(--text-md); font-weight: 650; line-height: 1.45; }
 .evidence-graph__detail-copy { margin-top: var(--space-3); color: var(--color-text-secondary); font-size: var(--text-sm); line-height: 1.5; }
 .evidence-graph__review { margin-top: 14px; padding-top: var(--space-3); border-top: var(--line-w) solid var(--line-hairline); }

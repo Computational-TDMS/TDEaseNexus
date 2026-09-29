@@ -105,6 +105,20 @@
         </Field>
       </div>
     </section>
+
+    <!-- Agent transcript: reasoning inline or folded behind the task tree -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">{{ t('workbench.settings.appearance.agentTranscript') }}</h2>
+      </div>
+      <div class="surface-card">
+        <Field :label="t('workbench.settings.appearance.showReasoning')" :description="t('workbench.settings.appearance.showReasoningHint')">
+          <template #default>
+            <el-switch :model-value="store.showReasoning" @update:model-value="store.setShowReasoning(Boolean($event))" />
+          </template>
+        </Field>
+      </div>
+    </section>
   </div>
 </template>
 

@@ -172,6 +172,23 @@
         <WorkflowDagViewer v-else-if="dagProjection" :projection="dagProjection" />
       </section>
 
+      <section
+        v-else-if="activeTarget === 'discrimination' && discrimination"
+        class="file-document__discrimination"
+        data-render-target="ms2-discrimination"
+      >
+        <Ms2DiscriminationViewer :model="discrimination" :directive="viewDirective" />
+      </section>
+
+      <!-- Kernel resolve-shift result: the shift's mass ledger. -->
+      <section
+        v-else-if="activeTarget === 'ledger' && ledger"
+        class="file-document__ledger"
+        data-render-target="mass-ledger"
+      >
+        <MassLedgerViewer :model="ledger" />
+      </section>
+
       <!-- TopFD `.msalign` / mzML: the shared spectrum-list browser. mzML
            entries carry no peaks in the index — peakLoader decodes the
            selected spectrum lazily from its byte range. -->
@@ -196,7 +213,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppButton from '@/components/primitives/AppButton.vue'
 import FastaViewer from './FastaViewer.vue'
@@ -207,6 +224,11 @@ import Empty from '@/components/primitives/Empty.vue'
 import ErrorCard from '@/components/primitives/ErrorCard.vue'
 import Skeleton from '@/components/primitives/Skeleton.vue'
 import ViewerSurface from '@/components/visualization/ViewerSurface.vue'
+import Ms2DiscriminationViewer from '@/components/visualization/Ms2DiscriminationViewer.vue'
+import { compareSiblingPath, isDiscriminationPayload, parseDiscrimination, type DiscriminationModel } from '@/services/visualization/ms2Discrimination'
+import MassLedgerViewer from '@/components/visualization/MassLedgerViewer.vue'
+import { isMassLedgerPayload, parseMassLedger, type MassLedgerModel } from '@/services/visualization/massLedger'
+import { useAgentViewStore } from '@/stores/agentView'
 import { BackendFailure } from '@/studio/domain/backend-failure'
 import { getDesktopFileOps, isDesktopFileOpsAvailable } from '@/services/workspace/desktopWorkspace'
 import { projectEvidenceGraph } from '@/services/workspace/evidence-graph'
@@ -249,7 +271,7 @@ const workspaceStore = useWorkspaceStore()
 
 type Status = 'loading' | 'success' | 'error' | 'unsupported'
 type FileRole = 'ordinary' | 'workflow' | 'evidence' | 'fasta' | 'toppic-proteins'
-type RenderTarget = 'source' | 'dag' | 'graph' | 'formatted' | 'table' | 'featuremap' | 'spectrum' | 'variants'
+type RenderTarget = 'source' | 'dag' | 'graph' | 'formatted' | 'table' | 'featuremap' | 'spectrum' | 'variants' | 'discrimination' | 'ledger'
 
 const status = ref<Status>('loading')
 /** The Backend's own failure envelope for the current load, when it gave one. */
@@ -262,6 +284,13 @@ const mzmlIndex = ref<MzmlIndex | null>(null)
 const mzmlSource = ref<MzmlSource | null>(null)
 const objectUrl = ref<string | null>(null)
 const textContent = ref('')
+/** chart-forge candidate-discrimination payload (+ sibling fragment-compare),
+ *  parsed once per load — `null` for every other file. */
+const discrimination = shallowRef<DiscriminationModel | null>(null)
+/** Kernel resolve-shift result — the shift's mass ledger — `null` otherwise. */
+const ledger = shallowRef<MassLedgerModel | null>(null)
+const agentView = useAgentViewStore()
+const viewDirective = computed(() => agentView.directiveFor(targetPath.value))
 const actionFailed = ref(false)
 const activeTarget = ref<RenderTarget>('source')
 const dagStatus = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -303,6 +332,8 @@ const renderTargets = computed<RenderTarget[]>(() => {
   if (role.value === 'evidence') return ['graph', 'source']
   if (role.value === 'fasta') return ['formatted', 'source']
   if (role.value === 'toppic-proteins') return ['table', 'variants', 'source']
+  if (discrimination.value) return ['discrimination', 'source']
+  if (ledger.value) return ['ledger', 'source']
   // Kind-driven targets for the two TopFD text formats. `.feature` is already
   // classified `table`, so its default target is the ag-grid table and the
   // Feature Map target reuses the same parsed rows. `.msalign` has no table
@@ -384,6 +415,33 @@ function revokeObjectUrl() {
   }
 }
 
+/** Candidate-discrimination JSON → native viewer model. The sibling
+ *  `_compare.json` (ghost ions) is read through the SAME origin as the file;
+ *  its absence only drops the ghosts. */
+async function readDiscrimination(text: string, run: { runId: string; path: string } | null): Promise<DiscriminationModel | null> {
+  let parsed: unknown
+  try { parsed = JSON.parse(text) } catch { return null }
+  if (!isDiscriminationPayload(parsed)) return null
+  let compare: unknown
+  const sibling = compareSiblingPath(targetPath.value)
+  if (sibling) {
+    try {
+      const blob = run ? await documentsStore.fetchRunFile(run.runId, sibling) : await documentsStore.readWorkspaceFile(sibling)
+      compare = JSON.parse(await blob.text())
+    } catch { compare = undefined }
+  }
+  try { return parseDiscrimination(parsed, compare) } catch { return null }
+}
+
+/** Kernel resolve-shift result → mass ledger model. A JSON that neither the
+ *  discrimination nor the ledger read model claims stays plain source text. */
+function readMassLedger(text: string): MassLedgerModel | null {
+  let parsed: unknown
+  try { parsed = JSON.parse(text) } catch { return null }
+  if (!isMassLedgerPayload(parsed)) return null
+  try { return parseMassLedger(parsed) } catch { return null }
+}
+
 async function load() {
   const currentLoad = ++loadVersion
   revokeObjectUrl()
@@ -392,6 +450,8 @@ async function load() {
   mzmlIndex.value = null
   mzmlSource.value = null
   textContent.value = ''
+  discrimination.value = null
+  ledger.value = null
   actionFailed.value = false
   toppicDatabaseFile.value = null
   variantLoadVersion += 1
@@ -470,6 +530,21 @@ async function load() {
       objectUrl.value = URL.createObjectURL(new Blob([blob!], { type: mediaMimeType(targetPath.value) }))
     } else {
       textContent.value = await blob!.text()
+      if (extensionOf(targetPath.value) === 'json') {
+        const model = await readDiscrimination(textContent.value, run)
+        if (currentLoad !== loadVersion) return
+        if (model) {
+          discrimination.value = model
+          activeTarget.value = 'discrimination'
+        } else {
+          const ledgerModel = readMassLedger(textContent.value)
+          if (currentLoad !== loadVersion) return
+          if (ledgerModel) {
+            ledger.value = ledgerModel
+            activeTarget.value = 'ledger'
+          }
+        }
+      }
     }
     status.value = 'success'
     if (role.value === 'workflow' && origin.value === 'workspace') void loadDag()

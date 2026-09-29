@@ -19,7 +19,7 @@ export function bareToolName(name: string): string {
 /** The process rows' glyph name (ToolIcon.vue renders it via @lucide/vue). */
 export type ToolIconName =
   | 'terminal' | 'file' | 'pencil' | 'folder' | 'search' | 'list' | 'spark' | 'thought' | 'circle'
-  | 'workflow' | 'run' | 'monitor' | 'log' | 'fileDown'
+  | 'workflow' | 'run' | 'monitor' | 'log' | 'fileDown' | 'view'
 
 export function toolIconName(name: string): ToolIconName {
   const bare = bareToolName(name)
@@ -38,6 +38,7 @@ export function toolIconName(name: string): ToolIconName {
   if (bare === 'grep') return 'search'
   if (bare === 'todo_write' || bare.startsWith('todo')) return 'list'
   if (bare === 'subagent.spawn') return 'spark'
+  if (bare.startsWith('view.')) return 'view'
   return 'spark'
 }
 
@@ -84,6 +85,9 @@ const ACTION_KEYS: Readonly<Record<string, string>> = {
   'ptc.exec': 'ptcExec',
   'orchestrate.run': 'orchestrateRun',
   'orchestrate.wait': 'orchestrateWait',
+  'view.open': 'viewOpen',
+  'view.focus': 'viewFocus',
+  'view.select': 'viewSelect',
 }
 
 /** The i18n key of the tool's action phrase (`agent.toolAction.*`), or

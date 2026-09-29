@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick } from 'vue'
+import { FragmentationCalculator, activationToIonTypes } from '@/composables/ms2-sequence'
 
 const { ms2SequenceProps } = vi.hoisted(() => ({
   ms2SequenceProps: [] as Array<Record<string, unknown>>,
@@ -9,7 +10,7 @@ const { ms2SequenceProps } = vi.hoisted(() => ({
 vi.mock('@/components/visualization/MS2SequenceViewer.vue', () => ({
   default: defineComponent({
     name: 'MS2SequenceViewerStub',
-    props: ['data', 'config', 'selection'],
+    props: ['data', 'config', 'selection', 'spectra'],
     emits: ['selectionChange', 'configChange'],
     setup(props) {
       ms2SequenceProps.push(props as unknown as Record<string, unknown>)
@@ -142,6 +143,41 @@ describe('MS2SpectrumViewer', () => {
     })
 
     expect(trackProps(wrapper).sequence).toBe('MAKIGK')
+  })
+
+  it('matches fragments client-side from a scan-attributed peak table on the port', async () => {
+    // Theoretical fragments of the row's proteoform become the peak table's
+    // rows — exact masses, so the match is decided by the wiring, not by
+    // chemistry tolerances.
+    const calculator = new FragmentationCalculator()
+    const theoretical = calculator.computeFragments('PEPTIDE', activationToIonTypes(''), 2, [], false)
+    expect(theoretical.length).toBeGreaterThan(0)
+
+    const wrapper = await mountViewer({
+      datasets: [
+        PRSM_DATASET,
+        {
+          id: 'peaks',
+          kind: 'peak_table',
+          columns: [
+            { name: 'Spectrum ID', type: 'integer' as const },
+            { name: 'mass', type: 'number' as const },
+            { name: 'intensity', type: 'number' as const },
+          ],
+          rows: theoretical.map((fragment) => ({
+            'Spectrum ID': 88,
+            mass: fragment.theoreticalMz,
+            intensity: 100,
+          })),
+        },
+      ],
+    })
+
+    const track = trackProps(wrapper)
+    expect(track.annotationState).toBe('matched')
+    expect((track.matchedFragments as unknown[]).length).toBeGreaterThan(0)
+    // The same spectra feed the inner viewer — one conversion, both consumers.
+    expect((ms2SequenceProps.at(-1)?.spectra as unknown[]).length).toBeGreaterThan(0)
   })
 
   it('renders no coverage section at all when no dataset resolves', async () => {

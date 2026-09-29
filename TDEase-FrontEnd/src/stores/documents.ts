@@ -332,16 +332,20 @@ export const useDocumentsStore = defineStore('documents', () => {
    * tab (§5.2). `preview: false` creates, or promotes an existing preview
    * into, an Open-tier tab. A `pinned: true` open is never a preview.
    */
-  function open(key: DocumentKey, options: { title: string; preview?: boolean; pinned?: boolean }): string {
+  function open(key: DocumentKey, options: { title: string; preview?: boolean; pinned?: boolean; background?: boolean }): string {
     const id = documentId(key)
-    const preview = options.pinned ? false : (options.preview ?? true)
+    // A background open (the Agent with Follow off) must not disturb what the
+    // user is reading: it never takes focus and never recycles the preview
+    // slot (replacing a preview the user is looking at would still yank it).
+    const preview = options.pinned || options.background ? false : (options.preview ?? true)
     const existing = openDocuments.value.find((doc) => doc.id === id)
 
     if (existing) {
       existing.title = options.title
       if (options.pinned) existing.pinned = true
-      existing.lastActiveAt = Date.now()
       if (!preview && previewDocumentId.value === id) previewDocumentId.value = null
+      if (options.background) return id
+      existing.lastActiveAt = Date.now()
       select(id)
       return id
     }
@@ -362,6 +366,12 @@ export const useDocumentsStore = defineStore('documents', () => {
     }
     openDocuments.value = [...openDocuments.value, doc]
     if (preview) previewDocumentId.value = id
+    if (options.background) {
+      const group = ensureFocusedGroup()
+      group.tabs = [...group.tabs, id]
+      if (!group.activeId) group.activeId = id
+      return id
+    }
     select(id)
     return id
   }
@@ -673,7 +683,7 @@ export const useDocumentsStore = defineStore('documents', () => {
    */
   function openWorkspaceFile(
     path: string,
-    options: { title?: string; preview?: boolean } = {},
+    options: { title?: string; preview?: boolean; background?: boolean } = {},
   ): string {
     const normalized = path.replaceAll('\\', '/')
 
@@ -689,7 +699,7 @@ export const useDocumentsStore = defineStore('documents', () => {
     const title = options.title ?? normalized.split('/').pop() ?? normalized
     return open(
       { kind: 'file', workspaceId: asWorkspaceId(workspaceId), path: asRelativePath(normalized) },
-      { title, preview: options.preview ?? false },
+      { title, preview: options.preview ?? false, background: options.background },
     )
   }
 
