@@ -1,0 +1,21 @@
+#!/bin/sh
+# Commit message convention (applies to NEW commits only; history is exempt).
+# Accepted: conventional commits — `<type>(<optional scope>): <subject>`
+# types: feat fix docs style refactor perf test build ci chore release revert
+# The legacy `[tag] ...` style is also accepted during the transition, so
+# old tooling/scripts keep working; new commits should prefer conventional.
+# Anchor to the SUBJECT line only: a conventional-looking line buried in the
+# body must not validate a garbage subject.
+subject=$(sed -n '1p' "$1")
+if printf '%s' "$subject" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|release|revert)(\([^\)]+\))?: .+'; then
+  exit 0
+fi
+if printf '%s' "$subject" | grep -qE '^\[(feat|fix|docs|refactor|release|docs|scaffold|update|ux|audit|doctrine|case[0-9]*|test)\] .+'; then
+  # legacy style tolerated but flagged, so the transition is visible
+  echo "note: legacy [tag] commit style — prefer 'type(scope): subject' going forward" >&2
+  exit 0
+fi
+echo "commit message rejected: use 'type(scope): subject'" >&2
+echo "  types: feat fix docs style refactor perf test build ci chore release revert" >&2
+echo "  (legacy [tag] style still accepted)" >&2
+exit 1

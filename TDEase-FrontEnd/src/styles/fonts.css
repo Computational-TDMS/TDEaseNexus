@@ -1,0 +1,65 @@
+/**
+ * Local font faces — Inter (variable weight) and JetBrains Mono.
+ *
+ * VISUAL-SYSTEM.md §3.1: bundled locally so a scientific table renders
+ * identically offline and on a machine with no system Inter. `font-display:
+ * block` accepts a short invisible-text window rather than letting a table
+ * reflow after paint and misalign the columns the user was already reading.
+ *
+ * The OFL-licensed binaries and upstream license texts are committed under
+ * public/fonts so packaged builds remain deterministic and offline.
+ *
+ * Family name is 'Inter' — the name every `--font-*` fallback chain
+ * (unified-design-tokens.css) and every per-component font-family resolves to.
+ * The upstream binary is the variable cut `InterVariable.woff2`; the @font-face
+ * family name is a binding label, not the file name, so we bind it to what the
+ * app actually references. Naming it 'InterVariable' here would silently fall
+ * back to the system sans on every platform (Segoe UI on Windows) and erase
+ * 68 font-weight tiers across the UI.
+ */
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
+/*
+ * Metric-matched fallback for Inter's invisible-text window. `font-display:
+ * block` keeps text INVISIBLE but still lays it out with the next face's
+ * metrics — so when the 344KB variable font lands, every laid-out line
+ * re-flows by the Segoe/UI-vs-Inter metric delta (the largest remaining
+ * first-visit CLS event, welcome card, 2026-09-05 re-measure). This local()
+ * face carries Inter's ascent/descent/size ratios so the fallback period
+ * approximates the final metrics and the swap re-flow shrinks to sub-pixel.
+ * It only ever renders during the block window: the bundled face above wins
+ * the moment it finishes loading.
+ */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Segoe UI'), local('Arial');
+  font-weight: 100 900;
+  font-style: normal;
+  ascent-override: 90.20%;
+  descent-override: 22.59%;
+  line-gap-override: 0%;
+  size-adjust: 107.4%;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前端提交 → 后端引擎执行 · Sequence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:  #f5f5f5;
+      --color-ink:    #2d3142;
+      --color-muted:  #4f5d75;
+      --color-soft:   #7a8399;
+      --color-accent: #eb6c36;
+      --font-sans:    'Geist', system-ui, sans-serif;
+      --font-serif:   'Instrument Serif', serif;
+      --font-mono:    'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1280px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 0.5rem; }
+    .subtitle { font-size: 0.875rem; color: var(--color-muted); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 960px; display: block; }
+    .cards { display: grid; grid-template-columns: 1.15fr 1fr 0.95fr; gap: 1rem; margin-top: 1.75rem; }
+    .card { background: #ffffff; border: 1px solid rgba(45,49,66,0.12); border-radius: 6px; padding: 1.25rem; }
+    .card p.eyebrow { margin-bottom: 0.6rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .card-header h3 { font-size: 0.9rem; font-weight: 600; }
+    .card-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+    .card-dot.ink { background: var(--color-ink); }
+    .card-dot.coral { background: var(--color-accent); }
+    .card-dot.muted { background: var(--color-muted); }
+    .card ul { list-style: none; }
+    .card li { font-size: 0.8rem; line-height: 1.55; color: var(--color-muted); padding-left: 0.85rem; position: relative; }
+    .card li::before { content: "—"; position: absolute; left: 0; color: var(--color-soft); }
+    .card li strong { color: var(--color-ink); font-weight: 600; }
+    footer { margin-top: 1.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(45,49,66,0.12); font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; color: var(--color-soft); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">TDEASENEXUS · BACKEND ENGINE · SEQUENCE</p>
+    <h1>前端提交 → 后端引擎执行</h1>
+    <p class="subtitle">一次 Run 从 Studio 的冻结计划到 Snakemake 落盘执行：提交的是不可变 commit，节点二进制经 config["nodes"] 绝对路径注入，Run 目录不持有节点内容。</p>
+
+    <svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="seq-run-title seq-run-desc">
+      <title id="seq-run-title">前端提交 → 后端引擎执行</title>
+      <desc id="seq-run-desc">时序图：Studio 冻结并提交 Run 计划，Electron 主进程经 HTTP 提交给后端 API，API 写入队列后由独立 worker 进程认领执行槽与 Run 认领，再拉起 Snakemake 引擎，节点二进制经 config["nodes"] 绝对路径注入调用（Run 目录不持有节点内容），最终以事件日志回报终态。</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+        <marker id="arrow-open" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polyline points="0 0, 8 3, 0 6" fill="none" stroke="#4f5d75" stroke-width="1.2"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ── lifelines (drawn before everything else) ── -->
+      <line x1="120" y1="100" x2="120" y2="620" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="380" y1="100" x2="380" y2="620" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="640" y1="100" x2="640" y2="620" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="900" y1="100" x2="900" y2="620" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="1160" y1="100" x2="1160" y2="620" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- ── activation bars ── -->
+      <rect x="376" y="140" width="8" height="44" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="636" y="180" width="8" height="84" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="896" y="216" width="8" height="128" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="1156" y="336" width="8" height="88" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <rect x="636" y="456" width="8" height="48" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+
+      <!-- ── messages ── -->
+      <!-- 1. Studio -> main -->
+      <line x1="124" y1="140" x2="372" y2="140" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="196" y="120" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="248" y="129" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">run.submit</text>
+
+      <!-- 2. main -> API -->
+      <line x1="384" y1="180" x2="632" y2="180" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="424" y="160" width="168" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="508" y="169" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST /api/v2/runs</text>
+
+      <!-- 3. API -> worker (async, open head) -->
+      <line x1="644" y1="220" x2="892" y2="220" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow-open)"/>
+      <rect x="700" y="200" width="136" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="768" y="209" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">queue_requested</text>
+
+      <!-- 4. API -> Studio (return, dashed filled) -->
+      <line x1="636" y1="260" x2="128" y2="260" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="400" y="240" width="108" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="454" y="249" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">201 QUEUED</text>
+
+      <!-- 5. worker self: claim -->
+      <path d="M 904,300 H 948 V 324 H 908" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="960" y="300" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1020" y="309" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">claim slot+run</text>
+
+      <!-- 6. worker -> engine -->
+      <line x1="908" y1="344" x2="1152" y2="344" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="960" y="324" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1012" y="333" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">spawn engine</text>
+
+      <!-- 7. engine self: node shell -->
+      <path d="M 1156,384 H 1112 V 408 H 1152" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="928" y="384" width="172" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1014" y="393" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">config["nodes"] abs inject</text>
+
+      <!-- 8. engine -> worker: task events -->
+      <line x1="1156" y1="424" x2="912" y2="424" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow-open)"/>
+      <rect x="984" y="404" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1036" y="413" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">task events</text>
+
+      <!-- 9. Studio -> API: SSE -->
+      <line x1="124" y1="464" x2="632" y2="464" stroke="#2e5aa8" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow-link)"/>
+      <rect x="400" y="444" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="452" y="453" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SSE /events</text>
+
+      <!-- 10. API -> Studio: headline -->
+      <line x1="636" y1="504" x2="128" y2="504" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="400" y="484" width="148" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="474" y="493" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SUCCEEDED + results</text>
+
+      <!-- ── actors (drawn after arrows) ── -->
+      <rect x="32" y="56" width="176" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="32" y="56" width="176" height="44" rx="6" fill="rgba(45,49,66,0.05)" stroke="#7a8399" stroke-width="1"/>
+      <text x="120" y="76" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Studio (Renderer)</text>
+      <text x="120" y="90" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">prepare · freeze</text>
+
+      <rect x="292" y="56" width="176" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="292" y="56" width="176" height="44" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="380" y="76" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Electron main</text>
+      <text x="380" y="90" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">IPC · HTTP client</text>
+
+      <rect x="552" y="56" width="176" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="552" y="56" width="176" height="44" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="640" y="76" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Backend API</text>
+      <text x="640" y="90" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">uvicorn · 127.0.0.1</text>
+
+      <rect x="812" y="56" width="176" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="812" y="56" width="176" height="44" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="900" y="76" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Worker</text>
+      <text x="900" y="90" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">独立进程 · 队列</text>
+
+      <rect x="1072" y="56" width="176" height="44" rx="6" fill="#f5f5f5"/>
+      <rect x="1072" y="56" width="176" height="44" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="1160" y="76" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Engine</text>
+      <text x="1160" y="90" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">cwd = run 目录</text>
+
+      <!-- ── legend ── -->
+      <line x1="32" y1="648" x2="1248" y2="648" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="32" y="668" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <line x1="120" y1="664" x2="156" y2="664" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="168" y="668" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">同步调用</text>
+      <line x1="264" y1="664" x2="300" y2="664" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="312" y="668" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">返回 / 异步事件</text>
+      <line x1="456" y1="664" x2="492" y2="664" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="504" y="668" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">HTTP / SSE</text>
+      <line x1="612" y1="664" x2="648" y2="664" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <text x="660" y="668" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">终态（结果就绪）</text>
+    </svg>
+
+    <div class="cards">
+      <div class="card">
+        <p class="eyebrow">提交的到底是什么</p>
+        <div class="card-header"><span class="card-dot coral"></span><h3>不可变 commit</h3></div>
+        <ul>
+          <li>冻结的是 <strong>workspace_files 映射 + Snakefile 全文 + config + nodes(id+digest)</strong>，不是路径引用。</li>
+          <li>节点身份 = 目录内容 sha256；Snakefile 或节点任何字节变化都算<strong>新 revision</strong>。</li>
+          <li>提交后 run.json 永不重写，状态全部由 <strong>events.jsonl</strong> 派生。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="eyebrow">执行侧的三条硬约束</p>
+        <div class="card-header"><span class="card-dot ink"></span><h3>一次只跑一个 Run</h3></div>
+        <ul>
+          <li><strong>execution.claim</strong> 全局唯一执行槽：dry-run 与真 Run 共享，API 与 worker 互斥。</li>
+          <li>节点二进制经单一接缝 <code>config["nodes"]</code> 以 catalog 绝对路径注入；Run 目录内不写任何节点内容（<code>bindings.py</code>）。</li>
+          <li>引擎子进程剥离全部 <code>TDEASE_*</code>，没有环境变量后门。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="eyebrow">已知薄弱点</p>
+        <div class="card-header"><span class="card-dot muted"></span><h3>监督缺口</h3></div>
+        <ul>
+          <li>worker 处于监督之下：反复崩溃报 <code>worker_unstable</code>；父进程消失时 worker 自行退出（孤儿 poller），避免 API ready 而 Run 永久 QUEUED。</li>
+          <li>执行槽身份是 <code>&lt;pid&gt;:&lt;create_time&gt;</code>，不是裸 pid —— Windows 激进复用 pid 也不会让队列卡死。</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>docs/design/ENGINE-TASK-SUBMISSION-SEQUENCE.html · 依据 tdease-backend/app/api/runs_v2.py · src/services/run_worker.py · src/execution_runtime/snakemake_adapter.py</footer>
+  </div>
+</body>
+</html>

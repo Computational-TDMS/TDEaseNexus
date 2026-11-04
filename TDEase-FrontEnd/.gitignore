@@ -1,0 +1,35 @@
+# Runtime backend data dir (spawned by the Electron app on dev launch)
+data/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Desktop packaging output (electron-builder)
+# gitignored so IDEs (Zed/VSCode) don't index/lock the .asar/.exe — see docs/RELEASE.md
+release
+release-*
+
+# Temporary diagnostic scratch (repro tests) — never ships
+tmp-diag/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,0 +1,16 @@
+# FILE-LAYOUT.md §4.1: .venv/ and the session event log stay out of git.
+.venv/
+.tdease/events.jsonl
+
+# Runtime-validation experiment outputs (12+ GB) stay on disk, out of git.
+runtime-validation-*/
+validation-archive/
+
+# Paper-case session data (2026-10): evidence archives and multi-GB working
+# workspaces stay on disk, out of git (same rule as runtime-validation-*).
+case2026-dualstage-evidence.zip
+case2026-dualstage-evidence/
+paper-cases-archive/
+paper-package-20261009.zip
+paper-package-20261009/
+soybean-paper-ws/

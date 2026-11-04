@@ -1,0 +1,27 @@
+# TDEase targeted modification library for MSPathFinderT (-mod)
+# Source artifact: the suite's own parameter file in this node's Example_Files/
+#   MSPF_MetOx_STYPhos_LysMethDiMethTriMeth_NTermAcet_CysTriOx_SingleInternalCleavage_10ppm.txt
+# (suite-authored set, Wilson & Zhou 2022 Methods Note 15), reformatted from
+# its DynamicMod= entries into the bare mods-file syntax of
+# Example_Files/MSPathFinder_Mods.txt: <composition>,<residues>,<opt|fix>,<position>,<name>.
+# Bounds: NumMods=4 (suite default); K-me1/2/3 ladder lets the mass-level
+# search resolve K-trimethyl vs K-acetyl (+42.0470 vs +42.0106 Da) — MS/MS
+# adjudication stays downstream (tdp-copilot), never in this file.
+# Minimize before searching: this file targets histone/PTM cross-check runs;
+# for other applications trim it or point -mod at your own source artifact.
+
+# Max Number of Modifications per peptide/proteoform
+NumMods=4
+
+# Static mods
+# None
+
+# Dynamic mods
+O1,M,opt,any,Oxidation             # Oxidation M (+15.9949)
+HO3P,STY,opt,any,Phospho           # Phosphorylation STY (+79.899)
+C2H2O,*,opt,Prot-N-term,Acetyl     # Acetylation protein N-term (+42.0106)
+C2H2O,K,opt,any,Acetyl             # Acetylation K (+42.0106)
+C1H2,K,opt,any,Methyl              # Methylation K (+14.0157)
+C2H4,K,opt,any,DiMethyl            # Di-methylation K (+28.0313)
+C3H6,K,opt,any,TriMethyl           # Tri-methylation K (+42.0470)
+O3,C,opt,any,Trioxidation          # Trioxidation C (+47.9847)

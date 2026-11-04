@@ -1,0 +1,53 @@
+{
+  "button": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "close": "Close",
+    "reset": "Reset",
+    "search": "Search",
+    "retry": "Retry",
+    "yes": "Yes",
+    "no": "No",
+    "unnamed": "Unnamed",
+    "showDetails": "Show details",
+    "browse": "Browse…"
+  },
+  "status": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "noData": "No data available",
+    "task": {
+      "queued": "Queued",
+      "running": "Running",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "error": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. Please try reloading the page.",
+    "reload": "Reload Page",
+    "goToCause": "Go to cause →",
+    "unsupportedSchema": "Unsupported schema shape: {type}"
+  },
+  "theme": {
+    "switch": "Switch Theme",
+    "menuHeader": "Theme",
+    "mode": {
+      "light": "Light",
+      "dark": "Dark"
+    }
+  },
+  "copyableId": {
+    "copied": "Copied"
+  },
+  "chip": {
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "remove": "Remove"
+  }
+}

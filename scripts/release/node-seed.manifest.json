@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    { "name": "README.md", "kind": "aux" },
+    { "name": "_template", "kind": "template" },
+    { "name": "informed-proteomics", "kind": "package", "required": ["rules.smk", "README.md"] },
+    { "name": "msconvert", "kind": "package", "required": ["rules.smk", "README.md"] },
+    { "name": "pride", "kind": "package", "required": ["rules.smk", "README.md"] },
+    { "name": "topindex", "kind": "package", "required": ["rules.smk", "README.md"] },
+    { "name": "toppic", "kind": "package", "required": ["rules.smk", "README.md"] },
+    { "name": "toppic21", "kind": "package", "required": ["rules.smk", "README.md"] }
+  ],
+  "localOnly": [".snapshots", "toppic-windows-1.8.1.zip"]
+}

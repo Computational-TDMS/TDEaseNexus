@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作流进程与监督 · Flowchart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:  #f5f5f5;
+      --color-ink:    #2d3142;
+      --color-muted:  #4f5d75;
+      --color-soft:   #7a8399;
+      --color-accent: #eb6c36;
+      --font-sans:    'Geist', system-ui, sans-serif;
+      --font-serif:   'Instrument Serif', serif;
+      --font-mono:    'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1280px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 0.5rem; }
+    .subtitle { font-size: 0.875rem; color: var(--color-muted); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 960px; display: block; }
+    .cards { display: grid; grid-template-columns: 1fr 1.1fr 0.95fr; gap: 1rem; margin-top: 1.75rem; }
+    .card { background: #ffffff; border: 1px solid rgba(45,49,66,0.12); border-radius: 6px; padding: 1.25rem; }
+    .card p.eyebrow { margin-bottom: 0.6rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .card-header h3 { font-size: 0.9rem; font-weight: 600; }
+    .card-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+    .card-dot.ink { background: var(--color-ink); }
+    .card-dot.coral { background: var(--color-accent); }
+    .card-dot.muted { background: var(--color-muted); }
+    .card ul { list-style: none; }
+    .card li { font-size: 0.8rem; line-height: 1.55; color: var(--color-muted); padding-left: 0.85rem; position: relative; }
+    .card li::before { content: "—"; position: absolute; left: 0; color: var(--color-soft); }
+    .card li strong { color: var(--color-ink); font-weight: 600; }
+    code { font-family: var(--font-mono); font-size: 0.75em; }
+    footer { margin-top: 1.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(45,49,66,0.12); font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; color: var(--color-soft); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">TDEASENEXUS · BACKEND ENGINE · WORKER PROCESSES</p>
+    <h1>工作流进程与监督</h1>
+    <p class="subtitle">serve 拉起 worker，worker 轮询队列、抢全局执行槽、执行一个 Run；引擎与工具是它的后代进程。空转或跑完都回到 1 秒轮询。</p>
+
+    <svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="worker-flow-title worker-flow-desc">
+      <title id="worker-flow-title">工作流进程与监督</title>
+      <desc id="worker-flow-desc">流程图：Electron 启动 backend serve，serve 以子进程方式拉起 worker；worker 每秒检查队列，能抢到全局执行槽时认领 Run 并调用 Snakemake，节点二进制经 config["nodes"] 绝对路径注入执行（Run 目录不持有节点内容），结束后写终态事件并释放认领。</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ── arrows (before nodes) ── -->
+      <!-- 1. main -> serve -->
+      <path d="M 640,110 V 140" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="652" y="116" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="680" y="125" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">spawn</text>
+
+      <!-- 2. serve -> worker -->
+      <path d="M 640,188 V 212" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- 3. worker -> queued? -->
+      <path d="M 640,260 V 292" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="652" y="268" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="680" y="277" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">poll</text>
+
+      <!-- 4. queued? YES -> slot? -->
+      <path d="M 640,372 V 404" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="652" y="380" width="44" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="674" y="389" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">YES</text>
+
+      <!-- 5. queued? NO -> sleep -->
+      <path d="M 540,332 H 284" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="380" y="312" width="44" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="402" y="321" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+
+      <!-- 6. slot? NO -> sleep (up the left) -->
+      <path d="M 540,444 H 240 Q 200,444 200,436 V 356" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="380" y="424" width="44" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="402" y="433" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+
+      <!-- 7. sleep -> queued? (poll again) -->
+      <path d="M 200,308 V 284 Q 200,276 208,276 H 592 Q 600,276 600,284 V 292" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="380" y="256" width="44" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="402" y="265" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">1s</text>
+
+      <!-- 8. slot? YES -> claim -->
+      <path d="M 640,484 V 516" fill="none" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="652" y="492" width="44" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="674" y="501" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">YES</text>
+
+      <!-- 9. claim -> engine -->
+      <path d="M 640,568 V 596" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- 10. engine -> sleep (loop) -->
+      <path d="M 640,648 V 672 Q 640,680 632,680 H 88 Q 80,680 80,672 V 332 Q 80,332 88,332 H 120" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="360" y="660" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="388" y="669" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">loop</text>
+
+      <!-- ── nodes ── -->
+      <!-- start -->
+      <rect x="540" y="56" width="200" height="44" rx="20" fill="#f5f5f5"/>
+      <rect x="540" y="56" width="200" height="44" rx="20" fill="rgba(122,131,153,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="640" y="83" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Electron main</text>
+
+      <!-- serve -->
+      <rect x="520" y="140" width="240" height="48" rx="6" fill="#f5f5f5"/>
+      <rect x="520" y="140" width="240" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="640" y="161" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">backend serve (uvicorn)</text>
+      <text x="640" y="177" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">--config config.json</text>
+
+      <!-- worker -->
+      <rect x="520" y="212" width="240" height="48" rx="6" fill="#f5f5f5"/>
+      <rect x="520" y="212" width="240" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="640" y="233" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">worker 子进程</text>
+      <text x="640" y="249" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Popen · 无人 poll</text>
+
+      <!-- decision 1 -->
+      <polygon points="640,292 740,332 640,372 540,332" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/>
+      <text x="640" y="337" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">有 QUEUED Run?</text>
+
+      <!-- decision 2 (focal) -->
+      <polygon points="640,404 740,444 640,484 540,444" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.2"/>
+      <text x="640" y="449" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">claim execution slot?</text>
+
+      <!-- claim + execute -->
+      <rect x="500" y="516" width="280" height="52" rx="6" fill="#f5f5f5"/>
+      <rect x="500" y="516" width="280" height="52" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="640" y="538" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">claim run → execute_run</text>
+      <text x="640" y="554" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">run.json · cwd = run 目录</text>
+
+      <!-- engine -->
+      <rect x="500" y="596" width="280" height="52" rx="6" fill="#f5f5f5"/>
+      <rect x="500" y="596" width="280" height="52" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="640" y="618" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">snakemake → task shell</text>
+      <text x="640" y="634" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">config["nodes"] 注入 · 终态事件</text>
+
+      <!-- sleep -->
+      <rect x="120" y="308" width="160" height="48" rx="6" fill="#f5f5f5"/>
+      <rect x="120" y="308" width="160" height="48" rx="6" fill="rgba(122,131,153,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="200" y="337" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">sleep 1s</text>
+
+      <!-- ── legend ── -->
+      <line x1="32" y1="688" x2="1248" y2="688" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="32" y="708" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <rect x="120" y="700" width="16" height="10" rx="5" fill="rgba(122,131,153,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="148" y="708" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">进程 / 起止</text>
+      <polygon points="352,700 364,705 352,710 340,705" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/>
+      <text x="376" y="708" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">判断</text>
+      <rect x="452" y="700" width="16" height="10" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="480" y="708" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">步骤</text>
+      <polygon points="600,700 612,705 600,710 588,705" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.2"/>
+      <text x="624" y="708" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">最要紧的判断（全局执行槽）</text>
+    </svg>
+
+    <div class="cards">
+      <div class="card">
+        <p class="eyebrow">进程拓扑</p>
+        <div class="card-header"><span class="card-dot ink"></span><h3>一条链，全是子进程</h3></div>
+        <ul>
+          <li><code>Electron main → backend serve → worker → engine_runner/snakemake → 工具子进程</code>。</li>
+          <li>客户端停止时用 <code>taskkill /T /F</code> 连根拔；硬杀客户端则 backend/worker 变孤儿。</li>
+          <li>引擎子进程剥离全部 <code>TDEASE_*</code>，节点只能经 <code>config["nodes"]</code> 绝对路径注入访问。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="eyebrow">生命周期护栏</p>
+        <div class="card-header"><span class="card-dot coral"></span><h3>三层认领 + 孤儿回收</h3></div>
+        <ul>
+          <li><strong>execution.claim</strong>：全局唯一执行槽（API 的 dry-run 与 worker 的 Run 互斥）。</li>
+          <li><strong>run claim</strong>：<code>O_CREAT|O_EXCL</code>，防止同一个 Run 被执行两次。</li>
+          <li><strong>engine pid record</strong>：崩溃后由启动时的 <code>reconcile_orphaned_runs</code> 收尾并写终态事件。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="eyebrow">已知缺口</p>
+        <div class="card-header"><span class="card-dot muted"></span><h3>两处静默失败</h3></div>
+        <ul>
+          <li>worker 受监督：反复崩溃报 <code>worker_unstable</code>；父进程消失时 worker 检测到 <code>--parent-pid</code> 死亡自行退出（孤儿 poller 护栏），不会出现 API 仍 ready 而 Run 永久 QUEUED。</li>
+          <li>执行槽身份是 <code>&lt;pid&gt;:&lt;create_time&gt;</code>（storage.py <code>process_identity</code>）：Windows 激进复用 pid 也不会让队列永久卡住。</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>docs/design/ENGINE-WORKER-PROCESS-FLOWCHART.html · 依据 tdease-backend/cli.py · src/services/run_worker.py · src/execution_runtime/storage.py</footer>
+  </div>
+</body>
+</html>

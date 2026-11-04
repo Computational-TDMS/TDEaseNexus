@@ -1,0 +1,53 @@
+{
+  "button": {
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "close": "Schließen",
+    "reset": "Zurücksetzen",
+    "search": "Suchen",
+    "retry": "Erneut versuchen",
+    "yes": "Ja",
+    "no": "Nein",
+    "unnamed": "Unbenannt",
+    "showDetails": "Details anzeigen",
+    "browse": "Auswählen…"
+  },
+  "status": {
+    "loading": "Wird geladen...",
+    "saving": "Wird gespeichert...",
+    "saved": "Gespeichert",
+    "noData": "Keine Daten verfügbar",
+    "task": {
+      "queued": "In Warteschlange",
+      "running": "Läuft",
+      "succeeded": "Erfolgreich",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen"
+    }
+  },
+  "error": {
+    "title": "Etwas ist schiefgelaufen",
+    "message": "Ein unerwarteter Fehler ist aufgetreten. Bitte laden Sie die Seite neu.",
+    "reload": "Seite neu laden",
+    "goToCause": "Zur Ursache springen →",
+    "unsupportedSchema": "Nicht unterstütztes Schema: {type}"
+  },
+  "theme": {
+    "switch": "Design wechseln",
+    "menuHeader": "Design",
+    "mode": {
+      "light": "Hell",
+      "dark": "Dunkel"
+    }
+  },
+  "copyableId": {
+    "copied": "Kopiert"
+  },
+  "chip": {
+    "pin": "Anheften",
+    "unpin": "Lösen",
+    "remove": "Entfernen"
+  }
+}

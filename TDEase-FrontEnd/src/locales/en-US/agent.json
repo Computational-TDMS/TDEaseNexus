@@ -1,0 +1,396 @@
+{
+  "modelPicker": {
+    "title": "Switch model",
+    "current": "Current model",
+    "emptyModels": "No models available for this provider",
+    "empty": "No provider with a configured key yet — add one under Manage models.",
+    "runSettings": "Run settings",
+    "manageModels": "Manage models"
+  },
+  "sessionBar": {
+    "sessionsLabel": "Session",
+    "new": "New",
+    "fork": "Fork",
+    "archive": "Archive session",
+    "archived": "Archived",
+    "unarchive": "Restore session",
+    "empty": "No sessions yet — start one with New.",
+    "untitled": "Untitled session",
+    "recovered": "Recovered session",
+    "runtimeIdle": "Idle",
+    "runtimeFailed": "Failed",
+    "runtimeUnread": "New result",
+    "runtimeStreaming": "Working",
+    "mindsetLabel": "Mindset",
+    "authority": {
+      "ask": "Ask",
+      "auto": "Auto"
+    },
+    "mindset": {
+      "analysis": "Analysis",
+      "workflow": "Workflow",
+      "analysisTitle": "Investigates and reports findings before changing anything.",
+      "workflowTitle": "Run the full workflow: pick a template, execute it, read the results."
+    }
+  },
+  "inspector": {
+    "empty": {
+      "subagents": "No subagents in this session yet.",
+      "files": "No files produced yet."
+    }
+  },
+  "activity": {
+    "label": "Activity",
+    "viewPlan": "Plan",
+    "viewSubagents": "Subagents",
+    "viewFiles": "Files",
+    "viewRuns": "Runs",
+    "viewTrajectory": "Trajectory",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "viewJobs": "Background jobs",
+    "spineTitle": "Tasks",
+    "spineOpenPlan": "Open task plan",
+    "spineBranch": "{count} background runs",
+    "spineCalls": "{count} tool calls",
+    "pillDone": "Done",
+    "pillDoneFile": "Done · wrote {name}",
+    "pillDoneFiles": "Done · {count} files"
+  },
+  "tab": {
+    "label": "Agent views",
+    "emptyTitle": "Nothing open here yet",
+    "emptyDescription": "Click a file, link or asset in the conversation to open it here as a tab.",
+    "close": "Close tab"
+  },
+  "trajectory": {
+    "title": "Trajectory",
+    "totals": "{turns} turns · {requests} req · {calls} calls",
+    "empty": "No turns yet. The trajectory fills from the session's settled event log as turns complete.",
+    "laneUser": "user",
+    "laneModel": "model",
+    "laneTools": "tools",
+    "chipRequest": "req {seq}",
+    "chipThinking": "thinking",
+    "chipReply": "reply",
+    "settlementOpen": "open",
+    "loading": "loading…",
+    "snapshotNotFound": "(snapshot not found beside the session log)",
+    "snapshotReadFailed": "(snapshot read failed: {message})",
+    "hoverExpand": "(click to expand digests)",
+    "hoverEmptyReasoning": "(empty reasoning segment)",
+    "hoverEmptyMessage": "(empty message)",
+    "hoverStillOpen": "(still open at this replay prefix)",
+    "hoverMindset": "mode",
+    "hoverModel": "model",
+    "hoverPrompt": "prompt snapshot"
+  },
+  "subagent": {
+    "cancel": "Cancel",
+    "confidence": "Confidence",
+    "openConversation": "Open conversation",
+    "conversationMissingTitle": "Conversation not available yet",
+    "conversationMissingDescription": "This subagent's session log is not on disk. It may still be running, or the run predates session persistence.",
+    "label": "Subagents",
+    "groups": "Parallel groups",
+    "individual": "Individual subagents",
+    "result": "result",
+    "findings": "findings",
+    "evidence": "evidence",
+    "openQuestions": "open questions",
+    "peek": "activity",
+    "peekHint": "Press the eye icon to peek.",
+    "refreshPeek": "refresh",
+    "noActivity": "No activity yet.",
+    "state": {
+      "running": "Running",
+      "returned": "Returned",
+      "blocked": "Blocked",
+      "cancelled": "Cancelled"
+    },
+    "conversationErrorTitle": "Conversation could not be read",
+    "conversationErrorDescription": "This subagent's session log exists but could not be read (reason: {message}). The record was not lost — the file on disk is corrupt or truncated."
+  },
+  "files": {
+    "openInDocument": "Open",
+    "turnGroup": "Turn {n}",
+    "subagentGroup": "Subagent · {role}"
+  },
+  "transcript": {
+    "outcomeLabel": "Last turn",
+    "outcome": {
+      "resolved": "Resolved",
+      "blocked": "Blocked",
+      "halted": "Halted",
+      "cancelled": "Cancelled",
+      "continueInNewTurn": "Continue in a new turn",
+      "calls": "{count} call | {count} calls",
+      "tokens": "{count} tok",
+      "failed": "Failed"
+    },
+    "blocked": {
+      "title": "Needs your input",
+      "neededLabel": "Needed:",
+      "optionsLabel": "Tap an option to answer",
+      "customAnswer": "Or type your answer…",
+      "sendAnswer": "Send answer"
+    },
+    "cancelled": "⊘ Cancelled",
+    "failedRemedy": "The turn stopped because of a runtime or provider error.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "jumpToBottom": "Jump to latest",
+    "jumpToResponse": "Jump to start of response",
+    "working": "Thinking",
+    "loadingHistory": "Loading conversation…",
+    "failedChip": "Failed",
+    "compacted": "Context compacted",
+    "compacting": "Compacting context",
+    "askAi": "Ask AI",
+    "turnNav": "Conversation bookmarks",
+    "turn": "Jump to this turn"
+  },
+  "approval": {
+    "title": "Approve · {action}",
+    "modalTitle": "Your approval is needed",
+    "queueRemaining": "{n} more in queue",
+    "allowOnce": "Allow once",
+    "allowSession": "Allow for session",
+    "allowAlways": "Always allow {scope}",
+    "allowAlwaysTitle": "Also writes an allow rule into this workspace's permissions — below hand-written rules, above the shipped review policy and the default ladder. Editable in Settings → Permissions.",
+    "deny": "Deny",
+    "approved": "Approved",
+    "declined": "Declined",
+    "timeout": "Timed out",
+    "aborted": "Aborted",
+    "arguments": "Arguments",
+    "noArguments": "This action takes no arguments.",
+    "reviewRequired": "This commits significant work and should be reviewed on its own surface before you allow it. That surface has not been built yet, so read every argument below first.",
+    "approvedWhitelisted": "Allowed · whitelisted"
+  },
+  "hud": {
+    "phase": {
+      "waiting": "Waiting for model",
+      "thinking": "Thinking",
+      "responding": "Responding",
+      "executing": "Executing tools"
+    },
+    "act": "act {n}",
+    "calls": "{count} call | {count} calls",
+    "elapsed": "{elapsed} / {deadline}",
+    "waiting": "waiting for you",
+    "awaitingUser": "Awaiting approval",
+    "stopTurn": "Stop turn",
+    "stopTurnHint": "Stops the current turn. Completed results are kept; unfinished calls are marked cancelled."
+  },
+  "composer": {
+    "placeholder": "Ask, / for commands, or mention a Run, file or skill",
+    "credentialNotice": "The current model has no usable API key yet — sending is paused until you add one.",
+    "credentialAction": "Configure model",
+    "send": "Send",
+    "stop": "Stop",
+    "stopTitle": "Stops the current turn. Completed results are kept; unfinished calls are marked cancelled.",
+    "inlineViz": "Visual answers",
+    "inlineVizTitle": "Answer with inline visualizations (turn-scoped: applies to turns sent while on)",
+    "hint": "⏎ send  ·  ⇧⏎ newline",
+    "hintQueued": "Turn running · ⏎ queue · ⇧⏎ newline",
+    "queued": "Queued",
+    "dequeue": "Remove this queued message",
+    "enqueue": "Queue — sends automatically when the current turn settles",
+    "attach": "Attach image (or drop it here)",
+    "attachRejected": "{count} non-image file(s) ignored",
+    "attachedNoVision": "The bound model has no vision — images won't reach the model",
+    "removeAttachment": "Remove attachment",
+    "ctxTokens": "tokens",
+    "ctxUnknown": "Context occupancy unknown",
+    "ctxCache": "cache"
+  },
+  "export": {
+    "untitled": "Untitled session",
+    "empty": "This session has no conversation to export yet",
+    "failed": "Export failed: {message}"
+  },
+  "contextPanel": {
+    "title": "Context usage",
+    "capacity": "Capacity",
+    "cacheHit": "Cache hit rate",
+    "cacheRecent": "Recent average",
+    "recentUsage": "Recent usage",
+    "loading": "Loading…",
+    "noData": "No records yet",
+    "requests": "requests",
+    "window5h": "5 hours",
+    "window7d": "7 days",
+    "tokensLeft": "tokens left",
+    "tokens": "tokens",
+    "lastRequest": "This turn",
+    "speed": "Generation speed",
+    "tokensPerSec": "tokens/s",
+    "providerUsage": "Provider usage",
+    "input": "Input",
+    "output": "Output",
+    "reasoning": "Reasoning",
+    "cacheRead": "Cache read",
+    "cacheHitShort": "Hit rate",
+    "cacheWrite": "Cache write"
+  },
+  "empty": {
+    "goalIdentifyN": "Identify the proteoforms in these {count} raw files",
+    "goalShowInside": "Show me what is in these raw files before we decide what to run",
+    "goalCensus": "What did the runs find? Give me an overview of the results",
+    "goalInterpret": "Walk me through the latest run's results",
+    "goalPlanAnalysis": "Design an analysis workflow for my data — show me the plan before running",
+    "goalWhatNext": "What do I need before I can start?",
+    "goalExploreData": "What scientific questions could these data answer?",
+    "setupOpenWorkspace": "Open a Workspace folder"
+  },
+  "stop": {
+    "title": "Abort the current turn"
+  },
+  "slash": {
+    "compact": "Summarize the session history to reclaim context",
+    "export": "Export this conversation as standalone HTML (default) or PDF — written to exports/ and opened",
+    "localMcpServer": "Local MCP server · {name}"
+  },
+  "completion": {
+    "hint": "↑↓ select · Tab complete · Enter confirm · Esc close",
+    "group": {
+      "commands": "Commands",
+      "skills": "Skills",
+      "mcpServers": "MCP servers",
+      "runs": "Runs",
+      "files": "Files"
+    }
+  },
+  "thinking": {
+    "thinking": "Thinking",
+    "thought": "Thought",
+    "chars": "{count} chars",
+    "rate": "{n} chars/s",
+    "durationSeconds": "{n}s",
+    "effortTitle": "Reasoning effort",
+    "level": {
+      "off": "Off",
+      "offHint": "Do not request model reasoning tokens",
+      "low": "Low",
+      "lowHint": "Low reasoning effort",
+      "medium": "Medium",
+      "mediumHint": "Medium reasoning effort",
+      "high": "High",
+      "highHint": "High reasoning effort",
+      "xhigh": "Very high",
+      "xhighHint": "Very high reasoning effort",
+      "max": "Max",
+      "maxHint": "Use the maximum reasoning effort the model supports"
+    }
+  },
+  "codeBlock": {
+    "wrap": "Wrap",
+    "unwrap": "Unwrap"
+  },
+  "processFold": {
+    "expandDetails": "Show details",
+    "worked": "worked",
+    "failures": "{count} failed | {count} failed",
+    "working": "Working"
+  },
+  "permissionMode": {
+    "askLabel": "Ask (confirm side effects)",
+    "autoLabel": "Auto (run silently)"
+  },
+  "settingsTab": {
+    "title": "Run settings",
+    "model": "Model",
+    "provider": "Provider",
+    "modelName": "Model",
+    "modelNote": "Applies on the next turn — the context window updates once the session rebinds.",
+    "noCredential": "No API key configured for {provider}. Add one in Settings → Models.",
+    "reasoning": "Reasoning effort",
+    "context": "Context window",
+    "contextNote": "Live occupancy estimate from the running session's transcript. Shows \"—\" after compaction until the next response.",
+    "contextCache": "Cache hit {pct}",
+    "capabilities": "Capabilities",
+    "ptc": "Tool scripts (programmatic tool calling)",
+    "ptcHint": "In Analysis mode, lets the agent run tdease.ptc.exec — one scripted call looping registered tools through the same permission gate. Takes effect on the next turn."
+  },
+  "toolGroup": {
+    "ranTools": "Ran {count} tool | Ran {count} tools",
+    "ranToolsWithFailures": "Ran {count} tool ({failed} failed) | Ran {count} tools ({failed} failed)",
+    "runningTools": "Running {count} tool… | Running {count} tools…",
+    "output": "Output",
+    "noOutput": "No output",
+    "cancelled": "Cancelled",
+    "outputTruncated": "Truncated — {count} chars in total"
+  },
+  "toolAction": {
+    "read": "Read file",
+    "write": "Write file",
+    "edit": "Edit file",
+    "ls": "List directory",
+    "grep": "Search contents",
+    "find": "Find files",
+    "bash": "Run command",
+    "spawn": "Spawn subagent",
+    "runWatch": "Check run status",
+    "runLog": "Read run log",
+    "runFiles": "Fetch run files",
+    "jobStart": "Start background job",
+    "jobWatch": "Check background job",
+    "jobCancel": "Cancel background job",
+    "ptcExec": "Run tool script",
+    "plan": "Update plan",
+    "viewOpen": "Open in viewer",
+    "viewFocus": "Focus viewer",
+    "viewSelect": "Select in viewer"
+  },
+  "mermaid": {
+    "showSource": "Show source",
+    "hideSource": "Hide source",
+    "copySource": "Copy source",
+    "renderFailed": "Mermaid diagram failed to render: {error}"
+  },
+  "jobs": {
+    "title": "Background jobs",
+    "empty": "No background jobs in this session.",
+    "cancel": "Cancel",
+    "peek": "Peek output",
+    "exit": "exit {code}",
+    "close": "Close",
+    "state": {
+      "running": "Running",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "sideChat": {
+    "tabTitle": "Side chat",
+    "quotePrefix": "About this selection:",
+    "fromParent": "From: {title}",
+    "emptyHint": "The quote is ready — type your question.",
+    "inputPlaceholder": "Ask about the quote…",
+    "send": "Send",
+    "gone": "This side chat no longer exists."
+  },
+  "taskTree": {
+    "ariaLabel": "Task tree",
+    "title": "Plan",
+    "showReasoning": "Show reasoning",
+    "hideReasoning": "Hide reasoning",
+    "opened": "opened",
+    "openedIn": "opened in {viewer}",
+    "runStatus": {
+      "QUEUED": "queued",
+      "RUNNING": "running",
+      "SUCCEEDED": "succeeded",
+      "FAILED": "failed",
+      "CANCELLED": "cancelled"
+    },
+    "subagentState": {
+      "running": "working",
+      "returned": "returned",
+      "blocked": "blocked",
+      "cancelled": "cancelled"
+    }
+  }
+}

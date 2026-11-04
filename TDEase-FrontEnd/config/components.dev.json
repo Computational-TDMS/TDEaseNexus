@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "backend": {
+    "root": "../../tdease-backend",
+    "command": "tdease-backend"
+  },
+  "scientific": {
+    "root": "../../tdease-ai-capability/system"
+  }
+}

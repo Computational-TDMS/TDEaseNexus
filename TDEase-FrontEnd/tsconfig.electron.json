@@ -1,0 +1,49 @@
+{
+  // Type-checks the Electron main process, which nothing checked before.
+  //
+  // `tsconfig.json` includes only `src/**`, and `electron/build-main.mjs` bundles
+  // with esbuild, which strips types without checking them. So `electron/main.ts`
+  // shipped unverified -- and it now consumes contracts from `src/` (the
+  // Workspace snapshot policy, the run layout), which means a break on either
+  // side of that seam was invisible in both directions.
+  //
+  // Separate from the app config on purpose: this code runs in Node with
+  // Electron's APIs, not in a browser, so it must not inherit `lib: DOM`. A DOM
+  // lib here would make `fetch`, `URL` and friends resolve to browser types the
+  // main process does not necessarily have.
+  //
+  // EXCEPTION (DOM lib kept): the Node AgentRuntime under electron/agent/** reuses
+  // pure logic from src/agent/** that legitimately references
+  // Web-platform *types* — `Crypto`/`BufferSource`/`TextEncoder` (webcrypto in
+  // src/agent/prompt/digest.ts) and `Blob`/`Response` (the Backend HTTP client).
+  // Node 24 natively provides ALL of these as globals (globalThis.crypto,
+  // TextEncoder, fetch, Blob, AbortController), so the DOM lib here supplies only
+  // the *types* for globals Node already implements — it is NOT a license to use
+  // `window`/`document` (which do not exist in main and would crash at runtime).
+  // The "no DOM runtime behaviour in main" rule (AGENT-CONTRACT.md §1) governs
+  // runtime use, not these native-Node type definitions.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "strict": true,
+    // The Node runtime imports pure src/ modules that use `.ts` import
+    // extensions. The app config sets this; the
+    // electron config must too so those imports resolve during typecheck.
+    "allowImportingTsExtensions": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["electron/**/*.ts", "src/global.d.ts"],
+  "exclude": ["electron/**/*.test.ts", "electron/dist/**"]
+}

@@ -1,0 +1,6 @@
+[submodule "tdease-ai-capability"]
+	path = tdease-ai-capability
+	url = https://github.com/Computational-TDMS/tdease-ai-capability.git
+[submodule "tdease-backend"]
+	path = tdease-backend
+	url = https://github.com/Computational-TDMS/tdease-backend.git

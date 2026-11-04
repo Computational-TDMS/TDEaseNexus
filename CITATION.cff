@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: TDEaseNexus
+type: software
+authors:
+  - alias: Tisen-Ray
+repository-code: "https://github.com/Computational-TDMS/TDEaseNexus"
+url: "https://github.com/Computational-TDMS/TDEaseNexus"
+abstract: >-
+  TDEaseNexus (TD通) is an AI-first desktop workbench for top-down mass
+  spectrometry data analysis: an agent runtime (Electron + Vue 3), a
+  Python/FastAPI backend executing MSConvert/TopFD/TopPIC workflows through
+  Snakemake, and a Rust scientific kernel with a domain-skill library for
+  open-search census, candidate discrimination, positional-isomer fitting and
+  cross-sample quantification. Every intermediate result is stored,
+  re-readable and cross-checkable.
+keywords:
+  - top-down proteomics
+  - mass spectrometry
+  - AI agent
+  - proteoform
+  - open-source
+license: GPL-3.0-or-later
+version: 0.10.0-beta
+message: >-
+  If you use TDEaseNexus, please cite this repository with the version you
+  used. A versioned software DOI (Zenodo-GitHub) and data-repository DOIs for
+  the frozen reproduction package and certified session trajectories are
+  added here upon deposit.
