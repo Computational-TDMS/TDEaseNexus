@@ -218,7 +218,7 @@
   "publish": [
     {
       "provider": "github",
-      "owner": "Tisen-Ray",
+      "owner": "Computational-TDMS",
       "repo": "TDEaseNexus-Releases",
       "releaseType": "release"
     }

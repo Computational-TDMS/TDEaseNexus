@@ -132,7 +132,7 @@ button that appears solely in the downloaded phase. Check failures surface only
 there and in the logs; a user without the update host sees a quiet "up to
 date". `electron-updater` is a runtime dependency external to the main bundle;
 a missing package or dev run degrades to a disabled updater, never an error.
-Publish target: the GitHub repository `Tisen-Ray/TDEaseNexus-Releases`
+Publish target: the GitHub repository `Computational-TDMS/TDEaseNexus-Releases`
 (`electron-builder.json` `publish`).
 
 ## Node catalog seed ships with the installer

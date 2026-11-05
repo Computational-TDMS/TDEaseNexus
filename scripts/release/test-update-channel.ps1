@@ -78,6 +78,38 @@ Write-Output "  [$(if ($catalogOk) { 'ok' } else { 'FAIL' })] node catalog file 
 # asserted above; a cross-version replay would also show the exe mtime move.
 Write-Output "  [ok] app processed by installer (exit $installerExit)"
 
+# Installed-client update source: the app's own app-update.yml decides where the
+# updater looks. Replay its source with redirect hops printed, so a migration
+# leftover namespace cannot pass silently as "updates keep working".
+$updateYml = Join-Path $InstallDir "resources/app-update.yml"
+if (-not (Test-Path -LiteralPath $updateYml)) {
+    $found = Get-ChildItem -LiteralPath (Join-Path $InstallDir "resources") -Recurse -Filter "app-update.yml" `
+        -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($found) { $updateYml = $found.FullName }
+}
+$sourceCheck = Join-Path $RepoRoot "scripts/release/check-update-source.mjs"
+if (-not (Test-Path -LiteralPath $updateYml) -or -not (Test-Path -LiteralPath $sourceCheck)) {
+    $failures++
+    Write-Output "  [FAIL] cannot inspect installed update source (app-update.yml / check script missing)"
+} else {
+    $updateText = Get-Content -LiteralPath $updateYml -Raw
+    $feedOwner = ([regex]::Match($updateText, "(?m)^owner:\s*(\S+)")).Groups[1].Value
+    $feedRepoName = ([regex]::Match($updateText, "(?m)^repo:\s*(\S+)")).Groups[1].Value
+    if (-not $feedOwner -or -not $feedRepoName) {
+        $failures++
+        Write-Output "  [FAIL] cannot parse owner/repo from $updateYml"
+    } else {
+        Write-Output "  installed update source: $feedOwner/$feedRepoName"
+        & node $sourceCheck --slug "$feedOwner/$feedRepoName" --platform win32
+        if ($LASTEXITCODE -ne 0) {
+            $failures++
+            Write-Output "  [FAIL] installed update source does not resolve"
+        } else {
+            Write-Output "  [ok] installed update source resolves"
+        }
+    }
+}
+
 if ($failures -gt 0) {
     Write-Output "=== update-channel test: $failures FAILED ==="
     exit 1

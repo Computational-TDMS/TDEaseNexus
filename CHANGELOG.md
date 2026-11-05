@@ -6,7 +6,7 @@ desktop artifact versions (`TDEase-FrontEnd/package.json`).
 
 ## [Unreleased]
 
-## [0.11.0-beta]
+## [0.11.0-beta] — 2026-11-04
 
 ### Added
 
@@ -47,7 +47,7 @@ desktop artifact versions (`TDEase-FrontEnd/package.json`).
   commands are hard-excluded from the agent's visible tool surface
   (`966f5fc`).
 
-## [0.9.0-beta] — 2026-09-29
+## 0.9.0-beta — 2026-09-29
 
 ### Added
 
@@ -60,6 +60,6 @@ desktop artifact versions (`TDEase-FrontEnd/package.json`).
   (open search census, TDP-Copilot, IsoForma, TopPICR-based quantification,
   spectral/structure evidence, chart-forge, PTM database).
 
-[Unreleased]: https://github.com/Computational-TDMS/TDEaseNexus/compare/0.9.0-beta...HEAD
-[0.10.0-beta]: https://github.com/Computational-TDMS/TDEaseNexus/compare/0.9.0-beta...HEAD
-[0.9.0-beta]: https://github.com/Computational-TDMS/TDEaseNexus/releases/tag/0.9.0-beta
+[Unreleased]: https://github.com/Computational-TDMS/TDEaseNexus/compare/v0.11.0-beta...HEAD
+[0.11.0-beta]: https://github.com/Computational-TDMS/TDEaseNexus/tree/v0.11.0-beta
+[0.10.0-beta]: https://github.com/Computational-TDMS/TDEaseNexus/tree/v0.10.0-beta

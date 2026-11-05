@@ -6,19 +6,22 @@
 staged_js=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.m?js$' || true)
 [ -z "$staged_js" ] && exit 0
 fail=0
-tmp=$(mktemp)
-trap 'rm -f "$tmp"' EXIT
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
 for f in $staged_js; do
-  git show ":$f" > "$tmp" 2>/dev/null || { echo "pre-commit: cannot read staged blob: $f" >&2; fail=1; continue; }
+  # Keep the real basename: node --check refuses unknown extensions (Node >= 20),
+  # and a mktemp name like tmp.XXXXXX carries a bogus one.
+  staged="$tmpdir/$(basename "$f")"
+  git show ":$f" > "$staged" 2>/dev/null || { echo "pre-commit: cannot read staged blob: $f" >&2; fail=1; continue; }
   case "$f" in
     TDEase-FrontEnd/*)
-      (cd TDEase-FrontEnd && npx --no-install eslint --stdin --stdin-filename "../$f" < "$tmp" >/dev/null 2>&1) || {
+      (cd TDEase-FrontEnd && npx --no-install eslint --stdin --stdin-filename "../$f" < "$staged" >/dev/null 2>&1) || {
         echo "pre-commit: eslint failed: $f (run 'pnpm run lint' in TDEase-FrontEnd)" >&2
         fail=1
       }
       ;;
     *)
-      node --check "$tmp" 2>/dev/null || { echo "pre-commit: node --check failed: $f" >&2; fail=1; }
+      node --check "$staged" 2>/dev/null || { echo "pre-commit: node --check failed: $f" >&2; fail=1; }
       ;;
   esac
 done
